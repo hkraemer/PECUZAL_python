@@ -1,0 +1,11 @@
+test 1: first 5000 points, without normalisation, 100 taus
+test 2: first 5000 points, without normalisation, 400 taus
+test 3: first 5000 points, with normalisation, 400 taus
+test 4: first 5000 points, with normalisation, 400 taus, 5 temporal neighbours to each side excluded
+test 5: first 5000 points, with normalisation, 400 taus, 10 temporal neighbours to each side excluded
+test 6: first 5000 points, with normalisation, 400 taus, 20 temporal neighbours to each side excluded, slope threshold set to 0, stop after 2 dims
+test 7: first 5000 points, with normalisation, 400 taus, 50 temporal neighbours to each side excluded, slope threshold set to 0, stop after 4 dims
+test 8: first 5000 points, with normalisation, 400 taus, 5 temporal neighbours to each side excluded, slope threshold set to 0, stop after 4 dims
+test 9: full time series, with normalisation, 400 taus, 5 temporal neighbours to each side excluded, slope threshold set to 0, stop after 4 dims
+test 10: adjusted implementation with old end criteria, choose min of aveps
+test 11: adjusted implementation with old end criteria, choose max of aveps
