@@ -254,7 +254,10 @@ def uzal_cost(Y, K = 3, Tw = 40, theiler = 1 , sample_size = 1.0, norm = 'euclid
     sigma2_avrg = np.mean(sigma2) # averaged value of the noise amplification, Eq. 18
     alpha2 = 1 / np.sum(eps2**(-1)) # for normalization, Eq. 21
     L = np.log10(np.sqrt(sigma2_avrg)*np.sqrt(alpha2))
-    return L
+    L_local = np.log10(np.sqrt(sigma2)*np.sqrt(alpha2))
+    return L, L_local
+
+
 
 
 def all_neighbors(vtree, vs, ns, K, theiler):
