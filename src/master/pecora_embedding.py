@@ -178,12 +178,28 @@ from sklearn.neighbors import KDTree
 
 
 
-def get_binomial_table(p_val, alpha):
-    # for the Pecora-FNN method we need to estimate how many points from the
-    #    delta neighborhood need to fall outside the epsilon neighborhood to
-    #    reject the Null Hypothesis at a certain significance level alpha. Here we
-    #    compute a table storing these numbers of points.
-    pass
+def get_binomial_table(p = 0.5, alpha = 0.05, trial_range = 8):
+    '''
+    :param p: Binominal p (Default is 0.5)
+    :param alpha: Significance level (Default is 0.05)
+    :param trial_range: number of considered delta-neighborhood-points (Default is 8)
+    :return:
+            `delta_to_epsilon_amount`, a dictionary with `delta_points` as keys and the 
+            corresponding number of points in order to reject the Null, `epsilon_points`, 
+            constitute the values. 
+    Compute the numbers of points from the delta-neighborhood, which need to fall outside
+    the eosilon-neighborhood, in order to reject the Null Hypothesis at a significance
+    level `alpha`. One parameter of the binomial distribution is `p`, the other one would be 
+    the number of trials, i.e. the considered number of points of the delta-neighborhood. 
+    `trial_range` determines the number of considered delta-neighborhood-points, always 
+    starting from 8. For instance, if `trial_range=8`, then delta-neighborhood sizes from 
+    8 up to 15 are considered.
+    '''
+    assert trial_range >= 1
+    delta_to_epsilon_amount = dict()
+    for key in range(8,8+trial_range):
+        delta_to_epsilon_amount[key] = int(binom.ppf(1-alpha, key, p))
+    return delta_to_epsilon_amount
 
 def fnn(new_distances, old_distances, r=2): 
     # for a list of `old_distances` and `new_distances`, compute the false
