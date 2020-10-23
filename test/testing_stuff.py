@@ -14,24 +14,15 @@ from pecora_embedding import *
 
 theiler = 2
 Tw = 40
-Y = data[:100,:]
+Y = data[:1000,:]
 sample_size = 1
-norm = 'euclidean'
+norm = 'chebyshev'
 K = 8
 
-L = uzal_cost(Y, K = K, Tw = Tw, theiler = theiler , sample_size = sample_size, norm = norm)
-display(L)
-# D = np.size(Y,1)
-# NN = len(Y)-Tw
-# NNN = int(np.floor(sample_size*NN))
-# ns = random.sample(list(np.arange(NN)),NNN) # the fiducial point indices
-# ns = np.array(np.arange(0,100))
-# vs = Y[ns[:]] # the fiducial points in the data set
+# L , L_loc = uzal_cost(Y, K = 4, Tw = Tw, theiler = theiler , sample_size = sample_size, norm = norm)
+# print(L)
 
-# vtree = KDTree(Y[:-Tw], metric = norm)
-# allNNidxs, _ = all_neighbors(vtree, vs, ns, K, theiler) 
-
-# NNidxs = allNNidxs[0]
+eps_star = continuity_statistic(Y[:,0], [0], [0], delays = range(50), sample_size = 1, K = 13, theiler = 5,
+        norm = 'euclidean', alpha = 0.05, p = 0.5)
 
 
-# E = comp_Ek2(Y, ns[0], NNidxs, 1, K, norm)

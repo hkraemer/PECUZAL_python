@@ -165,19 +165,99 @@ from scipy.stats import binom
 
 
 
-# def continuity_statistic(var1, time_series_x, `taus`, `datasample`, `theiler_window`, `alpha`, `p`, `norm`):
+def continuity_statistic(s, taus, js, delays = range(50), sample_size = 0.1, K = 13, theiler = 1, norm = 'euclidean', alpha = 0.05, p = 0.5):
+    '''
+    :return:
+            The continuity statistic `avrg_eps_star` for each time series in `s` for the given trajectory
+            specified by the general embedding parameters `taus` and `js`.
+    :param s: Input time series as numpy array. This can be a multivariate set, where the timeseries
+    are stored in the columns.
+    :param taus: denotes what delay times will be used for each of the entries of the delay vector. 
+    It is recommended that `taus[0] = 0`.
+    :param js: denotes which of the timeseries contained in `s` will be used for the entries of the 
+    delay vector. `js` can contain duplicate indices.
+    :param delays = range(50): Possible time delay values `delays` (in sampling time units). For each 
+    of the `tau`'s in `delays` the continuity-statistic `avrg_eps_star` gets computed.
+    :param sample_size = 0.1: Number of considered fiducial points as a fraction of input time series length.
+    :param K = 13: the amount of nearest neighbors in the Delta-ball. Must be at least 8 (in order to guarantee 
+    a valid statistic). `avrg_eps_star` is computed taking the minimum result over all `k in K`. 
+    :param theiler = 1: Theiler window for excluding serial correlated points from neighbourhood.
+    :param norm: The norm used for distance computations. Must be either `'euclidean'` (Default) or `'chebyshev'`
+    :param alpha: Significance level (Default is 0.05)
+    :param p: Binominal p (Default is 0.5)
+    '''
+    if np.ndim(s)>1:
+        assert (np.size(s,0) > np.size(s,1)), "You must provide a numpy array storing the time series in its columns."
+        D = np.size(s,1)
+        all_eps_star = np.empty(shape=(len(delays), D))
+    else:
+        D = 1
+    assert (K >= 8) and (type(K) is int) and (K < len(s)) , "You must provide a delta-neighborhood size consisting of at least 8 neighbors."
+    assert (sample_size > 0) and (sample_size <= 1), "sample_size must be in (0 1]"
+    assert (theiler >= 0) and (type(theiler) is int) and (theiler < len(s)), "Theiler window must be a positive integer smaller than the time series length."
+    assert (alpha >= 0) and (alpha < 1), "Significance level alpha must be in (0 1)"
+    assert (p >= 0) and (p < 1), "Binomial p parameter must be in (0 1)"
+    assert (type(norm) is str) and (norm == 'euclidean' or norm == 'chebyshev')
 
-#     # function body
+    vspace = genembed(s, taus, js)
+    vtree = KDTree(vspace[:-np.amax(delays)], metric = norm)
 
-#     # according to `p` and `alpha`, compute how many points fall outside the
-#     # epsilon neighborhood and how many can be tolerated inside to reject the Null
-#     # =============================================================================
-#     #     bino_table = get_binomial_table(p_val,alpha);
-#     # =============================================================================
+    # pick fiducial points
+    if sample_size == 1:
+        N = len(vspace)-delays[-1]
+        ns = np.arange(N)
+    else:
+        N = int(np.floor(sample_size*(len(vspace)-delays[-1])))
+        ns = random.sample(list(np.arange(len(vspace)-delays[-1])),N) # the fiducial point indices
 
-#     # perform continuity statistic
+    vs = vspace[ns]
+    allNNidxs, _ = all_neighbors(vtree, vs, ns, K, theiler, len(vspace[:-np.amax(delays)]))
+
+    # Loop over potential timeseries to use in new embedding
+    for i in range(D):
+        if D == 1:
+            x = (s-np.mean(s))/np.std(s) # so that different timeseries can be compared
+            all_eps_star = continuity_per_timeseries(x, ns, allNNidxs, delays, K, alpha, p)
+        else:
+            x = s[:,i]
+            x = (x-np.mean(x))/np.std(x) # so that different timeseries can be compared
+            all_eps_star[:,i] = continuity_per_timeseries(x, ns, allNNidxs, delays, K, alpha, p)
+
+    return all_eps_star
 
 
+def genembed(s, taus, js):
+    '''
+    :param s: Input time series as numpy array. This can be a multivariate set, where the timeseries
+    are stored in the columns.
+    :param taus: denotes what delay times will be used for each of the entries of the delay vector. 
+    It is recommended that `taus[0] = 0`.
+    :param js: denotes which of the timeseries contained in `s` will be used for the entries of the 
+    delay vector. `js` can contain duplicate indices.
+    :return:
+            generalized embedding of `s` which can be a uni- or multivariate and return the result 
+            as a new numpy.array.
+
+    The generalized embedding works as follows:
+    `taus, js` are tuples (or vectors) of length `D`, which also coincides with the embedding
+    dimension. For example, imagine input trajectory `s = [x, y, z]` where `x, y, z` are
+    timeseries (the columns of `s`).
+    If `js = (0, 2, 1)` and `taus = (0, 2, 7)` the created delay vector at each step `t` will be
+    .. math::
+        (x(t), z(t+2), y(t+7))
+    '''
+    assert np.amax(js) <= np.ndim(s)
+    if np.ndim(s) == 1:
+        assert js[0] == 0 
+    N = len(s) - np.amax(taus)
+    data = np.empty(shape=(N,len(taus)))
+    for (i, tau) in enumerate(taus):
+        if np.ndim(s) == 1:
+            data[:,i] = s[tau:(N+tau)]
+        else:
+            data[:,i] = s[tau:(N+tau), js[i]]
+    return data
+    
 
 def get_binomial_table(p = 0.5, alpha = 0.05, trial_range = 8):
     '''
@@ -203,14 +283,30 @@ def get_binomial_table(p = 0.5, alpha = 0.05, trial_range = 8):
     return delta_to_epsilon_amount
 
 
-def fnn(new_distances, old_distances, r=2): 
-    # for a list of `old_distances` and `new_distances`, compute the false
-    # nearest neighbor fraction under a threshold `r` after
-    # Kantz & Schreiber 2004, formula 3.8 on page 37.
-    # and
-    # Hegger, Rainer and Kantz, Holger (1999). [Improved false nearest neighbor
-    # method to detect determinism in time series data. Physical Review E 60, 4970
-    pass
+def continuity_per_timeseries(x, ns, allNNidxs, delays, K, alpha, p):
+    avrg_eps_star = np.zeros(np.size(delays))
+    Ks = [k for k in range(8,K+1)]
+    delta_to_epsilon_amount = get_binomial_table(p, alpha, len(Ks))
+    for (l, tau) in enumerate(delays): # Loop over the different delays
+        c = 0
+        for (i, n) in enumerate(ns): # Loop over fiducial points
+            NNidxs = allNNidxs[i] # indices of k nearest neighbors to v
+            # calculate minimum ε
+            avrg_eps_star[l] += eps_star(x, n, tau, NNidxs, delta_to_epsilon_amount, Ks)
+            c += 1
+        avrg_eps_star[l] /= c
+    return avrg_eps_star
+
+
+def eps_star(x, n, tau, NNidxs, delta_to_epsilon_amount, Ks):
+    a = x[n+tau] # fiducial point in epsilon-space
+    dis = np.array([abs(a - x[i+tau]) for i in NNidxs])
+    eps = np.zeros(len(Ks))
+    for (i, k) in enumerate(Ks):
+        sortedds = np.sort(dis[:k])
+        l = delta_to_epsilon_amount[k]
+        eps[i] = sortedds[l-1]
+    return np.amin(eps)
 
 
 # uzal cost function
@@ -242,7 +338,7 @@ def uzal_cost(Y, K = 3, Tw = 40, theiler = 1 , sample_size = 1.0, norm = 'euclid
     vs = Y[ns[:]] # the fiducial points in the data set
 
     vtree = KDTree(Y[:-Tw], metric = norm)
-    allNNidxs, _ = all_neighbors(vtree, vs, ns, K, theiler) 
+    allNNidxs, _ = all_neighbors(vtree, vs, ns, K, theiler, (len(vs)-Tw)) 
 
     eps2 = np.empty(NNN)             # neighborhood size
     E2_avrg = np.empty(NNN)          # averaged conditional variance
@@ -278,17 +374,15 @@ def uzal_cost(Y, K = 3, Tw = 40, theiler = 1 , sample_size = 1.0, norm = 'euclid
 
 
 
-def all_neighbors(vtree, vs, ns, K, theiler):
+def all_neighbors(vtree, vs, ns, K, theiler, k_max):
     '''
     :return:  The `K`-th nearest neighbors for all input points `vs`, with indices `ns` in
     original data, while respecting the `theiler` window.
     '''
-    # number of encountered nearest neighbors
-    kk = len(vs)-1
     dists = np.empty(shape=(len(vs),K))  
     idxs = np.empty(shape=(len(vs),K),dtype=int)
 
-    dist_, ind_ = vtree.query(vs[:], k=kk)
+    dist_, ind_ = vtree.query(vs[:], k=k_max)
 
     for i in range(np.size(dist_,0)):    
         cnt = 0
