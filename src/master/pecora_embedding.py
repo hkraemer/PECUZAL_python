@@ -10,181 +10,143 @@ import math
 import numpy as np
 import scipy
 import random
-from scipy.stats import zscore
 from sklearn.neighbors import KDTree
 from scipy.stats import binom
 
 
-# def pecuzal_embedding(Y, Tw=40, K=3, Int=1, samplesize=0.5, norm="euclidean"):
-#     # `var` is the input-variable. This can be a single time series or a multi-
-#     # dimensional array, containing many time series. `taus` is a range-object 
-#     # indicating the delay values which the algorithm consideres. `datasample` is a
-#     # floating number from the interval (0,1] and determines the number of considered
-#     # trajectory points (fiducial points) as a fraction from all points. Lets say 
-#     # the input time series `var`is of length 10,000 and `datasample=0.5`, then 
-#     # 5,000 fiducial points get randomly chosen and the corresponding continuity-
-#     # statistic gets computed. `alpha` is the significance level for the continuity-
-#     # statistic, `p` is the probability for the binomial distribution. `k` is the 
-#     # number of considered nearest neighbors in Uzal's L-statistic and `Tw` is 
-#     # the maximum time horizon for the L-statistic. `norm` is the metric for 
-#     # distance computations in phase space. This can be restricted to `euclidean` 
-#     # and `chebychev`. 
+def pecuzal_embedding(s, taus = range(50), theiler = 1, sample_size = 1., K = 13, KNN = 3, Tw = 4*theiler, alpha = 0.05, p = 0.5, norm="euclidean", max_cycles = 50):
+    '''Performs an embedding of time series using the PECUZAL method
 
-#     # the desired ouput should be
-#     # =============================================================================
-#     #  return Y,tau_vals,ts_vals,epsilon_mins,FNNs,Ls
-#     # =============================================================================
+    Parameters
+    ----------
+    s : 'numpy.ndarray' (N, M)
+        Input time series of length N as numpy array. This can be a multivariate set, where the M timeseries are stored in the columns.
+    taus : `iterable`, optional
+        Possible delay values in sampling time units (Default is `taus=range(50)`). For each of the `tau`'s in `taus` the continuity statistic 
+        `avrg_eps_star` gets computed and further processed in order to find optimal delays for each embedding cycle.
+    theiler : `int`, optional
+        Theiler window for excluding serial correlated points from neighbourhood. In sampling time units, Default is `theiler = 1`.
+    sample_size : `float`, optional
+        Number of considered fiducial points as a fraction of input time series length, i.e. a float from interval (0,1.] (Default is 
+        `sample_size = 1.0`, i.e., all points of the acutal trajectory get considered).
+    K : `int`, optional
+        The amount of nearest neighbors in the Delta-ball. Must be at least 8 (in order to guarantee a valid statistic) and the Default is
+        `K = 13`. The continuity statistic `avrg_eps_star` is computed in each embedding cycle, taking the minimum result over all `k in K`.
+    KNN : `int`, optional
+        The number of nearest neighbors to be considered in the L-statistic, Default is `KNN = 3`.  
+    Tw : `int`, optional
+        The maximal considered time horizon for obtaining the L-statistic. Default is `Tw = 4*theiler`.
+    alpha : `float`, optional
+        Significance level for obtaining the continuity statistic `avrg_eps_star` in each embedding cycle (Default is `alpha = 0.05`).
+    p : `float`, optional
+        Binominal p for obtaining the continuity statistic `avrg_eps_star` in each embedding cycle (Default is `p = 0.5`).
+    norm : `str`, optional
+        The norm used for distance computations. Must be either `'euclidean'` (Default) or `'chebyshev'`
+    max_cycles : `int`, optional
+        The algorithm will stop after that many cycles no matter what. Default is `max_cycles = 50`.
+    
+    Returns
+    -------
+    Y : 'numpy.ndarray' (N', m)
+        The trajectory from the embedding of length `N' = N-sum(tau_vals)` of dimension `m` (embedding dimension)
+    tau_vals : 'list' [`int`]
+        The chosen delay values for each embedding cycle, `len(tau_vals) = m`.
+    ts_vals : 'list' [`int`]
+        The according time series number (index) chosen for each delay value in `tau_vals`, `len(ts_vals) = m`. For univariate embedding
+        `ts_vals` is a vector of zeros of length `tau_vals`, because there is simply just one time series to choose from, i.e. index 0. 
+    Ls : 'list'
+        The L-statistic for each embedding cycle. The minimum of these values corresponds to the L-value for the returned
+        trajectory `Y`.
+    avrg_eps_stars : 'list' [`list`]
+        The continuity statistics for each embedding cycle. Contains `avrg_eps_star` of each embedding cycle.
+    
+    See also
+    --------
+    uzal_cost
+    continuity_statistic
 
-#     # `Y` is the final embedded trajectory. `tau_vals` are the chosen delay 
-#     # values for each embedding cycle. Thus, the length of `tau_vals` corresponds
-#     # to the dimensionality of `Y`. `ts_vals` is a list storing the chosen time 
-#     # series for each delay value in `tau_vals`. In case of univariate embedding,
-#     # i.e. when there is just a single time series as input `var`, then `ts_vals`
-#     # is a list of same length as `tau_vals` just containing Ones (or Zeros, 
-#     # depending on the indexing style you prefer), since there is just one time 
-#     # series to choose from. `epsilon_mins` is a list containing the continuity-
-#     # statistic for each embedding cycle. `FNNs` contains the amount of false
-#     # nearest neighbors for each embedding cycle. `Ls` contains Uzal's L-statistic
-#     # for each embedding cycle.
+    Notes
+    -----
+    The method works iteratively and gradually builds the final embedding vectors
+    `Y`, as proposed in [1]_. Based on the continuity statistic `avrg_eps_star` [2]_ the algorithm picks an
+    optimal delay value `tau_i` for each embedding cycle `i`. For achieving that, we take the inpute time series 
+    `s` and compute the continuity statistic `avrg_eps_star`. 1. Each local maxima in `avrg_eps_star` is used 
+    for constructing a candidate embedding trajectory `Y_trial` with a delay corresponding to that
+    specific peak in `avrg_eps_star`. 2. We then compute the `L`-statistic [3]_ for `Y_trial`. 3. We pick the 
+    peak/`tau`-value, for which `L` is minimal and construct the actual embedding trajectory `Y_actual` (steps 
+    1.-3. correspond to an embedding cycle). 4. We repeat steps 1.-3. with `Y_actual` as input and stop the
+    algorithm when `L` can not be reduced anymore. `Y_actual` -> `Y`.
 
-#     # I suggest a function body looking roughly like this (but feel free to do 
-#     # whatever you want and what seems to make sense, also performance-wise):
+    In case of multivariate embedding, i.e. when embedding a set of `M` time series, in each embedding cycle 
+    `avrg_eps_star` gets computed for all `M` time series available. The optimal delay value `tau_i` in each 
+    embedding cycle `i` is chosen as the peak/`tau`-value for which `L` is minimal under all available peaks 
+    and under all M `avrg_eps_star`'s. In the first embedding cycle there will be M**2 different `avrg_eps_star`'s
+    to consider, since it is not clear a priori which time series of the input should consitute the first component 
+    of the embedding vector and form `Y_actual`.
 
-#     # =============================================================================
-#     #     z-standardize all time series in `var``
-#     Y = Y.apply(zscore)
-
-#     #     preallocate empty lists for `tau_vals`, `ts_vals`, `epsilon_mins`, `FNNs`, `Ls``
-#     tau_vals = np.zeros(Y.shape)
-#     ts_vals = np.zeros(Y.shape)
-#     epislon_mins = np.zeros(Y.shape)
-#     FNNs = np.zeros(Y.shape)
-#     Ls = np.zeros(Y.shape)
-
-#     for i in iter(range(0,len(Y))):
-#         for j in iter(range(0, len(Y))):
-#             print(i,j)
-#             epsilons = continuity_statistic(Y[i],Y[j])
-
-
-#     #     
-#     #     start while-loop over embedding cycles:
-#     #     
-#     #         in the first embedding cycle:
-#     #             
-#     #             loop over all time series in `var`, i:
-#     #             
-#     #                 loop over all time series in `var`, j:
-#     #             
-#     #                     for each (i,j) combination compute the continuity statistic:
-#     #                         epsilons = continuity_statistic(timeseries i, timeseries j, kwargs)
-#     #                     
-#     #                         for each peak in the continuity statistic `epsilons`:
-#     #                             make an embedding `Y_trial` with this delay `delay_trial`, 
-#     #                             and compute the L-statistic L = uzal_cost(`Y_trial`,`delay_trial`,`k`,`Tw`)
-#     #                             also compute the FNN-statistic fnns = fnn(`Y_trial-distances`, `former-distances)
-#     #                             
-#     #                             save the peak/delay value `delay_trial`, which has the
-#     #                             lowest `L`.
-#     #                     
-#     #             compare all L-statistics `L` for all (i,j)-combinations and take the
-#     #             one with the minimum `L`. Then ts_vals[0] = i and ts_vals[1] = j,
-#     #             tau_vals[0] = 0 and tau_vals[1] = `delay_trial`, which corresponds 
-#     #             to the minimum `L`
-#     #             
-#     #                 
-#     #         in all consecutive embedding cycles:
-#     #             
-#     #             loop over all time series in `var`, i:
-#     #                 
-#     #                 for each time series i, compute the continuity statistic:
-#     #                     epsilons = continuity_statistic(`Y`, timeseries i, kwargs)
-#     #                 
-#     #                     for each peak in the continuity statistic `epsilons`:
-#     #                         make an embedding `Y_trial` with this delay `delay_trial`, 
-#     #                         and compute the L-statistic L = uzal_cost(`Y_trial`,`theiler_window`,`k`,`Tw`,`datasample`)
-#     #                         also compute the FNN-statistic fnns = fnn(`Y_trial-distances`, `former-distances)
-#     #                         
-#     #                     save the peak/delay value `delay_trial`, which has the
-#     #                     lowest `L` in `tau_vals` and save the corresponding time 
-#     #                     series in `ts_vals`
-#     #                     
-#     #                     
-#     #         construct the actual phase space trajectory `Y` with the values in
-#     #         `tau_vals` and `ts_vals`
-#     #         
-#     #         compute the L-statistic for `Y`: L = uzal_cost(`Y`,`theiler_window`,`k`,`Tw`,`datasample`)
-#     #         
-#     #         check break criterions:
-#     #             
-#     #         if there hasn't been any valid peak to choose from in the continuity statistic, 
-#     #         the last saved `delay_value` is NaN, break
-#     #     
-#     #         if `L` is higher than in the former embedding cycle, break:
-#     #             
-#     #     
-#     #     return all return-values
-#     # =============================================================================
-
-#     D = Y['D']
-#     ET = Y['ET']
-
-#     NN = len(Y) - Tw
-#     NNN = math.floor(Int)
-#     ns = np.random.choice((np.arange(1, NN), NNN)  # the fiducial point indices
-
-#     vs = Y[ns] # the fiducial points in the data set
-
-#     vtree = scipy.spatial.KDTree(Y[0:-Tw])
-#     vtree.count_neighbors(vs)
-#     allNNidxs, allNNdist = all_neighbors(vtree, vs, ns, K, w)
-#     e_squared = np.zeros(NNN)  # neighborhood size
-#     E_squared_avrg = np.zeros(NNN)  # averaged conditional variance
-#     E_squared = np.zeros(Tw)
-#     e_ball = np.zeros(ET, K + 1, D)  # preallocation
-#     u_k = np.zeros(ET, D)
-
-#     # loop over each fiducial point
-#     for (i, v) in iter(range((vs)):
-#         NNidxs = allNNidxs[i]  # indices of k nearest neighbors to v
-#     # pairwise distance of fiducial points and `v`
-#     pdsqrd = fiducial_pairwise_dist_sqrd(Y.data, NNidxs, v, metric)
-#     e_squared[i] = (2 / (K * (K + 1))) * pdsqrd  # Eq. 16
-#     # loop over the different time horizons
-#     for T in iter(range(1, Tw)):
-#         E_squared[T] = comp_Ek2(e_ball, u_k, Y, ns[i], NNidxs, T, K, metric)  # Eqs. 13 & 14
-
-#     # Average E²[T] over all prediction horizons
-#     E_squared_avrg[i] = np.mean(E_squared)  # Eq. 15
-
-#     sigma_squared = E_squared_avrg. / e_squared  # noise amplification σ², Eq. 17
-#     sigma_squared_avrg = np.mean(sigma_squared)  # averaged value of the noise amplification, Eq. 18
-#     alpha_squared = 1 / np.sum(e_squared. ^ (-1))  # for normalization, Eq. 21
-#     L = np.log10(np.sqrt(sigma_squared_avrg) * np.sqrt(alpha_squared))
+    References
+    ----------
+    .. [1] Kraemer et al., "A unified and automated approach to attractor reconstruction", arXiv, vol. 22,
+        pp. 585-588, 2020.
+    .. [2] Pecora et al., "A unified approach to attractor reconstruction", Chaos, vol. 17, 013110, 2007.
+    .. [3] Uzal et al., "Optimal reconstruction of dynamical systems: A noise amplification approach", Physical Review E,
+        vol. 84, 016223, 2011.
+    '''    
+    pass
 
 
 
 
-def continuity_statistic(s, taus, js, delays = range(50), sample_size = 0.1, K = 13, theiler = 1, norm = 'euclidean', alpha = 0.05, p = 0.5):
-    '''
-    :return:
-            The continuity statistic `avrg_eps_star` for each time series in `s` for the given trajectory
-            specified by the general embedding parameters `taus` and `js`.
-    :param s: Input time series as numpy array. This can be a multivariate set, where the timeseries
-    are stored in the columns.
-    :param taus: denotes what delay times will be used for each of the entries of the delay vector. 
-    It is recommended that `taus[0] = 0`.
-    :param js: denotes which of the timeseries contained in `s` will be used for the entries of the 
-    delay vector. `js` can contain duplicate indices.
-    :param delays = range(50): Possible time delay values `delays` (in sampling time units). For each 
-    of the `tau`'s in `delays` the continuity-statistic `avrg_eps_star` gets computed.
-    :param sample_size = 0.1: Number of considered fiducial points as a fraction of input time series length.
-    :param K = 13: the amount of nearest neighbors in the Delta-ball. Must be at least 8 (in order to guarantee 
-    a valid statistic). `avrg_eps_star` is computed taking the minimum result over all `k in K`. 
-    :param theiler = 1: Theiler window for excluding serial correlated points from neighbourhood.
-    :param norm: The norm used for distance computations. Must be either `'euclidean'` (Default) or `'chebyshev'`
-    :param alpha: Significance level (Default is 0.05)
-    :param p: Binominal p (Default is 0.5)
+def continuity_statistic(s, taus, js, delays = range(50), sample_size = 1.0, K = 13, theiler = 1, norm = 'euclidean', alpha = 0.05, p = 0.5):
+    '''Compute the continuity statistic for a trajectory defined by `s`, `taus` and `js` and all time series stored in `s` after [1]_.
+
+    Parameters
+    ----------
+    s : `numpy.ndarray` (N, M)
+        Input time series of length `N`. This can be a multivariate set, consisting of `M`time series, which are stored in the columns.
+    taus : `list` or `numpy.ndarray`
+        Denotes what delay times will be used for constructing the trajectory for which the continuity statistic to all time series in
+        `s` will be computed.
+    js : `list` or `numpy.ndarray`
+        Denotes which of the timeseries contained in `s` will be used for constructing the trajectory using the delay values stored in
+        `taus`. `js` can contain duplicate indices.
+    delays : `iterable`, optional
+        Possible delay values in sampling time units (Default is `delays = range(50)`). The continuity statistic `avrg_eps_star` is a 
+        function of these delay values.
+    sample_size : `float`, optional
+        Number of considered fiducial points as a fraction of input time series length, i.e. a float from interval (0,1.] (Default is 
+        `sample_size = 1.0`, i.e., all points of the acutal trajectory get considered).
+    K : `int`, optional
+        The amount of nearest neighbors in the Delta-ball. Must be at least 8 (in order to guarantee a valid statistic) and the Default is
+        `K = 13`. The continuity statistic `avrg_eps_star` is computed by taking the minimum result over all `k in K`.
+    theiler : `int`, optional
+        Theiler window for excluding serial correlated points from neighbourhood. In sampling time units, Default is `theiler = 1`.
+    norm : `str`, optional
+        The norm used for distance computations. Must be either `'euclidean'` (Default) or `'chebyshev'`
+    alpha : `float`, optional
+        Significance level for obtaining the continuity statistic `avrg_eps_star` in each embedding cycle (Default is `alpha = 0.05`).
+    p : `float`, optional
+        Binominal p for obtaining the continuity statistic `avrg_eps_star` in each embedding cycle (Default is `p = 0.5`).
+
+    Returns
+    -------
+    avrg_eps_star : `numpy.ndarray` (len(delays), M)
+        The continuity statistic `avrg_eps_star` for each of the `M` time series in `s` for the given trajectory
+        specified by the general embedding parameters `taus` and `js` and for all delay values specified in `delays`.
+
+    See also
+    --------
+    pecuzal_embedding
+
+    Notes
+    -----
+    The full algorithm is too large to discuss here and written in detail in [1]_ and in summary in [2].
+
+    References
+    ----------
+    .. [1] Pecora et al., "A unified approach to attractor reconstruction", Chaos, vol. 17, 013110, 2007.
+    .. [2] Kraemer et al., "A unified and automated approach to attractor reconstruction", arXiv, vol. 22,
+        pp. 585-588, 2020.
     '''
     if np.ndim(s)>1:
         assert (np.size(s,0) > np.size(s,1)), "You must provide a numpy array storing the time series in its columns."
@@ -227,24 +189,31 @@ def continuity_statistic(s, taus, js, delays = range(50), sample_size = 0.1, K =
 
 
 def genembed(s, taus, js):
-    '''
-    :param s: Input time series as numpy array. This can be a multivariate set, where the timeseries
-    are stored in the columns.
-    :param taus: denotes what delay times will be used for each of the entries of the delay vector. 
-    It is recommended that `taus[0] = 0`.
-    :param js: denotes which of the timeseries contained in `s` will be used for the entries of the 
-    delay vector. `js` can contain duplicate indices.
-    :return:
-            generalized embedding of `s` which can be a uni- or multivariate and return the result 
-            as a new numpy.array.
+    '''Perform an embedding with delays `taus` and time series stored in `s`, specified by their indices `js`
 
+    Parameters
+    ----------
+    s : `numpy.ndarray` (N, M)
+        Input time series of length `N`. This can be a multivariate set, consisting of `M`time series, which are stored in the columns.
+    taus : `list` or `numpy.ndarray`
+        Denotes what delay times will be used for constructing the trajectory for which the continuity statistic to all time series in
+        `s` will be computed.
+    js : `list` or `numpy.ndarray`
+        Denotes which of the timeseries contained in `s` will be used for constructing the trajectory using the delay values stored in
+        `taus`. `js` can contain duplicate indices.
+
+    Returns
+    -------
+    Y : `numpy.ndarray` (N', d)
+        The trajectory from the embedding of length `N' = N-sum(taus)` of dimension `d = len(taus)`.
+
+    Notes
+    -----
     The generalized embedding works as follows:
-    `taus, js` are tuples (or vectors) of length `D`, which also coincides with the embedding
-    dimension. For example, imagine input trajectory `s = [x, y, z]` where `x, y, z` are
-    timeseries (the columns of `s`).
-    If `js = (0, 2, 1)` and `taus = (0, 2, 7)` the created delay vector at each step `t` will be
-    .. math::
-        (x(t), z(t+2), y(t+7))
+    `taus, js` are `list`'s (or `numpy.ndarray`'s) of length `d`, which also coincides with the embedding dimension. For example, imagine 
+    input trajectory :math:`s = [x, y, z]` where :math:`x, y, z` are timeseries (the columns of `s`).
+    If :math:`js = (0, 2, 1)` and :math:`taus = (0, 2, 7)` the created delay vector at each step `t` will be
+    .. math:: (x(t), z(t+2), y(t+7))
     '''
     assert np.amax(js) <= np.ndim(s)
     if np.ndim(s) == 1:
@@ -260,21 +229,29 @@ def genembed(s, taus, js):
     
 
 def get_binomial_table(p = 0.5, alpha = 0.05, trial_range = 8):
-    '''
-    :param p: Binominal p (Default is 0.5)
-    :param alpha: Significance level (Default is 0.05)
-    :param trial_range: number of considered delta-neighborhood-points (Default is 8)
-    :return:
-            `delta_to_epsilon_amount`, a dictionary with `delta_points` as keys and the 
-            corresponding number of points in order to reject the Null, `epsilon_points`, 
-            constitute the values. 
-    Compute the numbers of points from the delta-neighborhood, which need to fall outside
-    the eosilon-neighborhood, in order to reject the Null Hypothesis at a significance
-    level `alpha`. One parameter of the binomial distribution is `p`, the other one would be 
-    the number of trials, i.e. the considered number of points of the delta-neighborhood. 
-    `trial_range` determines the number of considered delta-neighborhood-points, always 
-    starting from 8. For instance, if `trial_range=8`, then delta-neighborhood sizes from 
-    8 up to 15 are considered.
+    '''Compute the numbers of points from the delta-neighborhood, which need to fall outside the epsilon-neighborhood, in order to reject 
+    the Null Hypothesis at a significance level `alpha`.
+
+    Parameters
+    ----------
+    p : `float`, optional
+        Binominal p (Default is `p = 0.5`).
+    alpha : `float`, optional
+        Significance level in order to be able to reject the Null on the basis of the binomial distribution (Default is `alpha = 0.05`).
+    trial_range : `int`, optional
+        Number of considered delta-neighborhood-points (Default is `trial_range = 8`).
+    
+    Returns
+    -------
+    delta_to_epsilon_amount : `dict`
+        A dictionary with `delta_points` as keys and the corresponding number of points in order to reject the Null, `epsilon_points`, 
+        constitute the values.
+
+    Notes
+    -----
+    One parameter of the binomial distribution is `p`, the other one would be the number of trials, i.e. the considered number of points 
+    of the delta-neighborhood. `trial_range` determines the number of considered delta-neighborhood-points, always starting from 8. For 
+    instance, if `trial_range = 8`, then delta-neighborhood sizes from 8 up to 15 are considered.
     '''
     assert trial_range >= 1
     delta_to_epsilon_amount = dict()
@@ -311,18 +288,55 @@ def eps_star(x, n, tau, NNidxs, delta_to_epsilon_amount, Ks):
 
 # uzal cost function
 def uzal_cost(Y, K = 3, Tw = 40, theiler = 1 , sample_size = 1.0, norm = 'euclidean'):
-    '''
-    :param Y: state space vector.
-    :param K: number of nearest neighbors to be considered.
-    :param Tw: Time forward parameter.
-    :param theiler: Theiler window for excluding serial correlated points from neighbourhood.
-    :param sample_size: Number of considered fiducial points as a fraction of input time series length.
-    :param norm: The norm used for distance computations. Must be either `'euclidean'` or `'chebyshev'`
-    :return:
-            L: The value of the proposed cost-function,
-            L_local: The local value of the proposed cost-function. Note that this output can be given only, if you
-            have set `sample_size` = 1, i.e. considering all points of the trajectory. The length of `L_local` is
-            length(`Y`)-`Tw`.
+    '''Compute the L-statistic for the trajectory `Y` after [1]_
+
+    Parameters
+    ----------
+    Y : `numpy.ndarray` (N, d)
+        State space vectors of length `N` and dimensionality `d`. This is usually an ouput from an embedding of some time series.
+    K : `int`, optional
+        The number of nearest neighbors to be considered in the L-statistic, Default is `K = 3`.
+    Tw : `int`, optional
+        The maximal considered time horizon for obtaining the L-statistic. Default is `Tw = 1`.
+    theiler : `int`, optional
+        Theiler window for excluding serial correlated points from neighbourhood. In sampling time units, Default is `theiler = 1`.
+    sample_size : `float`, optional
+        Number of considered fiducial points as a fraction of input trajectory length, i.e. a float from interval (0,1.] (Default is 
+        `sample_size = 1.0`, i.e., all points of the acutal trajectory get considered).
+    norm : `str`, optional
+        The norm used for distance computations. Must be either `'euclidean'` (Default) or `'chebyshev'`
+ 
+    Returns
+    -------
+    L : `float`
+        The value of the proposed cost-function.
+    L_local : `numpy.ndarray` (N',) 
+        The local value of the proposed cost-function. Note that this output is only meaningful, if you have set `sample_size` = 1.0, 
+        i.e. considering all points of the trajectory. The length of `L_local` is `N' = len(Y)-Tw`.
+
+    Notes
+    -----
+    The `L`-statistic is based on theoretical arguments on noise amplification, the complexity of the reconstructed attractor and a 
+    direct measure of local stretch, which constitutes an irrelevance measure [1]_. Technically, it is the logarithm of the product of the
+    :math:`\sigma`-statistic and a normalization statistic :math:`\alpha`:
+    .. math:: L = log10(\sigma*\alpha)
+
+    The :math:`\sigma`-statistic is computed as follows. :math:`\sigma = \sqrt{\sigma^2} = \sqrt{E^2/\varepsilon^2}`.
+    :math:`E^2` approximates the conditional variance at each point in state space and for a time horizon :math:`T \in Tw`, using :math:`K` 
+    nearest neighbors. For each reference point of the state space trajectory :math:`Y`, the neighborhood consists of the reference point 
+    itself and its :math:`K+1` nearest neighbors. :math:`E^2` measures how strong a neighborhood expands during :math:`T` time steps. 
+    :math:`E^2` is averaged over many time horizons :math:`T = 1:Tw`. Consequently, :math:`\varepsilon^2` is the size of the neighborhood at 
+    the reference point itself and is defined as the mean pairwise distance of the neighborhood. Finally, :math:`\sigma^2` gets averaged over 
+    a range of reference points on the attractor, which is controlled by :math:`samplesize`. This is just for performance reasons and the most 
+    accurate result will obviously be gained when setting :math:`sample_size=1.0`.
+
+    The :math:`\alpha`-statistic is a normalization factor, such that :math:`\sigma`'s from different embeddings can be compared. :math:`\alpha^2`
+    is defined as the inverse of the sum of the inverse of all :math:`\varepsilon^2`'s for all considered reference points.
+
+    References
+    ----------
+    .. [1] Uzal et al., "Optimal reconstruction of dynamical systems: A noise amplification approach", Physical Review E,
+        vol. 84, 016223, 2011.
     '''
     assert (theiler >= 0) and (type(theiler) is int) and (theiler < len(Y))
     assert (K >= 0) and (type(K) is int) and (K < len(Y))
@@ -375,9 +389,14 @@ def uzal_cost(Y, K = 3, Tw = 40, theiler = 1 , sample_size = 1.0, norm = 'euclid
 
 
 def all_neighbors(vtree, vs, ns, K, theiler, k_max):
-    '''
-    :return:  The `K`-th nearest neighbors for all input points `vs`, with indices `ns` in
-    original data, while respecting the `theiler` window.
+    '''Compute `K` nearest neighbours for the points `vs` (having indices `ns`) from the tree `vtree`, while respecting the `theiler`-window.
+
+    Returns
+    -------
+    indices : `numpy.ndarray` (len(vs),K)
+        The indices of the K-nearest neighbours of all points `vs` (having indices `ns`)
+    dists : `numpy.ndarray` (len(vs),K)
+        The distances to the K-nearest neighbours of all points `vs` (having indices `ns`)
     '''
     dists = np.empty(shape=(len(vs),K))  
     idxs = np.empty(shape=(len(vs),K),dtype=int)
@@ -398,11 +417,18 @@ def all_neighbors(vtree, vs, ns, K, theiler, k_max):
 
 
 def comp_Ek2(Y, ns, NNidxs, T, K, norm):
-    '''
-    :return:  The approximated conditional variance for a specific point in state space
-    `ns` (index value) with its `K`-nearest neighbors, which indices are stored in
-    `NNidxs`, for a time horizon `T`. This corresponds to Eqs. 13 & 14 in Uzal et al. 2011.
-    The specified `norm` is used for distance computations.
+    '''Compute the approximated conditional variance for a specific point in `Y` (with index `ns`) for time horizon `T`.
+
+    Returns
+    -------
+    E2 : `float``
+        The approximated conditional variance for a specific point in state space `ns` (index value) with its `K`-nearest neighbors, 
+        which indices are stored in `NNidxs`, for a time horizon `T`. This corresponds to Eqs. 13 & 14 in [1]_.
+
+    References
+    ----------
+    .. [1] Uzal et al., "Optimal reconstruction of dynamical systems: A noise amplification approach", Physical Review E,
+        vol. 84, 016223, 2011.
     '''
     D = np.size(Y,1)
     # determine neighborhood `T` time steps ahead
