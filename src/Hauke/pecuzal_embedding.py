@@ -14,7 +14,7 @@ from sklearn.neighbors import KDTree
 from scipy.stats import binom
 
 
-def pecuzal_embedding(s, taus = range(50), theiler = 1, sample_size = 1., K = 13, KNN = 3, Tw = 4*theiler, alpha = 0.05, p = 0.5, norm="euclidean", max_cycles = 50):
+def pecuzal_embedding(s, taus = range(50), theiler = 1, sample_size = 1., K = 13, KNN = 3, Tw_factor = 4, alpha = 0.05, p = 0.5, norm="euclidean", max_cycles = 50):
     '''Performs an embedding of time series using the PECUZAL method
 
     Parameters
@@ -34,8 +34,10 @@ def pecuzal_embedding(s, taus = range(50), theiler = 1, sample_size = 1., K = 13
         `K = 13`. The continuity statistic `avrg_eps_star` is computed in each embedding cycle, taking the minimum result over all `k in K`.
     KNN : `int`, optional
         The number of nearest neighbors to be considered in the L-statistic, Default is `KNN = 3`.  
-    Tw : `int`, optional
-        The maximal considered time horizon for obtaining the L-statistic. Default is `Tw = 4*theiler`.
+    Tw_factor : `int`, optional
+        The maximal considered time horizon for obtaining the L-statistic as a factor getting multiplied with the given `theiler`:
+        `Tw = Tw_factor * theiler` and Default is `Tw_factor = 4`. If `theiler` is set to, say, `theiler = 15` and `Tw_factor` is on its Default
+        the maximal considered time horizon `Tw` for obtaining the L-statistic is `Tw = Tw_factor * 15 = 4 * 15 = 60`.
     alpha : `float`, optional
         Significance level for obtaining the continuity statistic `avrg_eps_star` in each embedding cycle (Default is `alpha = 0.05`).
     p : `float`, optional
@@ -92,8 +94,33 @@ def pecuzal_embedding(s, taus = range(50), theiler = 1, sample_size = 1., K = 13
     .. [3] Uzal et al., "Optimal reconstruction of dynamical systems: A noise amplification approach", Physical Review E,
         vol. 84, 016223, 2011.
     '''    
-    pass
+    if np.ndim(s)>1:
+        assert (np.size(s,0) > np.size(s,1)), "You must provide a numpy array storing the time series in its columns."
+        D = np.size(s,1)
+    else:
+        D = 1
+    assert (K >= 8) and (type(K) is int) and (K < len(s)) , "You must provide a delta-neighborhood size consisting of at least 8 neighbors."
+    assert (KNN >= 1) and (type(KNN) is int), "You must provide a valid integer number of considered nearest neighbours for the computation of the L-statistic." 
+    assert (sample_size > 0) and (sample_size <= 1), "sample_size must be in (0 1]"
+    assert (theiler >= 0) and (type(theiler) is int) and (theiler < len(s)), "Theiler window must be a positive integer smaller than the time series length."
+    assert (alpha >= 0) and (alpha < 1), "Significance level alpha must be in (0 1)"
+    assert (p >= 0) and (p < 1), "Binomial p parameter must be in (0 1)"
+    assert (type(norm) is str) and (norm == 'euclidean' or norm == 'chebyshev')
 
+    Tw = Tw_factor*theiler # set time horizon for L-statistic
+
+    s_orig = s
+    s = (s-np.mean(s))/np.std(s) # especially important for comparative L-statistics
+    # define actual phase space trajectory
+    Y_act = s
+    # compute initial L values for each time series
+    L_inits = np.zeros(D)
+    for i in range(D):
+        L_inits[i] = uzal_cost(s[:,i], sample_size = sample_size, K = KNN, norm = norm, theiler = theiler, Tw = Tw)
+    L_init = np.amin(L_inits)
+
+    print(L_inits)
+    print(L_init)
 
 
 
@@ -288,7 +315,7 @@ def eps_star(x, n, tau, NNidxs, delta_to_epsilon_amount, Ks):
 
 # uzal cost function
 def uzal_cost(Y, K = 3, Tw = 40, theiler = 1 , sample_size = 1.0, norm = 'euclidean'):
-    '''Compute the L-statistic for the trajectory `Y` after [1]_
+    '''Compute the L-statistic for the trajectory `Y`.
 
     Parameters
     ----------
@@ -344,20 +371,33 @@ def uzal_cost(Y, K = 3, Tw = 40, theiler = 1 , sample_size = 1.0, norm = 'euclid
     assert (Tw >= 0) and (type(Tw) is int) and (Tw < len(Y))
     assert (type(norm) is str) and (norm == 'euclidean' or norm == 'chebyshev')
 
-    D = np.size(Y,1)
+    if np.ndim(Y)>1:
+        assert (np.size(Y,0) > np.size(Y,1)), "You must provide a numpy array storing the time series in its columns."
+        D = np.size(Y,1)
+    else:
+        D = 1
     NN = len(Y)-Tw
-    NNN = int(np.floor(sample_size*NN))
-    ns = random.sample(list(np.arange(NN)),NNN) # the fiducial point indices
+    if sample_size == 1:
+        NNN = NN
+        ns = [i for i in range(NN)]
+    else:
+        NNN = int(np.floor(sample_size*NN))
+        ns = random.sample(range(NN),NNN) # the fiducial point indices
 
     vs = Y[ns[:]] # the fiducial points in the data set
 
-    vtree = KDTree(Y[:-Tw], metric = norm)
-    allNNidxs, _ = all_neighbors(vtree, vs, ns, K, theiler, (len(vs)-Tw)) 
-
+    if D == 1:
+        allNNidxs, _ = all_neighbors_1dim(vs, ns, K, theiler)
+        neighborhood_v = np.empty(K+1)
+    else:
+        vtree = KDTree(Y[:-Tw], metric = norm)
+        allNNidxs, _ = all_neighbors(vtree, vs, ns, K, theiler, (len(vs)-Tw))
+        neighborhood_v = np.empty(shape=(K+1,D)) 
+        
     eps2 = np.empty(NNN)             # neighborhood size
     E2_avrg = np.empty(NNN)          # averaged conditional variance
     E2 = np.empty(Tw)                # condition variance 
-    neighborhood_v = np.empty(shape=(K+1,D))
+    
 
     # loop over each fiducial point
     for (i,v) in enumerate(vs):
@@ -368,7 +408,14 @@ def uzal_cost(Y, K = 3, Tw = 40, theiler = 1 , sample_size = 1.0, norm = 'euclid
         neighborhood_v[1:] = Y[NNidxs]
 
         # pairwise distance of fiducial points and `v`
-        pdsqrd = scipy.spatial.distance.pdist(neighborhood_v, norm)
+        if D == 1:
+            neighborhood_v_ = np.empty(shape=(len(neighborhood_v),2))
+            neighborhood_v_[:,0] = neighborhood_v
+            neighborhood_v_[:,1] = neighborhood_v
+            pdsqrd = scipy.spatial.distance.pdist(neighborhood_v_, 'chebyshev')
+        else:
+            pdsqrd = scipy.spatial.distance.pdist(neighborhood_v, norm)
+
         eps2[i] = (2/(K*(K+1))) * np.sum(pdsqrd**2)  # Eq. 16
 
         # loop over the different time horizons
@@ -414,6 +461,31 @@ def all_neighbors(vtree, vs, ns, K, theiler, k_max):
                     cnt += 1
     return idxs, dists
     
+def all_neighbors_1dim(vs, ns, K, theiler):
+    '''Compute `K` nearest neighbours for the points `vs` (having indices `ns`), while respecting the `theiler`-window.
+
+    Returns
+    -------
+    indices : `numpy.ndarray` (len(vs),K)
+        The indices of the K-nearest neighbours of all points `vs` (having indices `ns`)
+    dists : `numpy.ndarray` (len(vs),K)
+        The distances to the K-nearest neighbours of all points `vs` (having indices `ns`)
+    '''
+    dists = np.empty(shape=(len(vs),K))  
+    idxs = np.empty(shape=(len(vs),K),dtype=int)
+
+    for (i,v) in enumerate(vs):
+        dis = np.array([abs(v - vs[j]) for j in range(len(vs))])
+        idx = np.argsort(dis)
+        cnt = 0
+        for j in range(len(idxs)):
+            if idx[j] < ns[i]-theiler or idx[j] > ns[i]+theiler:
+                dists[i,cnt], idxs[i,cnt] = dis[idx[j]], idx[j]
+                if cnt == K-1:
+                    break
+                else:
+                    cnt += 1
+    return idxs, dists
 
 
 def comp_Ek2(Y, ns, NNidxs, T, K, norm):
@@ -430,9 +502,15 @@ def comp_Ek2(Y, ns, NNidxs, T, K, norm):
     .. [1] Uzal et al., "Optimal reconstruction of dynamical systems: A noise amplification approach", Physical Review E,
         vol. 84, 016223, 2011.
     '''
-    D = np.size(Y,1)
+    if np.ndim(Y)>1:
+        assert (np.size(Y,0) > np.size(Y,1)), "You must provide a numpy array storing the time series in its columns."
+        D = np.size(Y,1)
+        eps_ball = np.empty(shape=(K+1,D))
+    else:
+        D = 1
+        eps_ball = np.empty(K+1)
     # determine neighborhood `T` time steps ahead
-    eps_ball = np.empty(shape=(K+1,D))
+    
     eps_ball[0] = Y[ns+T]
     for (i, j) in enumerate(NNidxs):
         eps_ball[i+1] = Y[j+T]
