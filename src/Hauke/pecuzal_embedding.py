@@ -12,7 +12,7 @@ import scipy
 import random
 import sphinx
 from sklearn.neighbors import KDTree
-from scipy.stats import binom
+from scipy.stats import binom, zscore
 
 
 def pecuzal_embedding(s, taus = range(50), theiler = 1, sample_size = 1., K = 13, KNN = 3, Tw_factor = 4, alpha = 0.05, p = 0.5, max_cycles = 50):
@@ -110,7 +110,7 @@ def pecuzal_embedding(s, taus = range(50), theiler = 1, sample_size = 1., K = 13
     Tw = Tw_factor*theiler # set time horizon for L-statistic
 
     s_orig = s
-    s = (s-np.mean(s))/np.std(s) # especially important for comparative L-statistics
+    s = zscore(s) # especially important for comparative L-statistics
     # define actual phase space trajectory
     Y_act = []
     # compute initial L values for each time series
@@ -159,7 +159,11 @@ def pecuzal_multivariate_embedding_cycle(Y_act, flag, Ys, taus, theiler, counter
         Ls, ts_vals, sample_size, K, alpha, p, Tw, KNN):
     '''Perform one embedding cycle on `Y_act` with a multivariate set Ys
     '''
-    M = np.ndim(Ys)
+    if np.ndim(Ys)>1:
+        M = np.size(Ys,1)
+    else:
+        M = 1
+
     # in the 1st cycle we have to check all (size(Y,2)^2 combinations and pick
     # the tau according to minimial xi = (peak height * resulting L-statistic)
     if counter == 0:
@@ -201,10 +205,10 @@ def first_embedding_cycle_pecuzal(Ys, M, taus, theiler, sample_size, K,
             min_idx = min_idx[0]
         L_mini = L_min[min_idx]
         # update tau_vals, ts_vals, Ls
-        tau_vals = np.append(tau_vals, taus[int(L_min_idx[min_idx])])
-        ts_vals = np.append(ts_vals, int(min_idx)) # time series to start with
-        ts_vals = np.append(ts_vals, int(idx[min_idx])) # result of 1st embedding cycle
-        Ls = np.append(Ls, L_mini)
+        tau_vals.append(taus[L_min_idx[min_idx]])
+        ts_vals.append(min_idx) # time series to start with
+        ts_vals.append(idx[min_idx]) # result of 1st embedding cycle
+        Ls.append(L_mini) 
         eps[:,counter] = estar[:,(M*ts_vals[0])+ts_vals[1]]
         # create phase space vector for this embedding cycle
         Y_act = hcat_lagged_values(Ys[:,ts_vals[0]],
@@ -215,10 +219,10 @@ def first_embedding_cycle_pecuzal(Ys, M, taus, theiler, sample_size, K,
         L_min, L_min_idx, idx, _ = choose_right_embedding_params_first(
                                         estar, Ys, Ys, taus, Tw, KNN, theiler, sample_size, norm)
         # update tau_vals, ts_vals, Ls
-        tau_vals = np.append(tau_vals, taus[int(L_min_idx)])
-        ts_vals = np.append(ts_vals, int(0)) # time series to start with
-        ts_vals = np.append(ts_vals, int(idx)) # result of 1st embedding cycle
-        Ls = np.append(Ls, L_min)
+        tau_vals.append(taus[L_min_idx])
+        ts_vals.append(0) # time series to start with
+        ts_vals.append(idx) # result of 1st embedding cycle
+        Ls.append(L_min)
         eps[:,counter] = estar
         # create phase space vector for this embedding cycle
         Y_act = hcat_lagged_values(Ys,Ys,tau_vals[1])   
@@ -230,19 +234,19 @@ def embedding_cycle_pecuzal(Y_act, Ys, counter, M, taus, theiler, sample_size,
                     K, norm, alpha, p, Tw, KNN, tau_vals, ts_vals, Ls, eps):
     """Perform an embedding cycle of the multivariate embedding, but the first one.
     """
-
+    
     estar = continuity_statistic(Ys, tau_vals, ts_vals, delays = taus, sample_size = sample_size, 
                                     K = K, theiler = theiler, norm = norm, alpha = alpha, p = p)
     # update tau_vals, ts_vals, Ls, eps
     L_min, L_min_idx, idx = choose_right_embedding_params(estar, Y_act, Ys, taus, Tw, KNN, theiler, sample_size, norm)
 
-    tau_vals = np.append(tau_vals, taus[int(L_min_idx)])
-    ts_vals = np.append(ts_vals, int(idx))
-    Ls = np.append(Ls, L_min)
+    tau_vals.append(taus[L_min_idx])
+    ts_vals.append(idx)
+    Ls.append(L_min)
     if np.ndim(Ys)>1:
-        eps[:,counter] = estar[:,int(ts_vals[-1])]
+        eps[:,counter] = estar[:,ts_vals[-1]]
         # create phase space vector for this embedding cycle
-        Y_act = hcat_lagged_values(Y_act, Ys[:, int(ts_vals[-1])], tau_vals[-1])
+        Y_act = hcat_lagged_values(Y_act, Ys[:, ts_vals[-1]], tau_vals[-1])
     else:
         eps[:,counter] = estar
         # create phase space vector for this embedding cycle
@@ -395,7 +399,7 @@ def choose_right_embedding_params(estar, Y_act, s, taus, Tw, KNN, theiler, sampl
         L_min_ = L_trials_[min_idx_]
         tau_idx = max_idx_[min_idx_]-1
 
-        return L_min_, tau_idx, 0
+        return L_min_, tau_idx, int(0)
 
 
 
@@ -436,15 +440,15 @@ def get_maxima(s):
     for i in range(N-1):
         if (s[i-1] < s[i]) and (s[i+1] < s[i]):
             flag = False
-            maximas = np.append(maximas, s[i])
-            maximas_idx = np.append(maximas_idx, int(i))
+            maximas.append(s[i])
+            maximas_idx.append(i)
         
         # handling constant values
         if flag:
             if s[i+1] < s[first_point]:
                 flag = False
-                maximas = np.append(maximas, s[first_point])
-                maximas_idx = np.append(maximas_idx, int(first_point))
+                maximas.append(s[first_point])
+                maximas_idx.append(first_point)
                 
             elif s[i+1] > s[first_point]:
                 flag = False
@@ -461,7 +465,6 @@ def get_maxima(s):
         maximas = s[maximas_idx]
     
     return maximas, maximas_idx
-
 
 
 
