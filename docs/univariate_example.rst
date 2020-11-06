@@ -54,7 +54,7 @@ and possible delays ranging from `0:100`.
 
     Y_reconstruct, tau_vals, ts_vals, Ls, eps = pecuzal_embedding(y, taus = range(100), theiler = 30)
 
-which leads to the following note in the console:
+which leads to the following note in the console (see also the note on :ref:`performance <note_performance>`):
 
 ::
 

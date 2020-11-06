@@ -6,12 +6,13 @@
 Welcome to PECUZAL automatic embedding for Python's documentation!
 ==================================================================
 
-Here we introduce the PECUZAL automatic embedding method blabla
+We introduce the PECUZAL automatic embedding of time series method for Python. It is solely based
+on the paper [kraemer2020]_ (Open Source), where the functionality is explained in detail. Here we
+give an introduction to its easy usage in three examples. Enjoy Embedding! 
 
 
 .. todo::
    * Insert correct hyperlink to the `pecuzal_embedding`-function in the Julia-Docs
-   * Insert correct Licence at the end of the page
    * Insert correct citation link at the end of the page
    * Insert correct installation guide
 
@@ -22,6 +23,8 @@ Getting started
 Go and install that stuff by doing...
 
 .. note::
+   :name: note_performance
+
    This implementation is not profiled well. We recommend to use the implementation
    in the `Julia language <https://juliadynamics.github.io/DynamicalSystems.jl/dev/>`_,
    in order to get fast results, especially in the multivariate case. Moreover,
@@ -72,7 +75,7 @@ or as BiBTeX-entry:
 
 Licence
 =======
-This is under blabla Licence
+This is program is free software and runs under `MIT Licence <https://opensource.org/licenses/MIT>`_.
 
 
 Indices and tables
