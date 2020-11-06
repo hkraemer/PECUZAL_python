@@ -1,0 +1,6 @@
+README.md
+setup.py
+pecuzal_embedding_khkraemer.egg-info/PKG-INFO
+pecuzal_embedding_khkraemer.egg-info/SOURCES.txt
+pecuzal_embedding_khkraemer.egg-info/dependency_links.txt
+pecuzal_embedding_khkraemer.egg-info/top_level.txt

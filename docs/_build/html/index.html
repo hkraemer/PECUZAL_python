@@ -37,7 +37,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Embedding of a univariate time series" href="univariate_example.html" /> 
+    <link rel="next" title="Univariate example" href="univariate_example.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -86,6 +86,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="univariate_example.html">Embedding of a univariate time series</a></li>
 <li class="toctree-l1"><a class="reference internal" href="multivariate_example.html">Embedding of multivariate time series</a></li>
+<li class="toctree-l1"><a class="reference internal" href="noise_example.html">Embedding of non-deterministic data</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Source functions</span></p>
 <ul>
@@ -158,6 +159,15 @@
   <div class="section" id="welcome-to-pecuzal-automatic-embedding-for-python-s-documentation">
 <h1>Welcome to PECUZAL automatic embedding for Python’s documentation!<a class="headerlink" href="#welcome-to-pecuzal-automatic-embedding-for-python-s-documentation" title="Permalink to this headline">¶</a></h1>
 <p>Here we introduce the PECUZAL automatic embedding method blabla</p>
+<div class="admonition-todo admonition" id="id1">
+<p class="admonition-title">Todo</p>
+<ul class="simple">
+<li><p>Insert correct hyperlink to the <cite>pecuzal_embedding</cite>-function in the Julia-Docs</p></li>
+<li><p>Insert correct Licence at the end of the page</p></li>
+<li><p>Insert correct citation link at the end of the page</p></li>
+<li><p>Insert correct installation guide</p></li>
+</ul>
+</div>
 </div>
 <div class="section" id="getting-started">
 <h1>Getting started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
@@ -167,13 +177,18 @@
 <p>This implementation is not profiled well. We recommend to use the implementation
 in the <a class="reference external" href="https://juliadynamics.github.io/DynamicalSystems.jl/dev/">Julia language</a>,
 in order to get fast results, especially in the multivariate case. Moreover,
-it is well documented and embedded in the <cite>DynamicalSystems.jl</cite> ecosystem.</p>
+it is well documented and embedded in the
+<a class="reference external" href="https://juliadynamics.github.io/DynamicalSystems.jl/dev/">DynamicalSystems.jl</a> ecosystem.
+For instance, the compuations made in the <a class="reference internal" href="univariate_example.html#sec-univariate"><span class="std std-ref">Univariate example</span></a> and the <a class="reference internal" href="multivariate_example.html#sec-multivariate"><span class="std std-ref">Multivariate example</span></a>
+in this documentation took approximately <cite>500s</cite> and <cite>1680s</cite>, respectively. In the Julia implementation
+the exact same computation took <cite>3s</cite> and <cite>20s</cite>, respectively! (running on a 2.8GHz Quad-Core i7,  16GB 1600 MHz DDR3)</p>
 </div>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Usage and examples</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="univariate_example.html">Embedding of a univariate time series</a></li>
 <li class="toctree-l1"><a class="reference internal" href="multivariate_example.html">Embedding of multivariate time series</a></li>
+<li class="toctree-l1"><a class="reference internal" href="noise_example.html">Embedding of non-deterministic data</a></li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
@@ -191,23 +206,20 @@ it is well documented and embedded in the <cite>DynamicalSystems.jl</cite> ecosy
 <dd><p>Kraemer et al., “A unified and automated approach to attractor reconstruction”, New Journal of Physics, vol. 22, pp. 585-588, 2020.</p>
 </dd>
 </dl>
-<p>or as BiBTeX-entry:
-``
-&#64;article{kraemer2020,\</p>
-<blockquote>
-<div><p>doi = {10.21105/joss.00598},
-url = {<a class="reference external" href="https://doi.org/10.21105/joss.00598">https://doi.org/10.21105/joss.00598</a>},
-year  = {2020},
-month = {nov},
-volume = {3},
-number = {23},
-pages = {598},
-author = {K. Hauke Kraemer},
-title = {A unified and automated approach to attractor reconstruction},
-journal = {New Journal of Physics}</p>
-</div></blockquote>
-<div class="section" id="id1">
-<h2>}<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>or as BiBTeX-entry:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@article</span><span class="p">{</span><span class="n">kraemer2020</span><span class="p">,</span>
+<span class="n">doi</span> <span class="o">=</span> <span class="p">{</span><span class="mf">10.21105</span><span class="o">/</span><span class="n">joss</span><span class="o">.</span><span class="mi">00598</span><span class="p">},</span>
+<span class="n">url</span> <span class="o">=</span> <span class="p">{</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">doi</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="mf">10.21105</span><span class="o">/</span><span class="n">joss</span><span class="o">.</span><span class="mi">00598</span><span class="p">},</span>
+<span class="n">year</span>  <span class="o">=</span> <span class="p">{</span><span class="mi">2020</span><span class="p">},</span>
+<span class="n">month</span> <span class="o">=</span> <span class="p">{</span><span class="n">nov</span><span class="p">},</span>
+<span class="n">volume</span> <span class="o">=</span> <span class="p">{</span><span class="mi">3</span><span class="p">},</span>
+<span class="n">number</span> <span class="o">=</span> <span class="p">{</span><span class="mi">23</span><span class="p">},</span>
+<span class="n">pages</span> <span class="o">=</span> <span class="p">{</span><span class="mi">598</span><span class="p">},</span>
+<span class="n">author</span> <span class="o">=</span> <span class="p">{</span><span class="n">K</span><span class="o">.</span> <span class="n">Hauke</span> <span class="n">Kraemer</span><span class="p">},</span>
+<span class="n">title</span> <span class="o">=</span> <span class="p">{</span><span class="n">A</span> <span class="n">unified</span> <span class="ow">and</span> <span class="n">automated</span> <span class="n">approach</span> <span class="n">to</span> <span class="n">attractor</span> <span class="n">reconstruction</span><span class="p">},</span>
+<span class="n">journal</span> <span class="o">=</span> <span class="p">{</span><span class="n">New</span> <span class="n">Journal</span> <span class="n">of</span> <span class="n">Physics</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
 </div>
 </div>
 <div class="section" id="licence">
@@ -231,7 +243,7 @@ journal = {New Journal of Physics}</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="univariate_example.html" class="btn btn-neutral float-right" title="Embedding of a univariate time series" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="univariate_example.html" class="btn btn-neutral float-right" title="Univariate example" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
     </div>

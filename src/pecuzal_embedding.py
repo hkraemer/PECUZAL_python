@@ -915,3 +915,70 @@ def comp_Ek2(Y, ns, NNidxs, T, K, norm):
     
     E2 = E2_sum / (K+1)  # Eq. 13
     return E2       
+
+
+def mi(x, maxlag = 50):
+    """Compute the auto mutual information of a time series `x` up to a lag `maxlag`.
+
+    Parameters
+    ----------
+    x : `numpy.ndarray`
+        Numpy array storing the time series values.
+    maxlag : `int`, optional
+        The maximum lag in sampling units, i.e. an integer value
+
+    Returns
+    -------
+    mi : `numpy.ndarray` (len(range(maxlag)))
+        The auto mutual information of the given time series at each considered lag.
+    lags : `numpy.ndarray` (len(range(maxlag)))
+        The considered lags
+    """
+    
+    assert (type(maxlag) is int) and (maxlag > 0)
+    # initialize variables
+    binrule="fd"
+    x = zscore(x)
+    n = len(x)
+    lags = np.arange(0, maxlag, dtype="int")
+    mi = np.zeros(len(lags))
+    # loop over lags and get MI
+    for i, lag in enumerate(lags):
+        # extract lagged data
+        y1 = x[:n - lag].copy()
+        y2 = x[lag:].copy()
+        # use np.histogram to get individual entropies
+        H1, be1 = entropy1d(y1, binrule)
+        H2, be2 = entropy1d(y2, binrule)
+        H12, _, _ = entropy2d(y1, y2, [be1, be2])
+        # use the entropies to estimate MI
+        mi[i] = H1 + H2 - H12
+
+    return mi, lags
+
+
+def entropy1d(x, binrule):
+    """
+    Returns the Shannon entropy according to the bin rule specified.
+    """
+    p, be = np.histogram(x, bins=binrule, density=True)
+    r = be[1:] - be[:-1]
+    P = p * r
+    H = -(P * np.log2(P)).sum()
+
+    return H, be
+
+
+def entropy2d(x, y, bin_edges):
+    """
+    Returns the Shannon entropy according to the bin rule specified.
+    """
+    p, bex, bey = np.histogram2d(x, y, bins=bin_edges, normed=True)
+    r = np.outer(bex[1:] - bex[:-1], bey[1:] - bey[:-1])
+    P = p * r
+    H = np.zeros(P.shape)
+    i = ~np.isinf(np.log2(P))
+    H[i] = -(P[i] * np.log2(P[i]))
+    H = H.sum()
+
+    return H, bex, bey
