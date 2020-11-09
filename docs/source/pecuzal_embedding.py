@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-In the following the main function :py:func:`pecuzal_embedding.pecuzal_embedding` and all its auxilary functions are listed. 
+Created on Mon Aug 10 09:48:16 2020
+
+@author: hkraemer
 """
 
 import math
@@ -10,6 +12,9 @@ import scipy
 import random
 from sklearn.neighbors import KDTree
 from scipy.stats import binom, zscore
+
+import matplotlib.pyplot as plt
+
 
 def pecuzal_embedding(s, taus = range(50), theiler = 1, sample_size = 1., K = 13, KNN = 3, Tw_factor = 4, alpha = 0.05, p = 0.5, max_cycles = 50):
     '''Performs an embedding of time series using the PECUZAL method
@@ -104,7 +109,7 @@ def pecuzal_embedding(s, taus = range(50), theiler = 1, sample_size = 1., K = 13
     Tw = Tw_factor*theiler # set time horizon for L-statistic
 
     s_orig = s
-    s = zscore(s) # especially important for comparative L-statistics
+    s = zscore(s,ddof=1) # especially important for comparative L-statistics
     # define actual phase space trajectory
     Y_act = []
     # compute initial L values for each time series
@@ -193,7 +198,7 @@ def first_embedding_cycle_pecuzal(Ys, M, taus, theiler, sample_size, K,
                                             estar[:,(M*ts):(M*(ts+1))], Ys[:,ts],
                                             Ys, taus, Tw, KNN, theiler, sample_size,
                                             norm)
-  
+
         min_idx = np.argmin(xi_min)
         if np.ndim(min_idx) > 0:
             min_idx = min_idx[0]
@@ -292,14 +297,16 @@ def choose_right_embedding_params_first(estar, Y_act, s, taus, Tw, KNN, theiler,
     '''
     D = np.ndim(s)
     if D > 1:
-        xi_min_ = np.zeros(D)
-        L_min_ = np.zeros(D)
-        tau_idx = np.zeros(D, dtype=int)
-        for ts in range(D):
+        M = np.size(s,1)
+        xi_min_ = np.zeros(M)
+        L_min_ = np.zeros(M)
+        tau_idx = np.zeros(M, dtype=int)
+        for ts in range(M):
             # zero-padding of estar in order to also cover tau=0 (important for the multivariate case)
             # get the L-statistic for each peak in estar and take the one according to L_min
             L_trials_, max_idx_, xi_trials_ = local_L_statistics(np.insert(estar[:,ts],0,0), Y_act, s[:,ts],
                                             taus, Tw, KNN, theiler, sample_size, norm)
+
             min_idx_ = np.argmin(xi_trials_)
             if np.ndim(min_idx_)>0:
                 min_idx_ = min_idx_[0]
@@ -313,16 +320,15 @@ def choose_right_embedding_params_first(estar, Y_act, s, taus, Tw, KNN, theiler,
 
         return L_min_[idx], tau_idx[idx], idx, xi_min_[idx]
     else:
-        L_trials_, max_idx_, xi_trials_ = local_L_statistics(np.insert(estar,0,0), Y_act, s,
+        L_trials_, max_idx_, _ = local_L_statistics(np.insert(estar,0,0), Y_act, s,
                                     taus, Tw, KNN, theiler, sample_size, norm)
-        min_idx_ = np.argmin(xi_trials_)
+        min_idx_ = np.argmin(L_trials_)
         if np.ndim(min_idx_)>0:
             min_idx_ = min_idx_[0]
-        xi_min_ = xi_trials_[min_idx_]
         L_min_ = L_trials_[min_idx_]
         tau_idx = max_idx_[min_idx_]-1
 
-        return L_min_, tau_idx, 0, xi_min_
+        return L_min_, tau_idx, int(0), 0
 
 
 
@@ -366,9 +372,10 @@ def choose_right_embedding_params(estar, Y_act, s, taus, Tw, KNN, theiler, sampl
     '''
     D = np.ndim(s)
     if D > 1:
-        L_min_ = np.zeros(D)
-        tau_idx = np.zeros(D, dtype=int)
-        for ts in range(D):
+        M = np.size(s,1)
+        L_min_ = np.zeros(M)
+        tau_idx = np.zeros(M, dtype=int)
+        for ts in range(M):
             # zero-padding of estar in order to also cover tau=0 (important for the multivariate case)
             # get the L-statistic for each peak in estar and take the one according to L_min
             L_trials_, max_idx_, _ = local_L_statistics(np.insert(estar[:,ts],0,0), Y_act, s[:,ts],
@@ -501,7 +508,7 @@ def pecuzal_break_criterion(Ls, counter, max_num_of_cycles, L_init):
         print("Algorithm stopped due to minimum L-value reached. VALID embedding achieved.")
         flag = False
 
-    if max_num_of_cycles == counter:
+    if max_num_of_cycles-1 == counter:
         print("Algorithm stopped due to hitting max cycle number. Valid embedding NOT achieved.")
         flag = False
 
@@ -582,11 +589,11 @@ def continuity_statistic(s, taus, js, delays = range(50), sample_size = 1.0, K =
     # Loop over potential timeseries to use in new embedding
     for i in range(D):
         if D == 1:
-            x = (s-np.mean(s))/np.std(s) # so that different timeseries can be compared
+            x = (s-np.mean(s))/np.std(s,ddof=1) # so that different timeseries can be compared
             all_eps_star = continuity_per_timeseries(x, ns, allNNidxs, delays, K, alpha, p)
         else:
             x = s[:,i]
-            x = (x-np.mean(x))/np.std(x) # so that different timeseries can be compared
+            x = (x-np.mean(x))/np.std(x,ddof=1) # so that different timeseries can be compared
             all_eps_star[:,i] = continuity_per_timeseries(x, ns, allNNidxs, delays, K, alpha, p)
 
     return all_eps_star
@@ -741,7 +748,6 @@ def uzal_cost(Y, K = 3, Tw = 40, theiler = 1 , sample_size = 1.0, norm = 'euclid
     The :math:`\\alpha`-statistic is a normalization factor, such that :math:`\\sigma`'s from different embeddings can be compared. :math:`\\alpha^2`
     is defined as the inverse of the sum of the inverse of all :math:`\\varepsilon^2`'s for all considered reference points.
     '''
-
     assert (theiler >= 0) and (type(theiler) is int) and (theiler < len(Y))
     assert (K >= 0) and (type(K) is int) and (K < len(Y))
     assert (sample_size > 0) and (sample_size <= 1)
@@ -810,6 +816,8 @@ def uzal_cost(Y, K = 3, Tw = 40, theiler = 1 , sample_size = 1.0, norm = 'euclid
     return L, L_local
 
 
+
+
 def all_neighbors(vtree, vs, ns, K, theiler, k_max):
     '''Compute `K` nearest neighbours for the points `vs` (having indices `ns`) from the tree `vtree`, while respecting the `theiler`-window.
 
@@ -837,7 +845,7 @@ def all_neighbors(vtree, vs, ns, K, theiler, k_max):
     return idxs, dists
     
 def all_neighbors_1dim(vs, ns, K, theiler):
-    '''Compute `K` nearest neighbours for the points `vs` (having indices `ns`), while respecting the `theiler`-window for 1-d arrays.
+    '''Compute `K` nearest neighbours for the points `vs` (having indices `ns`), while respecting the `theiler`-window.
 
     Returns
     -------
@@ -898,6 +906,8 @@ def comp_Ek2(Y, ns, NNidxs, T, K, norm):
     E2 = E2_sum / (K+1)  # Eq. 13
     return E2       
 
+# disable dive by zero warnings
+np.seterr(divide="ignore")
 
 def mi(x, maxlag = 50):
     """Compute the auto mutual information of a time series `x` up to a lag `maxlag`.
@@ -916,11 +926,11 @@ def mi(x, maxlag = 50):
     lags : `numpy.ndarray` (len(range(maxlag)))
         The considered lags
     """
-
+    
     assert (type(maxlag) is int) and (maxlag > 0)
     # initialize variables
     binrule="fd"
-    x = zscore(x)
+    x = (x-np.mean(x))/np.std(x,ddof=1)
     n = len(x)
     lags = np.arange(0, maxlag, dtype="int")
     mi = np.zeros(len(lags))
@@ -964,358 +974,3 @@ def entropy2d(x, y, bin_edges):
     H = H.sum()
 
     return H, bex, bey
-
-# """Example NumPy style docstrings.
-
-# This module demonstrates documentation as specified by the `NumPy
-# Documentation HOWTO`_. Docstrings may extend over multiple lines. Sections
-# are created with a section header followed by an underline of equal length.
-
-# Example
-# -------
-# Examples can be given using either the ``Example`` or ``Examples``
-# sections. Sections support any reStructuredText formatting, including
-# literal blocks::
-
-#     $ python example_numpy.py
-
-
-# Section breaks are created with two blank lines. Section breaks are also
-# implicitly created anytime a new section starts. Section bodies *may* be
-# indented:
-
-# Notes
-# -----
-#     This is an example of an indented section. It's like any other section,
-#     but the body is indented to help it stand out from surrounding text.
-
-# If a section is indented, then a section break is created by
-# resuming unindented text.
-
-# Attributes
-# ----------
-# module_level_variable1 : int
-#     Module level variables may be documented in either the ``Attributes``
-#     section of the module docstring, or in an inline docstring immediately
-#     following the variable.
-
-#     Either form is acceptable, but the two should not be mixed. Choose
-#     one convention to document module level variables and be consistent
-#     with it.
-
-
-# .. _NumPy Documentation HOWTO:
-#    https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt
-
-# """
-
-# module_level_variable1 = 12345
-
-# module_level_variable2 = 98765
-# """int: Module level variable documented inline.
-
-# The docstring may span multiple lines. The type may optionally be specified
-# on the first line, separated by a colon.
-# """
-
-# def function_with_types_in_docstring(param1, param2):
-#     """Example function with types documented in the docstring.
-
-#     `PEP 484`_ type annotations are supported. If attribute, parameter, and
-#     return types are annotated according to `PEP 484`_, they do not need to be
-#     included in the docstring:
-
-#     Parameters
-#     ----------
-#     param1 : int
-#         The first parameter.
-#     param2 : str
-#         The second parameter.
-
-#     Returns
-#     -------
-#     bool
-#         True if successful, False otherwise.
-
-#     .. _PEP 484:
-#         https://www.python.org/dev/peps/pep-0484/
-
-#     """
-
-
-# def function_with_pep484_type_annotations(param1: int, param2: str) -> bool:
-#     """Example function with PEP 484 type annotations.
-
-#     The return type must be duplicated in the docstring to comply
-#     with the NumPy docstring style.
-
-#     Parameters
-#     ----------
-#     param1
-#         The first parameter.
-#     param2
-#         The second parameter.
-
-#     Returns
-#     -------
-#     bool
-#         True if successful, False otherwise.
-
-#     """
-
-
-# def module_level_function(param1, param2=None, *args, **kwargs):
-#     """This is an example of a module level function.
-
-#     Function parameters should be documented in the ``Parameters`` section.
-#     The name of each parameter is required. The type and description of each
-#     parameter is optional, but should be included if not obvious.
-
-#     If ``*args`` or ``**kwargs`` are accepted,
-#     they should be listed as ``*args`` and ``**kwargs``.
-
-#     The format for a parameter is::
-
-#         name : type
-#             description
-
-#             The description may span multiple lines. Following lines
-#             should be indented to match the first line of the description.
-#             The ": type" is optional.
-
-#             Multiple paragraphs are supported in parameter
-#             descriptions.
-
-#     Parameters
-#     ----------
-#     param1 : int
-#         The first parameter.
-#     param2 : :obj:`str`, optional
-#         The second parameter.
-#     *args
-#         Variable length argument list.
-#     **kwargs
-#         Arbitrary keyword arguments.
-
-#     Returns
-#     -------
-#     bool
-#         True if successful, False otherwise.
-
-#         The return type is not optional. The ``Returns`` section may span
-#         multiple lines and paragraphs. Following lines should be indented to
-#         match the first line of the description.
-
-#         The ``Returns`` section supports any reStructuredText formatting,
-#         including literal blocks::
-
-#             {
-#                 'param1': param1,
-#                 'param2': param2
-#             }
-
-#     Raises
-#     ------
-#     AttributeError
-#         The ``Raises`` section is a list of all exceptions
-#         that are relevant to the interface.
-#     ValueError
-#         If `param2` is equal to `param1`.
-
-#     """
-#     if param1 == param2:
-#         raise ValueError('param1 may not be equal to param2')
-#     return True
-
-
-# def example_generator(n):
-#     """Generators have a ``Yields`` section instead of a ``Returns`` section.
-
-#     Parameters
-#     ----------
-#     n : int
-#         The upper limit of the range to generate, from 0 to `n` - 1.
-
-#     Yields
-#     ------
-#     int
-#         The next number in the range of 0 to `n` - 1.
-
-#     Examples
-#     --------
-#     Examples should be written in doctest format, and should illustrate how
-#     to use the function.
-
-#     >>> print([i for i in example_generator(4)])
-#     [0, 1, 2, 3]
-
-#     """
-#     for i in range(n):
-#         yield i
-
-
-# class ExampleError(Exception):
-#     """Exceptions are documented in the same way as classes.
-
-#     The __init__ method may be documented in either the class level
-#     docstring, or as a docstring on the __init__ method itself.
-
-#     Either form is acceptable, but the two should not be mixed. Choose one
-#     convention to document the __init__ method and be consistent with it.
-
-#     Note
-#     ----
-#     Do not include the `self` parameter in the ``Parameters`` section.
-
-#     Parameters
-#     ----------
-#     msg : str
-#         Human readable string describing the exception.
-#     code : :obj:`int`, optional
-#         Numeric error code.
-
-#     Attributes
-#     ----------
-#     msg : str
-#         Human readable string describing the exception.
-#     code : int
-#         Numeric error code.
-
-#     """
-
-#     def __init__(self, msg, code):
-#         self.msg = msg
-#         self.code = code
-
-
-# class ExampleClass:
-#     """The summary line for a class docstring should fit on one line.
-
-#     If the class has public attributes, they may be documented here
-#     in an ``Attributes`` section and follow the same formatting as a
-#     function's ``Args`` section. Alternatively, attributes may be documented
-#     inline with the attribute's declaration (see __init__ method below).
-
-#     Properties created with the ``@property`` decorator should be documented
-#     in the property's getter method.
-
-#     Attributes
-#     ----------
-#     attr1 : str
-#         Description of `attr1`.
-#     attr2 : :obj:`int`, optional
-#         Description of `attr2`.
-
-#     """
-
-#     def __init__(self, param1, param2, param3):
-#         """Example of docstring on the __init__ method.
-
-#         The __init__ method may be documented in either the class level
-#         docstring, or as a docstring on the __init__ method itself.
-
-#         Either form is acceptable, but the two should not be mixed. Choose one
-#         convention to document the __init__ method and be consistent with it.
-
-#         Note
-#         ----
-#         Do not include the `self` parameter in the ``Parameters`` section.
-
-#         Parameters
-#         ----------
-#         param1 : str
-#             Description of `param1`.
-#         param2 : list(str)
-#             Description of `param2`. Multiple
-#             lines are supported.
-#         param3 : :obj:`int`, optional
-#             Description of `param3`.
-
-#         """
-#         self.attr1 = param1
-#         self.attr2 = param2
-#         self.attr3 = param3  #: Doc comment *inline* with attribute
-
-#         #: list(str): Doc comment *before* attribute, with type specified
-#         self.attr4 = ["attr4"]
-
-#         self.attr5 = None
-#         """str: Docstring *after* attribute, with type specified."""
-
-#     @property
-#     def readonly_property(self):
-#         """str: Properties should be documented in their getter method."""
-#         return "readonly_property"
-
-#     @property
-#     def readwrite_property(self):
-#         """list(str): Properties with both a getter and setter
-#         should only be documented in their getter method.
-
-#         If the setter method contains notable behavior, it should be
-#         mentioned here.
-#         """
-#         return ["readwrite_property"]
-
-#     @readwrite_property.setter
-#     def readwrite_property(self, value):
-#         value
-
-#     def example_method(self, param1, param2):
-#         """Class methods are similar to regular functions.
-
-#         Note
-#         ----
-#         Do not include the `self` parameter in the ``Parameters`` section.
-
-#         Parameters
-#         ----------
-#         param1
-#             The first parameter.
-#         param2
-#             The second parameter.
-
-#         Returns
-#         -------
-#         bool
-#             True if successful, False otherwise.
-
-#         """
-#         return True
-
-#     def __special__(self):
-#         """By default special members with docstrings are not included.
-
-#         Special members are any methods or attributes that start with and
-#         end with a double underscore. Any special member with a docstring
-#         will be included in the output, if
-#         ``napoleon_include_special_with_doc`` is set to True.
-
-#         This behavior can be enabled by changing the following setting in
-#         Sphinx's conf.py::
-
-#             napoleon_include_special_with_doc = True
-
-#         """
-#         pass
-
-#     def __special_without_docstring__(self):
-#         pass
-
-#     def _private(self):
-#         """By default private members are not included.
-
-#         Private members are any methods or attributes that start with an
-#         underscore and are *not* special. By default they are not included
-#         in the output.
-
-#         This behavior can be changed such that private members *are* included
-#         by changing the following setting in Sphinx's conf.py::
-
-#             napoleon_include_private_with_doc = True
-
-#         """
-#         pass
-
-#     def _private_without_docstring(self):
-#         pass
