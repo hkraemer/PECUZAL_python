@@ -9,7 +9,13 @@ give an introduction to its easy usage in three examples. Enjoy Embedding!
 Getting started
 ===============
 
-Go and install that stuff by doing...
+Install from `PyPI <https://pypi.org/>`_ by simply typing
+
+::
+
+   pip install pecuzal_embedding
+
+in your console.
 
 .. note::
    :name: note_performance
