@@ -13,7 +13,6 @@ give an introduction to its easy usage in three examples. Enjoy Embedding!
 
 .. todo::
    * Insert correct hyperlink to the `pecuzal_embedding`-function in the Julia-Docs
-   * Insert correct Licence at the end of the page
    * Insert correct citation link at the end of the page
    * Insert correct installation guide
 
@@ -21,7 +20,14 @@ give an introduction to its easy usage in three examples. Enjoy Embedding!
 Getting started
 ===============
 
-Go and install that stuff by doing...
+Install from `PyPI <https://pypi.org/>`_ by simply typing
+
+::
+
+   pip install pecuzal_embedding
+
+in your console.
+
 
 .. note::
    :name: note_performance
@@ -76,7 +82,7 @@ or as BiBTeX-entry:
 
 Licence
 =======
-This is program is free software and runs under `MIT Licence <https://opensource.org/licenses/MIT>`_
+This is program is free software and runs under `MIT Licence <https://opensource.org/licenses/MIT>`_.
 
 
 Indices and tables
