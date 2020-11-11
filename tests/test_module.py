@@ -50,13 +50,3 @@ class TestModule(unittest.TestCase):
 if __name__ == '__main__':
     unittest.main()
 
-
-
-data = np.genfromtxt('lorenz_pecora_uni_x.csv')
-data = data[:500]
-theiler = 21
-Tmax = 100
-K = 14
-KNN = 3
-
-Y, tau_vals, ts_vals, Ls, eps = pecuzal_embedding(data, taus = range(Tmax), theiler = theiler, sample_size = 1., K = K, KNN = KNN)
