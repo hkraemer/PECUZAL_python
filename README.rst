@@ -17,32 +17,32 @@ Install from `PyPI <https://pypi.org/>`_ by simply typing
 
 in your console.
 
-.. note::
-   :name: note_performance
+NOTE
+====
 
    This implementation is not profiled well. We recommend to use the implementation
    in the `Julia language <https://juliadynamics.github.io/DynamicalSystems.jl/dev/>`_,
    in order to get fast results, especially in the multivariate case. Moreover,
    it is well documented and embedded in the 
    `DynamicalSystems.jl <https://juliadynamics.github.io/DynamicalSystems.jl/dev/>`_ ecosystem.
-   For instance, the compuations made in the :ref:`sec_univariate` and the :ref:`sec_multivariate`
+   For instance, the compuations made in the univariate and the multivariate example
    in this documentation took approximately `500s` and `1680s`, respectively. In the Julia implementation
    the exact same computation took `3s` and `20s`, respectively! (running on a 2.8GHz Quad-Core i7,  16GB 1600 MHz DDR3)
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Usage and examples
 
-   Embedding of a univariate time series <univariate_example>
-   Embedding of multivariate time series <multivariate_example>
-   Embedding of non-deterministic data <noise_example>
+Usage and examples
+==================
+
+   * Embedding of a univariate time series
+   * Embedding of multivariate time series
+   * Embedding of non-deterministic data
 
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Source functions
+Source functions
+================
 
-   pecuzal_embedding
+   * pecuzal_embedding
+
 
 Citing and reference
 ====================
