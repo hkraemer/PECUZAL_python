@@ -1,6 +1,6 @@
 import setuptools
 
-with open("README.md", "r") as fh:
+with open("README.rst", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
@@ -15,17 +15,19 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     py_modules=["pecuzal_embedding"],
     package_dir={'':'src'},
-    include_package_data=True
+    package_data={'': ['test/data/*.csv']},
+    include_package_data=True,
     classifiers=[
         "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
-        "Development Status :: 3 - Alpha",
-    ],
+        "Development Status :: 3 - Alpha"],
     python_requires='>=3.6',
-    install_requires=["math","numpy>=1.17.2","scipy>=1.3.1","random","scikit-learn>=0.21.3"] 
-    extras_requires = {"dev": [
-        'unittest'
-    ]}
+    install_requires=["numpy>=1.17.2","scipy>=1.3.1","random","scikit-learn>=0.21.3"], 
+    # extras_require = {"dev": [
+    #     'unittest'
+    # ]},
 )
 
