@@ -26,22 +26,14 @@ NOTE
    it is well documented and embedded in the 
    `DynamicalSystems.jl <https://juliadynamics.github.io/DynamicalSystems.jl/dev/>`_ ecosystem.
    For instance, the compuations made in the univariate and the multivariate example
-   in this documentation took approximately `500s` and `1680s`, respectively. In the Julia implementation
+   in the documentation took approximately `500s` and `1680s`, respectively. In the Julia implementation
    the exact same computation took `3s` and `20s`, respectively! (running on a 2.8GHz Quad-Core i7,  16GB 1600 MHz DDR3)
 
 
-Usage and examples
-==================
+Documentation
+=============
 
-   * Embedding of a univariate time series
-   * Embedding of multivariate time series
-   * Embedding of non-deterministic data
-
-
-Source functions
-================
-
-   * pecuzal_embedding
+There is a documentation available including some basic usage examples
 
 
 Citing and reference

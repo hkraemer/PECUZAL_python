@@ -12,7 +12,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/x-rst",
     url="https://gitlab.com/hkraemer2/pecuzal-python",
-    packages=setuptools.find_packages(),
+    packages=setuptools.find_packages(exclude=['docs', 'tests*']),
     py_modules=["pecuzal_embedding"],
     package_dir={'':'src'},
     package_data={'': ['test/data/*.csv']},
