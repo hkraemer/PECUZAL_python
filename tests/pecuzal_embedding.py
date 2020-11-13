@@ -13,8 +13,6 @@ import random
 from sklearn.neighbors import KDTree
 from scipy.stats import binom, zscore
 
-import matplotlib.pyplot as plt
-
 
 def pecuzal_embedding(s, taus = range(50), theiler = 1, sample_size = 1., K = 13, KNN = 3, Tw_factor = 4, alpha = 0.05, p = 0.5, max_cycles = 50):
     '''Performs an embedding of time series using the PECUZAL method
