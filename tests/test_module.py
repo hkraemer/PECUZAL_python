@@ -9,7 +9,7 @@ class TestModule(unittest.TestCase):
 
     # Test case for univariate example
     def test_pecuzal_univariate_example(self):
-        data = np.genfromtxt('lorenz_pecora_uni_x.csv')
+        data = np.genfromtxt('./data/lorenz_pecora_uni_x.csv')
         data = data[:500]
         theiler = 21
         Tmax = 100
@@ -30,7 +30,7 @@ class TestModule(unittest.TestCase):
 
     # Test case for multivariate example
     def test_pecuzal_multivariate_example(self):
-        data = np.genfromtxt('lorenz_pecora_multi.csv')
+        data = np.genfromtxt('./data/lorenz_pecora_multi.csv')
         data = data[:500,:]
         theiler = 15
         Tmax = 100
