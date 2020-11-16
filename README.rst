@@ -40,7 +40,7 @@ the exact same computation took `3s` and `20s`, respectively! (running on a 2.8G
 Documentation
 =============
 
-There is a documentation available including some basic usage examples [![doc dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://hkraemer.github.io/PECUZAL_python/)
+There is a `documentation available <https://hkraemer.github.io/PECUZAL_python/>`_ including some basic usage examples.
 
 
 Citing and reference
