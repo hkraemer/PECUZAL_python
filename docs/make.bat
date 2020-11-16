@@ -8,7 +8,7 @@ if "%SPHINXBUILD%" == "" (
 	set SPHINXBUILD=sphinx-build
 )
 set SOURCEDIR=.
-set BUILDDIR=build
+set BUILDDIR=_build
 
 if "%1" == "" goto help
 
@@ -36,4 +36,4 @@ popd
 
 github:
   @make html
-  @cp -a build/html/. ./docs
+  @cp -a _build/html/. .
