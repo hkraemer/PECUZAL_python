@@ -14,7 +14,7 @@ from sklearn.neighbors import KDTree
 from scipy.stats import binom, zscore
 
 
-def pecuzal_embedding(s, taus = range(50), theiler = 1, sample_size = 1., K = 13, KNN = 3, Tw_factor = 4, alpha = 0.05, p = 0.5, max_cycles = 50):
+def pecuzal_embedding(s, taus = range(50), theiler = 1, sample_size = 1., K = 13, KNN = 3, Tw_factor = 4, alpha = 0.05, p = 0.5, max_cycles = 10):
     '''Performs an embedding of time series using the PECUZAL method
 
     Parameters
@@ -43,7 +43,7 @@ def pecuzal_embedding(s, taus = range(50), theiler = 1, sample_size = 1., K = 13
     p : `float`, optional
         Binominal p for obtaining the continuity statistic `avrg_eps_star` in each embedding cycle (Default is `p = 0.5`).
     max_cycles : `int`, optional
-        The algorithm will stop after that many cycles no matter what. Default is `max_cycles = 50`.
+        The algorithm will stop after that many cycles no matter what. Default is `max_cycles = 10`.
     
     Returns
     -------
