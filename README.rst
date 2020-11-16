@@ -1,3 +1,7 @@
+.. image:: https://travis-ci.com/hkraemer/PECUZAL_python.svg?token=UPM3LG4spHrp2RSRu1tV&branch=main
+    :target: https://travis-ci.com/hkraemer/PECUZAL_python
+    
+
 PECUZAL Python
 ==============
 
@@ -40,24 +44,20 @@ Citing and reference
 ====================
 If you enjoy this tool and find it valuable for your research please cite
 
-.. [kraemer2020] Kraemer et al., "A unified and automated approach to attractor reconstruction", New Journal of Physics, vol. 22, pp. 585-588, 2020.
+.. [kraemer2020] Kraemer et al., "A unified and automated approach to attractor reconstruction",  arXiv:2011.07040 [physics.data-an], 2020.
 
 or as BiBTeX-entry:
 
 ::
 
-  @article{kraemer2020,
-  doi = {10.21105/joss.00598},
-  url = {https://doi.org/10.21105/joss.00598},
-  year  = {2020},
-  month = {nov},
-  volume = {3},
-  number = {23},
-  pages = {598},
-  author = {K. Hauke Kraemer},
-  title = {A unified and automated approach to attractor reconstruction},
-  journal = {New Journal of Physics}
-  }
+@misc{kraemer2020,
+      title={A unified and automated approach to attractor reconstruction}, 
+      author={K. H. Kraemer and G. Datseris and J. Kurths and I. Z. Kiss and J. L. Ocampo-Espindola and N. Marwan},
+      year={2020},
+      eprint={2011.07040},
+      archivePrefix={arXiv},
+      primaryClass={physics.data-an}
+}
 
 
 Licence
