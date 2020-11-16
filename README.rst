@@ -1,5 +1,8 @@
 .. image:: https://travis-ci.com/hkraemer/PECUZAL_python.svg?token=UPM3LG4spHrp2RSRu1tV&branch=main
     :target: https://travis-ci.com/hkraemer/PECUZAL_python
+
+.. image:: https://img.shields.io/badge/docs-dev-blue.svg
+    :target: https://hkraemer.github.io/PECUZAL_python/
     
 
 PECUZAL Python
@@ -37,7 +40,7 @@ the exact same computation took `3s` and `20s`, respectively! (running on a 2.8G
 Documentation
 =============
 
-There is a documentation available including some basic usage examples
+There is a documentation available including some basic usage examples [![doc dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://hkraemer.github.io/PECUZAL_python/)
 
 
 Citing and reference
