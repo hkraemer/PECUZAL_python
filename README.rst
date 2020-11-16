@@ -20,7 +20,7 @@ Install from `PyPI <https://pypi.org/>`_ by simply typing
 
 ::
 
-   pip install pecuzal_embedding
+   pip install pecuzal-embedding
 
 in your console.
 

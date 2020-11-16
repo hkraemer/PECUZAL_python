@@ -20,7 +20,6 @@ give an introduction to its easy usage in three examples. Enjoy Embedding!
 .. todo::
    * Insert correct hyperlink to the `pecuzal_embedding`-function in the Julia-Docs
    * Insert correct citation link at the end of the page
-   * Insert correct installation guide
 
 
 Getting started
@@ -30,7 +29,7 @@ Install from `PyPI <https://pypi.org/>`_ by simply typing
 
 ::
 
-   pip install pecuzal_embedding
+   pip install pecuzal-embedding
 
 in your console.
 
