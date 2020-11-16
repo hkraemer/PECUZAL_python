@@ -1,0 +1,325 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Univariate example &mdash; PECUZAL automatic embedding for Python 11/2020 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Multivariate example" href="multivariate_example.html" />
+    <link rel="prev" title="Welcome to PECUZAL automatic embedding for Python’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> PECUZAL automatic embedding for Python
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Usage and examples</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Embedding of a univariate time series</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multivariate_example.html">Embedding of multivariate time series</a></li>
+<li class="toctree-l1"><a class="reference internal" href="noise_example.html">Embedding of non-deterministic data</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Source functions</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="pecuzal_embedding.html">PECUZAL embedding module</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">PECUZAL automatic embedding for Python</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Univariate example</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/univariate_example.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="univariate-example">
+<span id="sec-univariate"></span><h1>Univariate example<a class="headerlink" href="#univariate-example" title="Permalink to this headline">¶</a></h1>
+<p>We exemplify the proposed embedding method by embedding the <cite>y</cite>-component of the Roessler system
+(with standard parameters <span class="math notranslate nohighlight">\([a = 0.2, b = 0.2, c = 5.7]\)</span>). All three time series are stored
+in <cite>roessler_test_series.csv</cite>.</p>
+<p>First we load the already computed data…</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="s1">&#39;roessler_test_series.csv&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>… bind the time series we would like to consider and compute the auto mutual information, in order
+to estimate an appropriate Theiler window. This is especially important when dealing with highly sampled
+datasets. Let’s focus on the first 5,000 samples here and plot the time series and its mutual information:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">pecuzal_embedding</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:</span><span class="mi">5000</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>   <span class="c1"># bind the data</span>
+<span class="n">mi</span><span class="p">,</span> <span class="n">lags</span> <span class="o">=</span> <span class="n">mi</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>    <span class="c1"># compute mutual information up to default maximum time lag</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">6.</span><span class="p">,</span> <span class="mi">8</span><span class="p">,))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)),</span><span class="n">y</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;time [in sampling units]&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;y-component of Roessler test time series&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">lags</span><span class="p">,</span><span class="n">mi</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;MI&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;time lag [in sampling units]&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Mutual information for y-component of Roessler test time series&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">hspace</span><span class="o">=.</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/mi_and_timeseries_y_comp.png" id="fig-mi-y" src="_images/mi_and_timeseries_y_comp.png" />
+<p>Now we are ready to go and simply call the PECUZAL algorithm <a class="reference internal" href="pecuzal_embedding.html#pecuzal_embedding.pecuzal_embedding" title="pecuzal_embedding.pecuzal_embedding"><code class="xref py py-func docutils literal notranslate"><span class="pre">pecuzal_embedding.pecuzal_embedding()</span></code></a>
+with a Theiler window determined from the first minimum of the mutual information shown in the above Figure
+and possible delays ranging from <cite>0:100</cite>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Y_reconstruct</span><span class="p">,</span> <span class="n">tau_vals</span><span class="p">,</span> <span class="n">ts_vals</span><span class="p">,</span> <span class="n">Ls</span><span class="p">,</span> <span class="n">eps</span> <span class="o">=</span> <span class="n">pecuzal_embedding</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">taus</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> <span class="n">theiler</span> <span class="o">=</span> <span class="mi">30</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>which leads to the following note in the console (see also the note on <a class="reference internal" href="index.html#note-performance"><span class="std std-ref">performance</span></a>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Algorithm</span> <span class="n">stopped</span> <span class="n">due</span> <span class="n">to</span> <span class="n">minimum</span> <span class="n">L</span><span class="o">-</span><span class="n">value</span> <span class="n">reached</span><span class="o">.</span> <span class="n">VALID</span> <span class="n">embedding</span> <span class="n">achieved</span><span class="o">.</span>
+</pre></div>
+</div>
+<p><cite>Y_reconstruct</cite> stores the reconstructed trajectory. Since in this example <cite>Y_reconstruct</cite> is a three-dimensional
+trajectory we can actually plot it, in order to visualize the result.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mpl_toolkits</span> <span class="kn">import</span> <span class="n">mplot3d</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">14.</span><span class="p">,</span> <span class="mf">8.</span><span class="p">))</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">121</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Y_reconstruct</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">Y_reconstruct</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">Y_reconstruct</span><span class="p">[:,</span><span class="mi">2</span><span class="p">],</span> <span class="s1">&#39;gray&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;y(t+</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tau_vals</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;y(t+</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tau_vals</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="s1">&#39;y(t+</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tau_vals</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;PECUZAL reconstructed Roessler system&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">view_init</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">70</span><span class="p">)</span>
+
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">122</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="p">[:</span><span class="mi">5000</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">data</span><span class="p">[:</span><span class="mi">5000</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">data</span><span class="p">[:</span><span class="mi">5000</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span> <span class="s1">&#39;gray&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;x(t)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;y(t)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="s1">&#39;z(t)&#39;</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Original Roessler system&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="_images/reconstruction_y_comp.png" id="fig-rec-y" src="_images/reconstruction_y_comp.png" />
+<p>For the correct axis labels we used the delay values the PECUZAL algorithm used and which are
+stored in the output-variable we named <cite>tau_vals</cite> above.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">tau_vals</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">63</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>This means, that the reconstructed trajectory consists of the unlagged time series (here the
+<cite>y</cite>-component) and two more components with the time series lagged by 30 and 63 sample, respectively.
+Note the coincidence with the first minimum of the mutual information…
+The output variable <cite>ts_vals</cite> stores the chosen time series for each delay value stored in <cite>tau_vals</cite>.
+Since there is only one time series we fed in,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ts_vals</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>This output is only needed for the multivariate case, see <a class="reference internal" href="multivariate_example.html#sec-multivariate"><span class="std std-ref">Multivariate example</span></a> . We can also
+look at the output of the low-level function, namely the <cite>continuity-statistic</cite>, which led to
+the result. We stored these statistics for each embedding cycle in the variable <cite>eps</cite>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">8.</span><span class="p">,</span> <span class="mf">5.</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">eps</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;1st embedding cycle&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="n">tau_vals</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[</span><span class="n">eps</span><span class="p">[</span><span class="n">tau_vals</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="mi">0</span><span class="p">]])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">eps</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;2nd embedding cycle&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="n">tau_vals</span><span class="p">[</span><span class="mi">2</span><span class="p">]],</span> <span class="p">[</span><span class="n">eps</span><span class="p">[</span><span class="n">tau_vals</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="mi">1</span><span class="p">]])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">eps</span><span class="p">[:,</span><span class="mi">2</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;3rd embedding cycle&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Continuity statistics for PECUZAL embedding of Roessler y-component&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;delay&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;$\langle \varepsilon^\star \rangle$&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper right&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="_images/continuity_univariate.png" id="fig-continuity-uni" src="_images/continuity_univariate.png" />
+<p>The points mark the postitions, where the algorithm picked the delays for the reconstruction from.
+In the third embedding cycle there is no delay value picked and the algorithm breaks, because it
+can not minimize the <cite>L</cite>-statistic further. Its values for each embedding cycle are stored in <cite>Ls</cite>:</p>
+<div class="highlight-default notranslate" id="l-uni"><div class="highlight"><pre><span></span><span class="n">Ls</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">2.5494252517874783</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.380125495387192</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.330279598017837</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="multivariate_example.html" class="btn btn-neutral float-right" title="Multivariate example" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to PECUZAL automatic embedding for Python’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, K.H.Kraemer
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
