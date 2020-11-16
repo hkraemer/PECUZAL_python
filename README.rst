@@ -51,13 +51,13 @@ or as BiBTeX-entry:
 ::
 
 @misc{kraemer2020,
-    title={A unified and automated approach to attractor reconstruction}, 
-    author={K. H. Kraemer and G. Datseris and J. Kurths and I. Z. Kiss and J. L. Ocampo-Espindola and N. Marwan},
-    year={2020},
-    eprint={2011.07040},
-    archivePrefix={arXiv},
-    primaryClass={physics.data-an}
-    url={https://arxiv.org/abs/2011.07040}
+title={A unified and automated approach to attractor reconstruction}, 
+author={K. H. Kraemer and G. Datseris and J. Kurths and I. Z. Kiss and J. L. Ocampo-Espindola and N. Marwan},
+year={2020},
+eprint={2011.07040},
+archivePrefix={arXiv},
+primaryClass={physics.data-an}
+url={https://arxiv.org/abs/2011.07040}
 }
 
 
