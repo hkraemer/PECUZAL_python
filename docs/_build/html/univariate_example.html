@@ -163,14 +163,14 @@
 (with standard parameters <span class="math notranslate nohighlight">\([a = 0.2, b = 0.2, c = 5.7]\)</span>). All three time series are stored
 in <cite>roessler_test_series.csv</cite>.</p>
 <p>First we load the already computed data…</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">genfromtxt</span><span class="p">(</span><span class="s1">&#39;roessler_test_series.csv&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>… bind the time series we would like to consider and compute the auto mutual information, in order
 to estimate an appropriate Theiler window. This is especially important when dealing with highly sampled
 datasets. Let’s focus on the first 5,000 samples here and plot the time series and its mutual information:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">pecuzal_embedding</span> <span class="kn">import</span> <span class="o">*</span>
 
 <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:</span><span class="mi">5000</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>   <span class="c1"># bind the data</span>
@@ -212,9 +212,9 @@ trajectory we can actually plot it, in order to visualize the result.</p>
 <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">121</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">Y_reconstruct</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">Y_reconstruct</span><span class="p">[:,</span><span class="mi">1</span><span class="p">],</span> <span class="n">Y_reconstruct</span><span class="p">[:,</span><span class="mi">2</span><span class="p">],</span> <span class="s1">&#39;gray&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;y(t+{})&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tau_vals</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;y(t+{})&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tau_vals</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="s1">&#39;y(t+{})&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tau_vals</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;y(t+</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tau_vals</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;y(t+</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tau_vals</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="s1">&#39;y(t+</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tau_vals</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;PECUZAL reconstructed Roessler system&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">view_init</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">70</span><span class="p">)</span>
 
