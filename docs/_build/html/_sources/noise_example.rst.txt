@@ -34,7 +34,7 @@ data. Therefore, we create a simple AR(1)-process:
 
 .. _fig_ar:
 
-.. image:: ./source/images/ar_ts.png
+.. image:: ./docsource/images/ar_ts.png
 
 
 When we now call the PECUZAL algorithm :py:func:`pecuzal_embedding.pecuzal_embedding`

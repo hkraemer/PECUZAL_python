@@ -58,7 +58,7 @@ by taking the first minimum of the auto mutual information.
 
 .. _fig_mi_multi:
 
-.. image:: ./source/images/mi_and_timeseries_multi.png
+.. image:: ./docsource/images/mi_and_timeseries_multi.png
 
 Due to the spikyness of the `z`-component the according auto mutual information yields `nan`-values as
 a result of empty bins in the histograms. So we stick to the choice of `theiler = 30`, here and 
@@ -124,5 +124,5 @@ criterion for the goodness of a reconstruction, see [kraemer2020]_.
 
 .. _fig_rec_multi:
 
-.. image:: ./source/images/reconstruction_multi.png
+.. image:: ./docsource/images/reconstruction_multi.png
 

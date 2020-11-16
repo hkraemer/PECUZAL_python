@@ -44,7 +44,7 @@ datasets. Let's focus on the first 5,000 samples here and plot the time series a
 
 .. _fig_mi_y:
 
-.. image:: ./source/images/mi_and_timeseries_y_comp.png
+.. image:: ./docsource/images/mi_and_timeseries_y_comp.png
 
 Now we are ready to go and simply call the PECUZAL algorithm :py:func:`pecuzal_embedding.pecuzal_embedding` 
 with a Theiler window determined from the first minimum of the mutual information shown in the above Figure 
@@ -88,7 +88,7 @@ trajectory we can actually plot it, in order to visualize the result.
 
 .. _fig_rec_y:
 
-.. image:: ./source/images/reconstruction_y_comp.png
+.. image:: ./docsource/images/reconstruction_y_comp.png
 
 For the correct axis labels we used the delay values the PECUZAL algorithm used and which are
 stored in the output-variable we named `tau_vals` above. 
@@ -127,7 +127,7 @@ the result. We stored these statistics for each embedding cycle in the variable 
 
 .. _fig_continuity_uni:
 
-.. image:: ./source/images/continuity_univariate.png
+.. image:: ./docsource/images/continuity_univariate.png
 
 The points mark the postitions, where the algorithm picked the delays for the reconstruction from.
 In the third embedding cycle there is no delay value picked and the algorithm breaks, because it
