@@ -6,7 +6,7 @@ PECUZAL Python
 ==============
 
 We introduce the PECUZAL automatic embedding of time series method for Python. It is solely based
-on the paper [kraemer2020]_ (Open Source), where the functionality is explained in detail. Here we
+on the paper [kraemer2020]_ `(Open Source) <https://arxiv.org/abs/2011.07040>`_, where the functionality is explained in detail. Here we
 give an introduction to its easy usage in three examples. Enjoy Embedding! 
 
 
@@ -44,19 +44,20 @@ Citing and reference
 ====================
 If you enjoy this tool and find it valuable for your research please cite
 
-.. [kraemer2020] Kraemer et al., "A unified and automated approach to attractor reconstruction",  arXiv:2011.07040 [physics.data-an], 2020.
+.. [kraemer2020] Kraemer et al., "A unified and automated approach to attractor reconstruction",  `arXiv:2011.07040 [physics.data-an] <https://arxiv.org/abs/2011.07040>`_, 2020.
 
 or as BiBTeX-entry:
 
 ::
 
 @misc{kraemer2020,
-      title={A unified and automated approach to attractor reconstruction}, 
-      author={K. H. Kraemer and G. Datseris and J. Kurths and I. Z. Kiss and J. L. Ocampo-Espindola and N. Marwan},
-      year={2020},
-      eprint={2011.07040},
-      archivePrefix={arXiv},
-      primaryClass={physics.data-an}
+    title={A unified and automated approach to attractor reconstruction}, 
+    author={K. H. Kraemer and G. Datseris and J. Kurths and I. Z. Kiss and J. L. Ocampo-Espindola and N. Marwan},
+    year={2020},
+    eprint={2011.07040},
+    archivePrefix={arXiv},
+    primaryClass={physics.data-an}
+    url={https://arxiv.org/abs/2011.07040}
 }
 
 
