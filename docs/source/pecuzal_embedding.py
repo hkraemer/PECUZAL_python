@@ -132,7 +132,7 @@ def pecuzal_embedding(s, taus = range(50), theiler = 1, sample_size = 1., K = 13
 
     # loop over increasing embedding dimensions until some break criterion will
     # tell the loop to stop/break
-    bar = Bar('PECUZAL embeds your time series: Executing embedding cycle no.: 1, max=max_cycles)
+    bar = Bar('PECUZAL embeds your time series: Executing embedding cycle no.: 1', max=max_cycles)
 
     while flag:
         bar.next()
