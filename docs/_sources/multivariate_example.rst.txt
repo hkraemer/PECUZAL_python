@@ -3,6 +3,10 @@
 Multivariate example
 ====================
 
+If you want to run the following example on your local machine, you are welcome to download the code
+`here <https://github.com/hkraemer/PECUZAL_python/blob/docs-config/docs/compute_documentation_examples.py>`_ 
+and run it (after having pip-installed the package).
+
 Similar to the approach in the :ref:`sec_univariate`, we now highlight the capability of the
 proposed embedding method for a multivariate input. Again, we load all three time series of the
 Roessler system, which are stored in `roessler_test_series.csv`, and restrict ourselves to the
@@ -64,12 +68,14 @@ Due to the spikyness of the `z`-component the according auto mutual information 
 a result of empty bins in the histograms. So we stick to the choice of `theiler = 30`, here and 
 call the PECUZAL algorithm :py:func:`pecuzal_embedding.pecuzal_embedding` with default `kwargs` 
 and possible delays ranging from `0:100`.
+**NOTE: The following computation will take approximately 25-30 minutes (depending on the machine you are running the code on).
+See also the :ref:`performance note <note_performance>`.**
 
 .. code-block:: python
 
    Y_reconstruct, tau_vals, ts_vals, Ls, eps = pecuzal_embedding(data, taus = range(100), theiler = 30)
 
-which leads to the following note in the console (see also the note on :ref:`performance <note_performance>`):
+which leads to the following note in the console:
 
 ::
 

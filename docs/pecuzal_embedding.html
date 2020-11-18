@@ -455,7 +455,7 @@ The dimensionality of <cite>Z</cite> is thus equal to that of <cite>Y</cite> + 1
 
 <dl class="function">
 <dt id="pecuzal_embedding.pecuzal_embedding">
-<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">pecuzal_embedding</code><span class="sig-paren">(</span><em class="sig-param">s</em>, <em class="sig-param">taus=range(0</em>, <em class="sig-param">50)</em>, <em class="sig-param">theiler=1</em>, <em class="sig-param">sample_size=1.0</em>, <em class="sig-param">K=13</em>, <em class="sig-param">KNN=3</em>, <em class="sig-param">Tw_factor=4</em>, <em class="sig-param">alpha=0.05</em>, <em class="sig-param">p=0.5</em>, <em class="sig-param">max_cycles=50</em><span class="sig-paren">)</span><a class="headerlink" href="#pecuzal_embedding.pecuzal_embedding" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">pecuzal_embedding</code><span class="sig-paren">(</span><em class="sig-param">s</em>, <em class="sig-param">taus=range(0</em>, <em class="sig-param">50)</em>, <em class="sig-param">theiler=1</em>, <em class="sig-param">sample_size=1.0</em>, <em class="sig-param">K=13</em>, <em class="sig-param">KNN=3</em>, <em class="sig-param">Tw_factor=4</em>, <em class="sig-param">alpha=0.05</em>, <em class="sig-param">p=0.5</em>, <em class="sig-param">max_cycles=10</em><span class="sig-paren">)</span><a class="headerlink" href="#pecuzal_embedding.pecuzal_embedding" title="Permalink to this definition">¶</a></dt>
 <dd><p>Performs an embedding of time series using the PECUZAL method</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -474,7 +474,7 @@ The dimensionality of <cite>Z</cite> is thus equal to that of <cite>Y</cite> + 1
 the maximal considered time horizon <cite>Tw</cite> for obtaining the L-statistic is <cite>Tw = Tw_factor * 15 = 4 * 15 = 60</cite>.</p></li>
 <li><p><strong>alpha</strong> (<cite>float</cite>, optional) – Significance level for obtaining the continuity statistic <cite>avrg_eps_star</cite> in each embedding cycle (Default is <cite>alpha = 0.05</cite>).</p></li>
 <li><p><strong>p</strong> (<cite>float</cite>, optional) – Binominal p for obtaining the continuity statistic <cite>avrg_eps_star</cite> in each embedding cycle (Default is <cite>p = 0.5</cite>).</p></li>
-<li><p><strong>max_cycles</strong> (<cite>int</cite>, optional) – The algorithm will stop after that many cycles no matter what. Default is <cite>max_cycles = 50</cite>.</p></li>
+<li><p><strong>max_cycles</strong> (<cite>int</cite>, optional) – The algorithm will stop after that many cycles no matter what. Default is <cite>max_cycles = 10</cite>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>

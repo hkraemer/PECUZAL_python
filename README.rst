@@ -28,12 +28,13 @@ NOTE
 ====
 
 This implementation is not profiled well. We recommend to use the implementation
-in the `Julia language <https://juliadynamics.github.io/DynamicalSystems.jl/dev/>`_,
+in the `Julia language <https://juliadynamics.github.io/DynamicalSystems.jl/dev/>`_ or 
+in `Matlab <https://github.com/hkraemer/PECUZAL_Matlab>`_,
 in order to get fast results, especially in the multivariate case. Moreover,
 it is well documented and embedded in the 
 `DynamicalSystems.jl <https://juliadynamics.github.io/DynamicalSystems.jl/dev/>`_ ecosystem.
-For instance, the compuations made in the univariate and the multivariate example
-in the documentation took approximately `500s` and `1680s`, respectively. In the Julia implementation
+For instance, the compuations made in the :ref:`sec_univariate` and the :ref:`sec_multivariate`
+in this documentation took approximately `500s` and `1680s`, respectively. In the Julia implementation
 the exact same computation took `3s` and `20s`, respectively! (running on a 2.8GHz Quad-Core i7,  16GB 1600 MHz DDR3)
 
 

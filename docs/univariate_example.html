@@ -159,6 +159,9 @@
             
   <div class="section" id="univariate-example">
 <span id="sec-univariate"></span><h1>Univariate example<a class="headerlink" href="#univariate-example" title="Permalink to this headline">¶</a></h1>
+<p>If you want to run the following example on your local machine, you are welcome to download the code
+<a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/blob/docs-config/docs/compute_documentation_examples.py">here</a>
+and run it (after having pip-installed the package).</p>
 <p>We exemplify the proposed embedding method by embedding the <cite>y</cite>-component of the Roessler system
 (with standard parameters <span class="math notranslate nohighlight">\([a = 0.2, b = 0.2, c = 5.7]\)</span>). All three time series are stored
 in <cite>roessler_test_series.csv</cite>.</p>
@@ -196,11 +199,13 @@ datasets. Let’s focus on the first 5,000 samples here and plot the time series
 <img alt="_images/mi_and_timeseries_y_comp.png" id="fig-mi-y" src="_images/mi_and_timeseries_y_comp.png" />
 <p>Now we are ready to go and simply call the PECUZAL algorithm <a class="reference internal" href="pecuzal_embedding.html#pecuzal_embedding.pecuzal_embedding" title="pecuzal_embedding.pecuzal_embedding"><code class="xref py py-func docutils literal notranslate"><span class="pre">pecuzal_embedding.pecuzal_embedding()</span></code></a>
 with a Theiler window determined from the first minimum of the mutual information shown in the above Figure
-and possible delays ranging from <cite>0:100</cite>.</p>
+and possible delays ranging from <cite>0:100</cite>.
+<strong>NOTE: The following computation will take approximately 10 minutes (depending on the machine you are running the code on).
+See also the :ref:`performance note &lt;note_performance&gt;`.</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Y_reconstruct</span><span class="p">,</span> <span class="n">tau_vals</span><span class="p">,</span> <span class="n">ts_vals</span><span class="p">,</span> <span class="n">Ls</span><span class="p">,</span> <span class="n">eps</span> <span class="o">=</span> <span class="n">pecuzal_embedding</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">taus</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> <span class="n">theiler</span> <span class="o">=</span> <span class="mi">30</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>which leads to the following note in the console (see also the note on <a class="reference internal" href="index.html#note-performance"><span class="std std-ref">performance</span></a>):</p>
+<p>which leads to the following note in the console:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Algorithm</span> <span class="n">stopped</span> <span class="n">due</span> <span class="n">to</span> <span class="n">minimum</span> <span class="n">L</span><span class="o">-</span><span class="n">value</span> <span class="n">reached</span><span class="o">.</span> <span class="n">VALID</span> <span class="n">embedding</span> <span class="n">achieved</span><span class="o">.</span>
 </pre></div>
 </div>

@@ -3,6 +3,10 @@
 Stochastic source example
 =========================
 
+If you want to run the following example on your local machine, you are welcome to download the code
+`here <https://github.com/hkraemer/PECUZAL_python/blob/docs-config/docs/compute_documentation_examples.py>`_ 
+and run it (after having pip-installed the package).
+
 Finally we demonstrate how the PECUZAL method deals with non-deterministic input
 data. Therefore, we create a simple AR(1)-process:
 

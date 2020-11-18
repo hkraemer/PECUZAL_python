@@ -3,6 +3,10 @@
 Univariate example
 ==================
 
+If you want to run the following example on your local machine, you are welcome to download the code
+`here <https://github.com/hkraemer/PECUZAL_python/blob/docs-config/docs/compute_documentation_examples.py>`_ 
+and run it (after having pip-installed the package).
+
 We exemplify the proposed embedding method by embedding the `y`-component of the Roessler system
 (with standard parameters :math:`[a = 0.2, b = 0.2, c = 5.7]`). All three time series are stored
 in `roessler_test_series.csv`.
@@ -49,12 +53,14 @@ datasets. Let's focus on the first 5,000 samples here and plot the time series a
 Now we are ready to go and simply call the PECUZAL algorithm :py:func:`pecuzal_embedding.pecuzal_embedding` 
 with a Theiler window determined from the first minimum of the mutual information shown in the above Figure 
 and possible delays ranging from `0:100`.
+**NOTE: The following computation will take approximately 10 minutes (depending on the machine you are running the code on).
+See also the :ref:`performance note <note_performance>`.**
 
 .. code-block:: python
 
     Y_reconstruct, tau_vals, ts_vals, Ls, eps = pecuzal_embedding(y, taus = range(100), theiler = 30)
 
-which leads to the following note in the console (see also the note on :ref:`performance <note_performance>`):
+which leads to the following note in the console:
 
 ::
 
