@@ -20,7 +20,6 @@ import matplotlib.pyplot as plt
 from pecuzal_embedding import *
 
 y = data[:5000,1]   # bind the data
-#y = data[:5000,1]   # bind the data
 muinf, lags = mi(y)    # compute mutual information up to default maximum time lag
 
 plt.figure(figsize=(6., 8,))

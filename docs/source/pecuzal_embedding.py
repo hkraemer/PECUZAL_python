@@ -12,9 +12,10 @@ import scipy
 import random
 from sklearn.neighbors import KDTree
 from scipy.stats import binom, zscore
+from progress.bar import Bar
 
 
-def pecuzal_embedding(s, taus = range(50), theiler = 1, sample_size = 1., K = 13, KNN = 3, Tw_factor = 4, alpha = 0.05, p = 0.5, max_cycles = 50):
+def pecuzal_embedding(s, taus = range(50), theiler = 1, sample_size = 1., K = 13, KNN = 3, Tw_factor = 4, alpha = 0.05, p = 0.5, max_cycles = 10):
     '''Performs an embedding of time series using the PECUZAL method
 
     Parameters
@@ -43,7 +44,7 @@ def pecuzal_embedding(s, taus = range(50), theiler = 1, sample_size = 1., K = 13
     p : `float`, optional
         Binominal p for obtaining the continuity statistic `avrg_eps_star` in each embedding cycle (Default is `p = 0.5`).
     max_cycles : `int`, optional
-        The algorithm will stop after that many cycles no matter what. Default is `max_cycles = 50`.
+        The algorithm will stop after that many cycles no matter what. Default is `max_cycles = 10`.
     
     Returns
     -------
@@ -131,14 +132,20 @@ def pecuzal_embedding(s, taus = range(50), theiler = 1, sample_size = 1., K = 13
 
     # loop over increasing embedding dimensions until some break criterion will
     # tell the loop to stop/break
+    bar = Bar('PECUZAL embeds your time series: Executing embedding cycle no.: 1, max=max_cycles)
+
     while flag:
+        bar.next()
+        bar.message = 'PECUZAL embeds your time series: Executing embedding cycle no.:{}'.format(counter+2)
+
         Y_act, tau_vals, ts_vals, Ls, eps = pecuzal_multivariate_embedding_cycle(
                 Y_act, flag, s, taus, theiler, counter, eps, tau_vals, norm,
                 Ls, ts_vals, sample_size, K, alpha, p, Tw, KNN)
 
         flag = pecuzal_break_criterion(Ls, counter, max_cycles, L_init)
         counter += 1
-    
+    bar.finish()
+
     # construct final reconstruction vector
     if D > 1:
         Y_final = s_orig[:,ts_vals[0]]

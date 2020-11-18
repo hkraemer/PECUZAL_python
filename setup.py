@@ -33,9 +33,6 @@ setuptools.setup(
         "Operating System :: OS Independent",
         "Development Status :: 5 - Production/Stable"],
     python_requires='>=3.6',
-    install_requires=["numpy>=1.17.2","scipy>=1.3.1","scikit-learn>=0.21.3"], 
-    # extras_require = {"dev": [
-    #     'unittest'
-    # ]},
+    install_requires=["numpy>=1.17.2","scipy>=1.3.1","scikit-learn>=0.21.3","progress>=1.5"], 
 )
 
