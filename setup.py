@@ -5,7 +5,7 @@ with open("README.rst", "r") as fh:
 
 setuptools.setup(
     name="pecuzal_embedding", 
-    version="0.0.7",
+    version="1.0.2",
     author="K.H.Kraemer",
     author_email="hkraemer@pik-potsdam.de",
     description="PECUZAL automatic embedding of uni- and multivariate time series",
@@ -31,11 +31,8 @@ setuptools.setup(
         "Topic :: Scientific/Engineering :: Information Analysis",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
-        "Development Status :: 3 - Alpha"],
+        "Development Status :: 5 - Production/Stable"],
     python_requires='>=3.6',
-    install_requires=["numpy>=1.17.2","scipy>=1.3.1","scikit-learn>=0.21.3"], 
-    # extras_require = {"dev": [
-    #     'unittest'
-    # ]},
+    install_requires=["numpy>=1.17.2","scipy>=1.3.1","scikit-learn>=0.21.3","progress>=1.5"], 
 )
 
