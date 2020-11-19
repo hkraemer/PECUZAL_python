@@ -8,37 +8,45 @@ If you want to run the following example on your local machine, you are welcome 
 and run it (after having pip-installed the package).
 
 We exemplify the proposed embedding method by embedding the `y`-component of the Roessler system
-(with standard parameters :math:`[a = 0.2, b = 0.2, c = 5.7]`). All three time series are stored
-in `roessler_test_series.csv`.
-
-First we load the already computed data...
+(with standard parameters :math:`[a = 0.2, b = 0.2, c = 5.7]`). Therefore we define and integrate the
+ODE's:
 
 .. code-block:: python
    
     import numpy as np
-    data = np.genfromtxt('roessler_test_series.csv')
+    from scipy.integrate import odeint
 
-... bind the time series we would like to consider and compute the auto mutual information, in order
+    # integrate Roessler system on standard parameters
+    def roessler(x,t):
+        return [-x[1]-x[2], x[0]+.2*x[1], .2+x[2]*(x[0]-5.7)]
+
+    x0 = [1., .5, .5] # define initial conditions
+    tspan = np.arange(0., 7500.*.2, .2) # time span
+    data = odeint(roessler, x0, tspan, hmax = 0.01)
+
+    data = data[2500:,:]    # remove transients
+
+Now bind the time series we would like to consider and compute the auto mutual information, in order
 to estimate an appropriate Theiler window. This is especially important when dealing with highly sampled
 datasets. Let's focus on the first 5,000 samples here and plot the time series and its mutual information:
 
 .. code-block:: python
    
     import matplotlib.pyplot as plt
-    from pecuzal_embedding import *
+    from pecuzal_embedding import pecuzal_embedding, mi
 
-    y = data[:5000,1]   # bind the data
-    mi, lags = mi(y)    # compute mutual information up to default maximum time lag
+    y = data[:5000,1]   # bind only y-component
+    muinf, lags = mi(y)    # compute mutual information up to default maximum time lag
 
     plt.figure(figsize=(6., 8,))
     plt.subplot(2,1,1)
-    plt.plot(range(len(y)),y)
+    plt.plot(range(len(y[:1000])),y[:1000])
     plt.grid()
     plt.xlabel('time [in sampling units]')
     plt.title('y-component of Roessler test time series')
 
     plt.subplot(2,1,2)
-    plt.plot(lags,mi)
+    plt.plot(lags,muinf)
     plt.grid()
     plt.ylabel('MI')
     plt.xlabel('time lag [in sampling units]')
@@ -58,7 +66,7 @@ See also the :ref:`performance note <note_performance>`.**
 
 .. code-block:: python
 
-    Y_reconstruct, tau_vals, ts_vals, Ls, eps = pecuzal_embedding(y, taus = range(100), theiler = 30)
+    Y_reconstruct, tau_vals, ts_vals, Ls, eps = pecuzal_embedding(y, taus = range(100), theiler = 7)
 
 which leads to the following note in the console:
 
@@ -101,10 +109,10 @@ stored in the output-variable we named `tau_vals` above.
 
 ::
 
-    tau_vals = [0, 30, 63]
+    tau_vals = [0, 7, 15]
 
 This means, that the reconstructed trajectory consists of the unlagged time series (here the 
-`y`-component) and two more components with the time series lagged by 30 and 63 sample, respectively.
+`y`-component) and two more components with the time series lagged by 7 and 15 sample, respectively.
 Note the coincidence with the first minimum of the mutual information...
 The output variable `ts_vals` stores the chosen time series for each delay value stored in `tau_vals`. 
 Since there is only one time series we fed in,
@@ -142,5 +150,5 @@ can not minimize the `L`-statistic further. Its values for each embedding cycle 
 .. code-block::
     :name: l_uni
 
-    Ls = [-2.5494252517874783, -3.380125495387192, -3.330279598017837]
+    Ls = [-2.660021409247255, -3.497996853343526, -3.444974162070703]
 
