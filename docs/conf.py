@@ -61,4 +61,4 @@ def linkcode_resolve(domain, info):
     if not info['module']:
         return None
     filename = info['module'].replace('.', '/')
-    return "https://github.com/hkraemer/PECUZAL_python/%s.py" % filename
+    return "https://github.com/hkraemer/PECUZAL_python/blob/main/src/pecuzal_embedding.py"
