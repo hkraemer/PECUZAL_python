@@ -10,6 +10,7 @@ import math
 import numpy as np
 import scipy
 import random
+from numba import njit
 from sklearn.neighbors import KDTree
 from scipy.stats import binom, zscore
 from progress.bar import Bar
@@ -259,7 +260,6 @@ def embedding_cycle_pecuzal(Y_act, Ys, counter, M, taus, theiler, sample_size,
     return Y_act, tau_vals, ts_vals, Ls, eps
 
 
-
 def choose_right_embedding_params_first(estar, Y_act, s, taus, Tw, KNN, theiler, sample_size, norm):
     '''Choose the right embedding parameters of the estar-statistic in the first
     embedding cycle on the basis of minimal `xi` = (peak height * resulting `L`-statistic).
@@ -334,7 +334,6 @@ def choose_right_embedding_params_first(estar, Y_act, s, taus, Tw, KNN, theiler,
         tau_idx = max_idx_[min_idx_]-1
 
         return L_min_, tau_idx, int(0), 0
-
 
 
 def choose_right_embedding_params(estar, Y_act, s, taus, Tw, KNN, theiler, sample_size, norm):
@@ -434,7 +433,6 @@ def local_L_statistics(estar, Y_act, s, taus, Tw, KNN, theiler, sample_size, nor
     return L_trials, max_idx, xi_trials
 
 
-
 def get_maxima(s):
     '''Return the maxima of the given time series `s` and its indices
     '''
@@ -471,7 +469,6 @@ def get_maxima(s):
         maximas = s[maximas_idx]
     
     return maximas, maximas_idx
-
 
 
 def hcat_lagged_values(Y, s, tau):
@@ -518,6 +515,7 @@ def pecuzal_break_criterion(Ls, counter, max_num_of_cycles, L_init):
         flag = False
 
     return flag
+
 
 def continuity_statistic(s, taus, js, delays = range(50), sample_size = 1.0, K = 13, theiler = 1, norm = 'euclidean', alpha = 0.05, p = 0.5):
     '''Compute the continuity statistic for a trajectory defined by `s`, `taus` and `js` and all time series stored in `s`.
@@ -822,7 +820,7 @@ def uzal_cost(Y, K = 3, Tw = 40, theiler = 1 , sample_size = 1.0, norm = 'euclid
 
 
 
-
+@njit
 def all_neighbors(vtree, vs, ns, K, theiler, k_max):
     '''Compute `K` nearest neighbours for the points `vs` (having indices `ns`) from the tree `vtree`, while respecting the `theiler`-window.
 
@@ -833,8 +831,8 @@ def all_neighbors(vtree, vs, ns, K, theiler, k_max):
     dists : `numpy.ndarray` (len(vs),K)
         The distances to the K-nearest neighbours of all points `vs` (having indices `ns`)
     '''
-    dists = np.empty(shape=(len(vs),K))  
-    idxs = np.empty(shape=(len(vs),K),dtype=int)
+    dists = np.empty(shape=(len(vs),K),dtype=np.float32)  
+    idxs = np.empty(shape=(len(vs),K),dtype=np.int64)
 
     dist_, ind_ = vtree.query(vs[:], k=k_max)
 
@@ -848,7 +846,8 @@ def all_neighbors(vtree, vs, ns, K, theiler, k_max):
                 else:
                     cnt += 1
     return idxs, dists
-    
+
+@njit   
 def all_neighbors_1dim(vs, ns, K, theiler):
     '''Compute `K` nearest neighbours for the points `vs` (having indices `ns`), while respecting the `theiler`-window.
 
@@ -859,8 +858,8 @@ def all_neighbors_1dim(vs, ns, K, theiler):
     dists : `numpy.ndarray` (len(vs),K)
         The distances to the K-nearest neighbours of all points `vs` (having indices `ns`)
     '''
-    dists = np.empty(shape=(len(vs),K))  
-    idxs = np.empty(shape=(len(vs),K),dtype=int)
+    dists = np.empty(shape=(len(vs),K),dtype=np.float32)  
+    idxs = np.empty(shape=(len(vs),K),dtype=np.int64)
 
     for (i,v) in enumerate(vs):
         dis = np.array([abs(v - vs[j]) for j in range(len(vs))])
