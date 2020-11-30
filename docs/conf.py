@@ -64,7 +64,7 @@ html_context = {
     #https://github.com/runawayhorse001/SphinxGithub/blob/master/doc/index.rst
     'github_user': 'hkraemer',
     'github_repo': 'PECUZAL_python',
-    #'github_version': 'docs-config/docs/' ,
+    'github_version': 'tree/docs-config/docs/' ,
 }
 
 
