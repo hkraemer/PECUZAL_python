@@ -95,4 +95,4 @@ def linkcode_resolve(domain, info):
         filename = info['module'].replace('.', '/') + '.py'
     import subprocess
 
-    return "https://github.com/hkraemer/PECUZAL_python/blob/main/src/%s" % (filename)
+    return "https://github.com/hkraemer/PECUZAL_python/tree/docs-config/%s" % (filename)
