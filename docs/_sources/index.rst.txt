@@ -20,7 +20,6 @@ give an introduction to its easy usage in three examples. Enjoy Embedding!
 
 
 .. todo::
-   * Insert correct hyperlink to the `pecuzal_embedding`-function in the Julia-Docs
    * Insert correct citation link at the end of the page
 
 
@@ -40,7 +39,7 @@ in your console.
    :name: note_performance
 
    This implementation is not profiled well. We recommend to use the implementation
-   in the `Julia language <https://juliadynamics.github.io/DynamicalSystems.jl/dev/>`_ or 
+   in the `Julia language <https://juliadynamics.github.io/DynamicalSystems.jl/latest/embedding/unified/>`_ or 
    in `Matlab <https://github.com/hkraemer/PECUZAL_Matlab>`_,
    in order to get fast results, especially in the multivariate case. Moreover,
    it is well documented and embedded in the 
