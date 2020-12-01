@@ -18,7 +18,7 @@ from scipy.integrate import odeint
 
 import matplotlib.pyplot as plt
 from pecuzal_embedding import pecuzal_embedding, mi
-
+import time
 
 # integrate Roessler system on standard parameters
 def roessler(x,t):
@@ -30,8 +30,12 @@ data = odeint(roessler, x0, tspan, hmax = 0.01)
 
 data = data[2500:,:]    # remove transients
 
-y = data[:5000,1]   # bind only y-component
-muinf, lags = mi(y)    # compute mutual information up to default maximum time lag
+y = data[:2000,1]   # bind only y-component
+muinf, lags = mi(y) 
+start_time = time.clock()
+Y_reconstruct, tau_vals, ts_vals, Ls, eps = pecuzal_embedding(y, taus = range(100), theiler = 7)   # compute mutual information up to default maximum time lag
+end_time = time.clock()
+print((end_time-start_time), "seconds")
 
 plt.figure(figsize=(6., 8,))
 plt.subplot(2,1,1)

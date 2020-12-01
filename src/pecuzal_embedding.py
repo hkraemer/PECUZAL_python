@@ -820,7 +820,6 @@ def uzal_cost(Y, K = 3, Tw = 40, theiler = 1 , sample_size = 1.0, norm = 'euclid
 
 
 
-@njit
 def all_neighbors(vtree, vs, ns, K, theiler, k_max):
     '''Compute `K` nearest neighbours for the points `vs` (having indices `ns`) from the tree `vtree`, while respecting the `theiler`-window.
 
@@ -831,14 +830,20 @@ def all_neighbors(vtree, vs, ns, K, theiler, k_max):
     dists : `numpy.ndarray` (len(vs),K)
         The distances to the K-nearest neighbours of all points `vs` (having indices `ns`)
     '''
-    dists = np.empty(shape=(len(vs),K),dtype=np.float32)  
-    idxs = np.empty(shape=(len(vs),K),dtype=np.int64)
 
     dist_, ind_ = vtree.query(vs[:], k=k_max)
 
-    for i in range(np.size(dist_,0)):    
+    return all_neighbors_njit_helper(vs, K, ns, theiler, dist_, ind_)
+
+
+@njit
+def all_neighbors_njit_helper(vs, K, ns, theiler, dist_, ind_):
+    dists = np.empty(shape=(len(vs),K),dtype=np.float32)  
+    idxs = np.empty(shape=(len(vs),K),dtype=np.int64)
+
+    for i in range(dist_.shape[0]):    
         cnt = 0
-        for j in range(1,np.size(dist_,1)):
+        for j in range(dist_.shape[0]):
             if ind_[i,j] < ns[i]-theiler or ind_[i,j] > ns[i]+theiler:
                 dists[i,cnt], idxs[i,cnt] = dist_[i,j], ind_[i,j]
                 if cnt == K-1:
