@@ -2,6 +2,7 @@
 branches:
   except:
   - docs-config
+  - numba_incorp
 
 language: python
 python:
