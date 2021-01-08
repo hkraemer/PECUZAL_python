@@ -13,6 +13,7 @@
 # K.H.Kraemer Nov 2020
 
 #' Univariate example
+import time
 import numpy as np
 from scipy.integrate import odeint
 
@@ -25,12 +26,12 @@ def roessler(x,t):
    return [-x[1]-x[2], x[0]+.2*x[1], .2+x[2]*(x[0]-5.7)]
 
 x0 = [1., .5, 0.5] # define initial conditions
-tspan = np.arange(0., 7500.*.2, .2) # time span
+tspan = np.arange(0., 5000.*.2, .2) # time span
 data = odeint(roessler, x0, tspan, hmax = 0.01)
 
 data = data[2500:,:]    # remove transients
 
-y = data[:5000,1]   # bind only y-component
+y = data[:,1]   # bind only y-component
 muinf, lags = mi(y)    # compute mutual information up to default maximum time lag
 
 plt.figure(figsize=(6., 8,))
@@ -50,8 +51,11 @@ plt.title('Mutual information for y-component of Roessler test time series')
 plt.subplots_adjust(hspace=.3)
 plt.savefig('mi_and_timeseries_y_comp.png')
 
-
+t0 = time.time()
 Y_reconstruct, tau_vals, ts_vals, Ls, eps = pecuzal_embedding(y, taus = range(100), theiler = 7)
+t1 = time.time()
+
+delta_t = t1-t0
 
 from mpl_toolkits import mplot3d
 
