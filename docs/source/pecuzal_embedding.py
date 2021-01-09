@@ -55,8 +55,8 @@ def pecuzal_embedding(s, taus = range(50), theiler = 1, sample_size = 1., K = 13
         The according time series number (index) chosen for each delay value in `tau_vals`, `len(ts_vals) = m`. For univariate embedding
         `ts_vals` is a vector of zeros of length `tau_vals`, because there is simply just one time series to choose from, i.e. index 0. 
     Ls : 'list'
-        The L-statistic for each embedding cycle. The minimum of these values corresponds to the L-value for the returned
-        trajectory `Y`.
+        The :math:`\\Delta L`-statistic for each embedding cycle, including the very last encountered cycle, which will not enter the final
+        trajectory `Y`. The total decrease of :math:`\\Delta L` is, thus, :math:`\\Delta L_t = np.sum(Ls[:-1])`.
     avrg_eps_stars : 'list' [`list`]
         The continuity statistics for each embedding cycle. Contains `avrg_eps_star` of each embedding cycle.
     
@@ -834,7 +834,7 @@ def uzal_cost_pecuzal(Y, Y_trial, Tw, K = 3, theiler = 1, norm = 'euclidean'):
  
     Returns
     -------
-    :math:`\\Delta L` : `float`
+    :math:`\Delta L` : `float`
         The first minimal value of `L_trial - L` with respect to `T` :math:`\\in` `2:Tw`.
 
     Notes
