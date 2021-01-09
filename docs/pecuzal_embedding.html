@@ -487,8 +487,8 @@ of <cite>ΔL</cite>).</p></li>
 <li><p><strong>tau_vals</strong> (‘list’ [<cite>int</cite>]) – The chosen delay values for each embedding cycle, <cite>len(tau_vals) = m</cite>.</p></li>
 <li><p><strong>ts_vals</strong> (‘list’ [<cite>int</cite>]) – The according time series number (index) chosen for each delay value in <cite>tau_vals</cite>, <cite>len(ts_vals) = m</cite>. For univariate embedding
 <cite>ts_vals</cite> is a vector of zeros of length <cite>tau_vals</cite>, because there is simply just one time series to choose from, i.e. index 0.</p></li>
-<li><p><strong>Ls</strong> (<em>‘list’</em>) – The L-statistic for each embedding cycle. The minimum of these values corresponds to the L-value for the returned
-trajectory <cite>Y</cite>.</p></li>
+<li><p><strong>Ls</strong> (<em>‘list’</em>) – The <span class="math notranslate nohighlight">\(\Delta L\)</span>-statistic for each embedding cycle, including the very last encountered cycle, which will not enter the final
+trajectory <cite>Y</cite>. The total decrease of <span class="math notranslate nohighlight">\(\Delta L\)</span> is, thus, <span class="math notranslate nohighlight">\(\Delta L_t = np.sum(Ls[:-1])\)</span>.</p></li>
 <li><p><strong>avrg_eps_stars</strong> (‘list’ [<cite>list</cite>]) – The continuity statistics for each embedding cycle. Contains <cite>avrg_eps_star</cite> of each embedding cycle.</p></li>
 </ul>
 </p>
@@ -602,7 +602,7 @@ prediction horizon <cite>Tw</cite>.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>:math:`Delta L`</strong> – The first minimal value of <cite>L_trial - L</cite> with respect to <cite>T</cite> <span class="math notranslate nohighlight">\(\in\)</span> <cite>2:Tw</cite>.</p>
+<dd class="field-even"><p><strong>L_diff</strong> – The first minimal value of <cite>L_trial - L</cite> with respect to <cite>T</cite> <span class="math notranslate nohighlight">\(\in\)</span> <cite>2:Tw</cite>.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><cite>float</cite></p>
@@ -610,7 +610,7 @@ prediction horizon <cite>Tw</cite>.</p>
 </dl>
 <p class="rubric">Notes</p>
 <p>This function makes use of the idea of the L-statistic proposed in <a class="reference internal" href="#uzal2011" id="id12"><span>[uzal2011]</span></a> and specifically tailored for the needs of the
-PECUZAL algorithm to work, cf. Ref. <a class="reference internal" href="index.html#kraemer2020" id="id13"><span>[kraemer2020]</span></a> . For each <cite>T</cite> <span class="math notranslate nohighlight">\(\in\)</span> <cite>2:Tw</cite>, we compute <span class="math notranslate nohighlight">\(\Delta L\)</span> = <cite>L_trial - L</cite>.
+PECUZAL algorithm to work, cf. Ref. <a class="reference internal" href="index.html#kraemer2020" id="id13"><span>[kraemer2020]</span></a> . For each <cite>T</cite> <span class="math notranslate nohighlight">\(\in\)</span> <cite>2:Tw</cite>, we compute <cite>L_diff</cite> = <span class="math notranslate nohighlight">\(\Delta L\)</span> = <cite>L_trial - L</cite>.
 As soon as <span class="math notranslate nohighlight">\(\Delta L\)</span> increases with increasing <cite>T</cite> (since it is a negative value for a valuable embedding <cite>Y_trial</cite> with
 respect to <cite>Y</cite>) and <span class="math notranslate nohighlight">\(\Delta L&gt;0\)</span>, the algorithm breaks.</p>
 <div class="admonition seealso">
