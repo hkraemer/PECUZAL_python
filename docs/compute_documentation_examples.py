@@ -13,13 +13,11 @@
 # K.H.Kraemer Nov 2020
 
 #' Univariate example
-import time
 import numpy as np
 from scipy.integrate import odeint
 
 import matplotlib.pyplot as plt
 from pecuzal_embedding import pecuzal_embedding, mi
-
 
 # integrate Roessler system on standard parameters
 def roessler(x,t):
@@ -51,11 +49,7 @@ plt.title('Mutual information for y-component of Roessler test time series')
 plt.subplots_adjust(hspace=.3)
 plt.savefig('mi_and_timeseries_y_comp.png')
 
-t0 = time.time()
 Y_reconstruct, tau_vals, ts_vals, Ls, eps = pecuzal_embedding(y, taus = range(100), theiler = 7)
-t1 = time.time()
-
-delta_t = t1-t0
 
 from mpl_toolkits import mplot3d
 
@@ -67,7 +61,6 @@ ax.set_xlabel('y(t+{})'.format(tau_vals[0]))
 ax.set_ylabel('y(t+{})'.format(tau_vals[1]))
 ax.set_zlabel('y(t+{})'.format(tau_vals[2]))
 ax.set_title('PECUZAL reconstructed Roessler system')
-ax.view_init(50, 70)
 
 ax = plt.subplot(122, projection='3d')
 ax.plot(data[:5000,0], data[:5000,1], data[:5000,2], 'gray')
@@ -133,7 +126,8 @@ Y_reconstruct, tau_vals, ts_vals, Ls, eps = pecuzal_embedding(data, taus = range
 print(tau_vals)
 print(ts_vals)
 
-L_total = np.amin(Ls)
+print(Ls)
+L_total = np.sum(Ls[:-1])
 print(L_total)
 
 ts_labels = ['x','y','z']

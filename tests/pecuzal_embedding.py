@@ -15,7 +15,7 @@ from scipy.stats import binom, zscore
 from progress.bar import Bar
 
 
-def pecuzal_embedding(s, taus = range(50), theiler = 1, sample_size = 1., K = 13, KNN = 3, Tw_factor = 4, alpha = 0.05, p = 0.5, max_cycles = 10):
+def pecuzal_embedding(s, taus = range(50), theiler = 1, sample_size = 1., K = 13, KNN = 3, L_threshold = 0.0, alpha = 0.05, p = 0.5, max_cycles = 10):
     '''Performs an embedding of time series using the PECUZAL method
 
     Parameters
@@ -35,10 +35,9 @@ def pecuzal_embedding(s, taus = range(50), theiler = 1, sample_size = 1., K = 13
         `K = 13`. The continuity statistic `avrg_eps_star` is computed in each embedding cycle, taking the minimum result over all `k in K`.
     KNN : `int`, optional
         The number of nearest neighbors to be considered in the L-statistic, Default is `KNN = 3`.  
-    Tw_factor : `int`, optional
-        The maximal considered time horizon for obtaining the L-statistic as a factor getting multiplied with the given `theiler`:
-        `Tw = Tw_factor * theiler` and Default is `Tw_factor = 4`. If `theiler` is set to, say, `theiler = 15` and `Tw_factor` is on its Default
-        the maximal considered time horizon `Tw` for obtaining the L-statistic is `Tw = Tw_factor * 15 = 4 * 15 = 60`.
+    L_threshold : `float`, optional
+        The algorithm breaks, when this threshold is exceeded by `ΔL` in an embedding cycle (set as a positive number, i.e. an absolute value
+        of `ΔL`).
     alpha : `float`, optional
         Significance level for obtaining the continuity statistic `avrg_eps_star` in each embedding cycle (Default is `alpha = 0.05`).
     p : `float`, optional
@@ -64,6 +63,7 @@ def pecuzal_embedding(s, taus = range(50), theiler = 1, sample_size = 1., K = 13
     See also
     --------
     uzal_cost
+    uzal_cost_pecuzal
     continuity_statistic
 
     Notes
@@ -71,19 +71,29 @@ def pecuzal_embedding(s, taus = range(50), theiler = 1, sample_size = 1., K = 13
     The method works iteratively and gradually builds the final embedding vectors
     `Y`, as proposed in [kraemer2020]_ . Based on the continuity statistic `avrg_eps_star` [pecora2007]_ the algorithm picks an
     optimal delay value `tau_i` for each embedding cycle `i`. For achieving that, we take the inpute time series 
-    `s` and compute the continuity statistic `avrg_eps_star`. 1. Each local maxima in `avrg_eps_star` is used 
-    for constructing a candidate embedding trajectory `Y_trial` with a delay corresponding to that
-    specific peak in `avrg_eps_star`. 2. We then compute the `L`-statistic [uzal2011]_ for `Y_trial`. 3. We pick the 
-    peak/`tau`-value, for which `L` is minimal and construct the actual embedding trajectory `Y_actual` (steps 
-    1.-3. correspond to an embedding cycle). 4. We repeat steps 1.-3. with `Y_actual` as input and stop the
-    algorithm when `L` can not be reduced anymore. `Y_actual` -> `Y`.
+    `s`, denoted as the actual phase space trajectory `Y_actual` and compute the continuity statistic `avrg_eps_star`. 
+    1. Each local maxima in `avrg_eps_star` is used for constructing a candidate embedding trajectory `Y_trial` with a delay 
+    corresponding to that specific peak in `avrg_eps_star`. 
+    2. We then compute the `L`-statistic [uzal2011]_ for `Y_trial` (`L-trial`) and `Y_actual` (`L_actual`) for increasing prediction 
+    time horizons (free parameter in the `L`-statistic) and save the maximum difference `max(L-trial - L_actual)` as :math:`\\Delta L`
+    (Note that this is a negative number, since the `L`-statistic decreases with better reconstructions).
+    3. We pick the peak/`tau`-value, for which :math:`\\Delta L` is minimal (=maximum decrease of the overall `L`-value) and construct the actual 
+    embedding trajectory `Y_actual` (steps 1.-3. correspond to an embedding cycle). 
+    4. We repeat steps 1.-3. with `Y_actual` as input and stop the algorithm when :math:`\\Delta L` is > 0, i.e. when and additional embedding 
+    component would not lead to a lower overall L-value. `Y_actual` -> `Y`.
 
     In case of multivariate embedding, i.e. when embedding a set of `M` time series, in each embedding cycle 
-    `avrg_eps_star` gets computed for all `M` time series available. The optimal delay value `tau_i` in each 
-    embedding cycle `i` is chosen as the peak/`tau`-value for which `L` is minimal under all available peaks 
-    and under all M `avrg_eps_star`'s. In the first embedding cycle there will be M**2 different `avrg_eps_star`'s
-    to consider, since it is not clear a priori which time series of the input should consitute the first component 
-    of the embedding vector and form `Y_actual`.
+    the continuity statistic `avrg_eps_star` gets computed for all `M` time series available. The optimal delay value 
+    `tau_i` in each embedding cycle `i` is chosen as the peak/`tau`-value for which :math:`\\Delta L` is minimal under all available peaks and under 
+    all M `avrg_eps_star`'s. In the first embedding cycle there will be :math:`M^2` different `avrg_eps_star`'s to consider, since it is
+    not clear a priori which time series of the input should consitute the first component of the embedding vector and form `Y_actual`.
+
+    The range of considered delay values is determined in `taus` and for the nearest neighbor search we respect the Theiler window 
+    `theiler`. The final embedding vector is stored in `Y` (`numpy.ndarray`). The chosen delay values for each embedding cycle are stored in 
+    `tau_vals` (`list` of `int`) and the according time series numbers chosen for each delay value in `tau_vals` are stored in `ts_vals`. For 
+    univariate embedding `ts_vals` is a vector of ones of length `len(tau_vals)`, because there is simply just one time series to choose 
+    from. The function also returns the :math:`\\Delta Ls`-values `Ls` for each embedding cycle and the continuity statistic `avrg_eps_stars` as 
+    `list` of `list`s.
 
     For distance computations the Euclidean norm is used.
 
@@ -104,21 +114,14 @@ def pecuzal_embedding(s, taus = range(50), theiler = 1, sample_size = 1., K = 13
     assert (theiler >= 0) and (type(theiler) is int) and (theiler < len(s)), "Theiler window must be a positive integer smaller than the time series length."
     assert (alpha >= 0) and (alpha < 1), "Significance level alpha must be in (0 1)"
     assert (p >= 0) and (p < 1), "Binomial p parameter must be in (0 1)"
+    assert (L_threshold >= 0), "L_threshold must be given as an absolute value, i.e. a positive number."
     norm = 'euclidean' 
-    Tw = Tw_factor*theiler # set time horizon for L-statistic
+    threshold = -L_threshold
 
     s_orig = s
     s = zscore(s,ddof=1) # especially important for comparative L-statistics
     # define actual phase space trajectory
     Y_act = []
-    # compute initial L values for each time series
-    if D>1:
-        L_inits = np.zeros(D)
-        for i in range(D):
-            L_inits[i], _ = uzal_cost(s[:,i], sample_size = sample_size, K = KNN, norm = norm, theiler = theiler, Tw = Tw)
-        L_init = np.amin(L_inits)
-    else:
-        L_init, _ = uzal_cost(s, sample_size = sample_size, K = KNN, norm = norm, theiler = theiler, Tw = Tw)
 
     # set a flag, in order to tell the while loop when to stop. Each loop
     # stands for encountering a new embedding dimension
@@ -140,9 +143,9 @@ def pecuzal_embedding(s, taus = range(50), theiler = 1, sample_size = 1., K = 13
 
         Y_act, tau_vals, ts_vals, Ls, eps = pecuzal_multivariate_embedding_cycle(
                 Y_act, flag, s, taus, theiler, counter, eps, tau_vals, norm,
-                Ls, ts_vals, sample_size, K, alpha, p, Tw, KNN)
+                Ls, ts_vals, sample_size, K, alpha, p, KNN)
 
-        flag = pecuzal_break_criterion(Ls, counter, max_cycles, L_init)
+        flag = pecuzal_break_criterion(Ls, counter, max_cycles, threshold)
         counter += 1
     bar.finish()
 
@@ -160,7 +163,7 @@ def pecuzal_embedding(s, taus = range(50), theiler = 1, sample_size = 1., K = 13
 
 
 def pecuzal_multivariate_embedding_cycle(Y_act, flag, Ys, taus, theiler, counter, eps, tau_vals, norm,
-        Ls, ts_vals, sample_size, K, alpha, p, Tw, KNN):
+        Ls, ts_vals, sample_size, K, alpha, p, KNN):
     '''Perform one embedding cycle on `Y_act` with a multivariate set Ys
     '''
     if np.ndim(Ys)>1:
@@ -172,19 +175,19 @@ def pecuzal_multivariate_embedding_cycle(Y_act, flag, Ys, taus, theiler, counter
     # the tau according to minimial xi = (peak height * resulting L-statistic)
     if counter == 0:
         Y_act, tau_vals, ts_vals, Ls, eps = first_embedding_cycle_pecuzal(Ys, M, taus, theiler, sample_size, K,
-                                norm, alpha, p, Tw, KNN, tau_vals, ts_vals, Ls, eps)
+                                norm, alpha, p, KNN, tau_vals, ts_vals, Ls, eps)
     # in all other cycles we just have to check (size(Y,2)) combinations and pick
     # the tau according to minimal resulting L-statistic
     else:
         Y_act, tau_vals, ts_vals, Ls, eps = embedding_cycle_pecuzal(Y_act, Ys, counter, M, taus, theiler, sample_size,
-                            K, norm, alpha, p, Tw, KNN, tau_vals, ts_vals, Ls, eps)
+                            K, norm, alpha, p, KNN, tau_vals, ts_vals, Ls, eps)
 
     return Y_act, tau_vals, ts_vals, Ls, eps
 
 
 
 def first_embedding_cycle_pecuzal(Ys, M, taus, theiler, sample_size, K,
-                        norm, alpha, p, Tw, KNN, tau_vals, ts_vals, Ls, eps):
+                        norm, alpha, p, KNN, tau_vals, ts_vals, Ls, eps):
     '''Perform the first embedding cycle of the multivariate embedding.
     '''
     counter = 0
@@ -193,18 +196,17 @@ def first_embedding_cycle_pecuzal(Ys, M, taus, theiler, sample_size, K,
         L_min = np.zeros(M)
         L_min_idx = np.zeros(M, dtype=int)
         idx = np.zeros(M, dtype=int)
-        xi_min = np.zeros(M)
         estar = np.zeros(shape=(len(taus), M*M))
         for ts in range(M):
             estar[:,(M*ts):(M*(ts+1))] = continuity_statistic(Ys, [0], [ts], delays = taus, sample_size = sample_size, 
                                                 K = K, theiler = theiler, norm = norm, alpha = alpha, p = p)
             
-            L_min[ts], L_min_idx[ts], idx[ts], xi_min[ts] = choose_right_embedding_params_first(
+            L_min[ts], L_min_idx[ts], idx[ts] = choose_right_embedding_params_first(
                                             estar[:,(M*ts):(M*(ts+1))], Ys[:,ts],
-                                            Ys, taus, Tw, KNN, theiler, sample_size,
+                                            Ys, taus, KNN, theiler, sample_size,
                                             norm)
 
-        min_idx = np.argmin(xi_min)
+        min_idx = np.argmin(L_min)
         if np.ndim(min_idx) > 0:
             min_idx = min_idx[0]
         L_mini = L_min[min_idx]
@@ -220,8 +222,8 @@ def first_embedding_cycle_pecuzal(Ys, M, taus, theiler, sample_size, K,
     else:
         estar = continuity_statistic(Ys, [0], [0], delays = taus, sample_size = sample_size, 
                                         K = K, theiler = theiler, norm = norm, alpha = alpha, p = p)
-        L_min, L_min_idx, idx, _ = choose_right_embedding_params_first(
-                                        estar, Ys, Ys, taus, Tw, KNN, theiler, sample_size, norm)
+        L_min, L_min_idx, idx = choose_right_embedding_params_first(
+                                        estar, Ys, Ys, taus, KNN, theiler, sample_size, norm)
         # update tau_vals, ts_vals, Ls
         tau_vals.append(taus[L_min_idx])
         ts_vals.append(0) # time series to start with
@@ -235,14 +237,14 @@ def first_embedding_cycle_pecuzal(Ys, M, taus, theiler, sample_size, K,
 
 
 def embedding_cycle_pecuzal(Y_act, Ys, counter, M, taus, theiler, sample_size,
-                    K, norm, alpha, p, Tw, KNN, tau_vals, ts_vals, Ls, eps):
+                    K, norm, alpha, p, KNN, tau_vals, ts_vals, Ls, eps):
     """Perform an embedding cycle of the multivariate embedding, but the first one.
     """
     
     estar = continuity_statistic(Ys, tau_vals, ts_vals, delays = taus, sample_size = sample_size, 
                                     K = K, theiler = theiler, norm = norm, alpha = alpha, p = p)
     # update tau_vals, ts_vals, Ls, eps
-    L_min, L_min_idx, idx = choose_right_embedding_params(estar, Y_act, Ys, taus, Tw, KNN, theiler, sample_size, norm)
+    L_min, L_min_idx, idx = choose_right_embedding_params(estar, Y_act, Ys, taus, KNN, theiler, sample_size, norm)
 
     tau_vals.append(taus[L_min_idx])
     ts_vals.append(idx)
@@ -260,9 +262,10 @@ def embedding_cycle_pecuzal(Y_act, Ys, counter, M, taus, theiler, sample_size,
 
 
 
-def choose_right_embedding_params_first(estar, Y_act, s, taus, Tw, KNN, theiler, sample_size, norm):
+def choose_right_embedding_params_first(estar, Y_act, s, taus, KNN, theiler, sample_size, norm):
     '''Choose the right embedding parameters of the estar-statistic in the first
-    embedding cycle on the basis of minimal `xi` = (peak height * resulting `L`-statistic).
+    embedding cycle. Return the `L`-decrease-value, the corresponding index value of
+    the chosen peak `tau_idx` and the number of the chosen time series `ts_idx` to start with.
     
     Parameters
     ----------
@@ -274,85 +277,6 @@ def choose_right_embedding_params_first(estar, Y_act, s, taus, Tw, KNN, theiler,
         The `M` time series of length `N`.
     taus : `iterable`
         Possible delay values in sampling time units.
-    Tw : `int`
-        The maximal considered time horizon for obtaining the L-statistic.
-    KNN : `int`
-        The number of nearest neighbors to be considered in the L-statistic.
-    theiler : `int`
-        Theiler window for excluding serial correlated points from neighbourhood, in sampling time units.
-    sample_size : `float`
-        Number of considered fiducial points as a fraction of input time series length, i.e. a float from interval (0,1.].
-    norm : `str`
-        The norm used for distance computations.
-
-    Returns
-    -------
-    L : `float`
-        `L`-value of chosen peak in `estar`
-    tau_idx : `int`
-        The corresponding index value of the chosen peak 
-    ts_idx : `int`
-        The number of the chosen time series to start with
-    xi_min : `float`
-        The minimum `xi = (peak height * resulting L-statistic)` according to the chosen peak.
-
-    See also
-    --------
-    continuity_statistic
-    '''
-    D = np.ndim(s)
-    if D > 1:
-        M = np.size(s,1)
-        xi_min_ = np.zeros(M)
-        L_min_ = np.zeros(M)
-        tau_idx = np.zeros(M, dtype=int)
-        for ts in range(M):
-            # zero-padding of estar in order to also cover tau=0 (important for the multivariate case)
-            # get the L-statistic for each peak in estar and take the one according to L_min
-            L_trials_, max_idx_, xi_trials_ = local_L_statistics(np.insert(estar[:,ts],0,0), Y_act, s[:,ts],
-                                            taus, Tw, KNN, theiler, sample_size, norm)
-
-            min_idx_ = np.argmin(xi_trials_)
-            if np.ndim(min_idx_)>0:
-                min_idx_ = min_idx_[0]
-            xi_min_[ts] = xi_trials_[min_idx_]
-            L_min_[ts] = L_trials_[min_idx_]
-            tau_idx[ts] = max_idx_[min_idx_]-1
-
-        idx = np.argmin(xi_min_)
-        if np.ndim(idx)>0:
-            idx = idx[0]
-
-        return L_min_[idx], tau_idx[idx], idx, xi_min_[idx]
-    else:
-        L_trials_, max_idx_, _ = local_L_statistics(np.insert(estar,0,0), Y_act, s,
-                                    taus, Tw, KNN, theiler, sample_size, norm)
-        min_idx_ = np.argmin(L_trials_)
-        if np.ndim(min_idx_)>0:
-            min_idx_ = min_idx_[0]
-        L_min_ = L_trials_[min_idx_]
-        tau_idx = max_idx_[min_idx_]-1
-
-        return L_min_, tau_idx, int(0), 0
-
-
-
-def choose_right_embedding_params(estar, Y_act, s, taus, Tw, KNN, theiler, sample_size, norm):
-    '''Choose the right embedding parameters of the estar-statistic in any embedding cycle, but the
-    first one, on the basis of minimal `L`.
-    
-    Parameters
-    ----------
-    estar : `numpy.ndarray` (len(taus), M)
-        The M continuity statistic(s) for delays `taus`.
-    Y_act : `numpy.ndarray`
-        The actual phase space trajectory.
-    s : numpy.ndarray` (N, M)
-        The `M` time series of length `N`.
-    taus : `iterable`
-        Possible delay values in sampling time units.
-    Tw : `int`
-        The maximal considered time horizon for obtaining the L-statistic.
     KNN : `int`
         The number of nearest neighbors to be considered in the L-statistic.
     theiler : `int`
@@ -383,8 +307,9 @@ def choose_right_embedding_params(estar, Y_act, s, taus, Tw, KNN, theiler, sampl
         for ts in range(M):
             # zero-padding of estar in order to also cover tau=0 (important for the multivariate case)
             # get the L-statistic for each peak in estar and take the one according to L_min
-            L_trials_, max_idx_, _ = local_L_statistics(np.insert(estar[:,ts],0,0), Y_act, s[:,ts],
-                                            taus, Tw, KNN, theiler, sample_size, norm)
+            L_trials_, max_idx_ = local_L_statistics(np.insert(estar[:,ts],0,0), Y_act, s[:,ts],
+                                            taus, KNN, theiler, sample_size, norm)
+
             min_idx_ = np.argmin(L_trials_)
             if np.ndim(min_idx_)>0:
                 min_idx_ = min_idx_[0]
@@ -397,8 +322,80 @@ def choose_right_embedding_params(estar, Y_act, s, taus, Tw, KNN, theiler, sampl
 
         return L_min_[idx], tau_idx[idx], idx
     else:
-        L_trials_, max_idx_, _ = local_L_statistics(np.insert(estar,0,0), Y_act, s,
-                                    taus, Tw, KNN, theiler, sample_size, norm)
+        L_trials_, max_idx_ = local_L_statistics(np.insert(estar,0,0), Y_act, s,
+                                    taus, KNN, theiler, sample_size, norm)
+        min_idx_ = np.argmin(L_trials_)
+
+        if np.ndim(min_idx_)>0:
+            min_idx_ = min_idx_[0]
+        L_min_ = L_trials_[min_idx_]
+        tau_idx = max_idx_[min_idx_]-1
+
+        return L_min_, tau_idx, int(0)
+
+
+
+def choose_right_embedding_params(estar, Y_act, s, taus, KNN, theiler, sample_size, norm):
+    '''Choose the right embedding parameters of the estar-statistic in any embedding cycle, but the
+    first one, on the basis of minimal `L`, i.e. maximal `L_decrease`.
+    
+    Parameters
+    ----------
+    estar : `numpy.ndarray` (len(taus), M)
+        The M continuity statistic(s) for delays `taus`.
+    Y_act : `numpy.ndarray`
+        The actual phase space trajectory.
+    s : numpy.ndarray` (N, M)
+        The `M` time series of length `N`.
+    taus : `iterable`
+        Possible delay values in sampling time units.
+    KNN : `int`
+        The number of nearest neighbors to be considered in the L-statistic.
+    theiler : `int`
+        Theiler window for excluding serial correlated points from neighbourhood, in sampling time units.
+    sample_size : `float`
+        Number of considered fiducial points as a fraction of input time series length, i.e. a float from interval (0,1.].
+    norm : `str`
+        The norm used for distance computations.
+
+    Returns
+    -------
+    L : `float`
+        `L`-value of chosen peak in `estar`
+    tau_idx : `int`
+        The corresponding index value of the chosen peak 
+    ts_idx : `int`
+        The number of the chosen time series to start with
+
+    See also
+    --------
+    continuity_statistic
+    '''
+    D = np.ndim(s)
+    if D > 1:
+        M = np.size(s,1)
+        L_min_ = np.zeros(M)
+        tau_idx = np.zeros(M, dtype=int)
+        for ts in range(M):
+            # zero-padding of estar in order to also cover tau=0 (important for the multivariate case)
+            # get the L-statistic for each peak in estar and take the one according to L_min
+            L_trials_, max_idx_ = local_L_statistics(np.insert(estar[:,ts],0,0), Y_act, s[:,ts],
+                                            taus, KNN, theiler, sample_size, norm)
+            min_idx_ = np.argmin(L_trials_)
+            if np.ndim(min_idx_)>0:
+                min_idx_ = min_idx_[0]
+            L_min_[ts] = L_trials_[min_idx_]
+            tau_idx[ts] = max_idx_[min_idx_]-1
+
+        idx = np.argmin(L_min_)
+        if np.ndim(idx)>0:
+            idx = idx[0]
+
+        return L_min_[idx], tau_idx[idx], idx
+    else:
+        L_trials_, max_idx_ = local_L_statistics(np.insert(estar,0,0), Y_act, s,
+                                    taus, KNN, theiler, sample_size, norm)
+
         min_idx_ = np.argmin(L_trials_)
         if np.ndim(min_idx_)>0:
             min_idx_ = min_idx_[0]
@@ -409,29 +406,25 @@ def choose_right_embedding_params(estar, Y_act, s, taus, Tw, KNN, theiler, sampl
 
 
 
-def local_L_statistics(estar, Y_act, s, taus, Tw, KNN, theiler, sample_size, norm):
-    '''Return the L-statistic `L` and indices `max_idx` and weighted peak height
-    `xi = peak-height * L` for all local maxima in `estar`.
+def local_L_statistics(estar, Y_act, s, taus, KNN, theiler, sample_size, norm):
+    '''Return the maximum decrease of the L-statistic `L_decrease` and corresponding
+    delay-indices `max_idx` for all local maxima in `estar`.
     '''
-    maxima, max_idx = get_maxima(estar) # determine local maxima in estar
+    _, max_idx = get_maxima(estar) # determine local maxima in estar
     if np.ndim(max_idx)>0:
-        L_trials = np.zeros(len(max_idx), dtype=float)
-        xi_trials = np.zeros(len(max_idx), dtype=float)
+        L_decrease = np.zeros(len(max_idx), dtype=float)
 
     for (i,tau_idx) in enumerate(max_idx):
         # create candidate phase space vector for this peak/τ-value
         Y_trial = hcat_lagged_values(Y_act,s,taus[int(tau_idx)-1])
-        # compute L-statistic
+        # compute L-statistic for Y_act and Y_trial and get the maximum decrease
         if np.ndim(max_idx)>0:
-            L_trials[i], _ = uzal_cost(Y_trial, Tw = Tw, K = KNN, theiler = theiler,
-                    sample_size = sample_size, norm = norm)
-            xi_trials[i] = L_trials[i]*maxima[i]
+            L_decrease[i] = uzal_cost_pecuzal(Y_act, Y_trial, taus[-1], K = KNN, theiler = theiler, norm = norm)
+            
         else:
-            L_trials, _ = uzal_cost(Y_trial, Tw = Tw, K = KNN, theiler = theiler,
-                    sample_size = sample_size, norm = norm)
-            xi_trials = L_trials*maxima          
-    
-    return L_trials, max_idx, xi_trials
+            L_decrease = uzal_cost_pecuzal(Y_act, Y_trial, taus[-1], K = KNN, theiler = theiler, norm = norm)
+                   
+    return L_decrease, max_idx
 
 
 
@@ -500,17 +493,16 @@ def hcat_lagged_values(Y, s, tau):
     return data
 
 
-def pecuzal_break_criterion(Ls, counter, max_num_of_cycles, L_init):
+def pecuzal_break_criterion(Ls, counter, max_num_of_cycles, threshold):
     '''Checks whether some break criteria are fulfilled
     '''
     flag = True
-    if counter == 0:
-        if Ls[-1] > L_init:
-            print("Algorithm stopped due to increasing L-values. Valid embedding NOT achieved.")
-            flag = False
+    if counter == 0 and Ls[-1]>threshold:
+        print("Algorithm stopped due to increasing L-values in the first embedding cycle.. Valid embedding NOT achieved.")
+        flag = False
         
-    if counter > 0 and Ls[-1]>Ls[-2]:
-        print("Algorithm stopped due to minimum L-value reached. VALID embedding achieved.")
+    if counter > 0 and Ls[-1]>threshold:
+        print("Algorithm stopped due to increasing L-values. VALID embedding achieved.")
         flag = False
 
     if max_num_of_cycles-1 == counter:
@@ -821,6 +813,148 @@ def uzal_cost(Y, K = 3, Tw = 40, theiler = 1 , sample_size = 1.0, norm = 'euclid
     return L, L_local
 
 
+def uzal_cost_pecuzal(Y, Y_trial, Tw, K = 3, theiler = 1, norm = 'euclidean'):
+    '''Compute Uzal etg al.'s L-statistic for the trajectories `Y` (`L`) and `Y_trial` (`L_trial`) up to the maximum given 
+    prediction horizon `Tw`. 
+
+    Parameters
+    ----------
+    Y : `numpy.ndarray` (N, d)
+        State space vectors of length `N` and dimensionality `d`. 
+    Y_trial: `numpy.ndarray` (N', d+1)
+        State space vectors of length `N'` and dimensionality `d+1`. This is usually result of `Y` undergoing a potential embedding cycle.
+    Tw : `int`
+        The maximal considered time horizon for obtaining the :math:`\\Delta L`.
+    K : `int`, optional
+        The number of nearest neighbors to be considered in the L-statistic, Default is `K = 3`.
+    theiler : `int`, optional
+        Theiler window for excluding serial correlated points from neighbourhood. In sampling time units, Default is `theiler = 1`.
+    norm : `str`, optional
+        The norm used for distance computations. Must be either `'euclidean'` (Default) or `'chebyshev'`
+ 
+    Returns
+    -------
+    :math:`\\Delta L` : `float`
+        The first minimal value of `L_trial - L` with respect to `T` :math:`\\in` `2:Tw`.
+
+    Notes
+    -----
+    This function makes use of the idea of the L-statistic proposed in [uzal2011]_ and specifically tailored for the needs of the
+    PECUZAL algorithm to work, cf. Ref. [kraemer2020]_ . For each `T` :math:`\\in` `2:Tw`, we compute :math:`\\Delta L` = `L_trial - L`. 
+    As soon as :math:`\\Delta L` increases with increasing `T` (since it is a negative value for a valuable embedding `Y_trial` with 
+    respect to `Y`) and :math:`\\Delta L>0`, the algorithm breaks.
+
+    See also
+    --------
+    uzal_cost
+
+    '''
+    assert (theiler >= 0) and (type(theiler) is int) and (theiler < len(Y))
+    assert (K >= 0) and (type(K) is int) and (K < len(Y))
+    assert (Tw >= 0) and (type(Tw) is int) and (Tw < len(Y))
+    assert (type(norm) is str) and (norm == 'euclidean' or norm == 'chebyshev')
+
+    if np.ndim(Y)>1:
+        assert (np.size(Y,0) > np.size(Y,1)), "You must provide a numpy array storing the time series in its columns."
+        D = np.size(Y,1)
+    else:
+        D = 1
+
+    assert (np.size(Y_trial,0) > np.size(Y_trial,1)), "You must provide a numpy array storing the time series in its columns."
+    assert (np.size(Y_trial,1) == (D+1)), "The trial trajectory must have dimension D+1, when the actual trajectory has dimension D."
+
+    NNN = len(Y_trial)-1
+    # preallocation for 1st dataset
+    eps2 = np.empty(NNN)             # neighborhood size
+    E2 = np.empty(shape=(NNN, Tw))    # conditional variance
+    # preallocation for 2nd dataset
+    eps2_trial = np.empty(NNN)             # neighborhood size
+    E2_trial = np.empty(shape=(NNN, Tw))   # conditional variance
+
+    dist_former = 9999999 # intial L-decrease
+
+    ns = [i for i in range(NNN)]
+    vs = Y[ns[:]] # the fiducial points in the data set
+    vs_trial = Y_trial[ns[:]] # the fiducial points in the data set
+    # loop over each time horizon
+    cnt = 0
+    for T in range(2,Tw+1):    # start at 2 will eliminate results for noise
+        NN = len(Y_trial)-T
+
+        if D == 1:
+            allNNidxs, _ = all_neighbors_1dim(vs[:NN], ns[:NN], K, theiler)
+            neighborhood_v = np.empty(K+1)
+            vtree_trial = KDTree(Y_trial[:NN,:], metric = norm)
+            allNNidxs_trial, _ = all_neighbors(vtree_trial, vs_trial[:NN,:], ns[:NN], K, theiler, (len(vs)-Tw))
+            neighborhood_v_trial = np.empty(shape=(K+1,D+1))
+        else:
+            vtree = KDTree(Y[:NN,:], metric = norm)
+            allNNidxs, _ = all_neighbors(vtree, vs[:NN,:], ns[:NN], K, theiler, (len(vs)-Tw))
+            neighborhood_v = np.empty(shape=(K+1,D))
+            vtree_trial = KDTree(Y_trial[:NN,:], metric = norm)
+            allNNidxs_trial, _ = all_neighbors(vtree_trial, vs_trial[:NN,:], ns[:NN], K, theiler, (len(vs)-Tw))
+            neighborhood_v_trial = np.empty(shape=(K+1,D+1)) 
+
+        # loop over each fiducial point
+        for (i,v) in enumerate(vs[:NN]):
+            v_trial = vs_trial[i]
+            NNidxs = allNNidxs[i] # indices of K nearest neighbors to v
+            NNidxs_trial = allNNidxs_trial[i] # indices of K nearest neighbors to v
+
+            # construct local neighborhoods  
+            neighborhood_v[0] = v            
+            neighborhood_v[1:] = Y[NNidxs]
+            neighborhood_v_trial[0] = v_trial            
+            neighborhood_v_trial[1:] = Y_trial[NNidxs_trial]
+
+
+            # pairwise distance of fiducial points and `v`
+            if D == 1:
+                neighborhood_v_ = np.empty(shape=(len(neighborhood_v),2))
+                neighborhood_v_[:,0] = neighborhood_v
+                neighborhood_v_[:,1] = neighborhood_v
+                pdsqrd = scipy.spatial.distance.pdist(neighborhood_v_, 'chebyshev')
+                pdsqrd_trial = scipy.spatial.distance.pdist(neighborhood_v_trial, norm)
+            else:
+                pdsqrd = scipy.spatial.distance.pdist(neighborhood_v, norm)
+                pdsqrd_trial = scipy.spatial.distance.pdist(neighborhood_v_trial, norm)
+
+            eps2[i] = (2/(K*(K+1))) * np.sum(pdsqrd**2)  # Eq. 16
+            eps2_trial[i] = (2/(K*(K+1))) * np.sum(pdsqrd_trial**2)  # Eq. 16
+
+            E2[i, cnt] = comp_Ek2(Y, ns[i], NNidxs, T, K, norm) # Eqs. 13 & 14
+            E2_trial[i, cnt] = comp_Ek2(Y_trial, ns[i], NNidxs_trial, T, K, norm) # Eqs. 13 & 14
+
+        # compute distance of L-values and check whether that distance can be
+        # increased
+
+        dist = compute_L_decrease(E2, E2_trial, eps2, eps2_trial, T, NN)
+        if dist > dist_former and dist_former<0:
+            break
+        else:
+            dist_former = dist
+
+        cnt += 1
+
+    return dist_former
+
+
+def compute_L_decrease(E2, E2_trial, eps2, eps2_trial, T, NN):
+    # 1st dataset
+    # Average E²[T] over all prediction horizons
+    E2_avrg = np.mean(E2[:NN,:T-1], axis=1)                   # Eq. 15
+    sigma2 = np.divide(E2_avrg,eps2[:NN]) # noise amplification σ², Eq. 17
+    sigma2_avrg = np.mean(sigma2) # averaged value of the noise amplification, Eq. 18
+    alpha2 = np.divide(1,np.sum(eps2[:NN]**(-1))) # for normalization, Eq. 21
+    L = np.log10(np.sqrt(sigma2_avrg)*np.sqrt(alpha2))
+    # 2nd dataset
+    # Average E²[T] over all prediction horizons
+    E2_avrg_trial = np.mean(E2_trial[:NN,:T-1], axis=1)                   # Eq. 15
+    sigma2_trial = np.divide(E2_avrg_trial,eps2_trial[:NN]) # noise amplification σ², Eq. 17
+    sigma2_avrg_trial = np.mean(sigma2_trial) # averaged value of the noise amplification, Eq. 18
+    alpha2_trial = np.divide(1, np.sum(eps2_trial[:NN]**(-1))) # for normalization, Eq. 21
+    L_trial = np.log10(np.sqrt(sigma2_avrg_trial)*np.sqrt(alpha2_trial))
+    return L_trial - L
 
 
 def all_neighbors(vtree, vs, ns, K, theiler, k_max):
@@ -892,8 +1026,8 @@ def comp_Ek2(Y, ns, NNidxs, T, K, norm):
     else:
         D = 1
         eps_ball = np.empty(K+1)
+
     # determine neighborhood `T` time steps ahead
-    
     eps_ball[0] = Y[ns+T]
     for (i, j) in enumerate(NNidxs):
         eps_ball[i+1] = Y[j+T]

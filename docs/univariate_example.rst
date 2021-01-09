@@ -21,21 +21,21 @@ ODE's:
         return [-x[1]-x[2], x[0]+.2*x[1], .2+x[2]*(x[0]-5.7)]
 
     x0 = [1., .5, .5] # define initial conditions
-    tspan = np.arange(0., 7500.*.2, .2) # time span
+    tspan = np.arange(0., 5000.*.2, .2) # time span
     data = odeint(roessler, x0, tspan, hmax = 0.01)
 
     data = data[2500:,:]    # remove transients
 
 Now bind the time series we would like to consider and compute the auto mutual information, in order
 to estimate an appropriate Theiler window. This is especially important when dealing with highly sampled
-datasets. Let's focus on the first 5,000 samples here and plot the time series and its mutual information:
+datasets. Let's focus on the first 2,500 samples here and plot the time series and its mutual information:
 
 .. code-block:: python
    
     import matplotlib.pyplot as plt
     from pecuzal_embedding import pecuzal_embedding, mi
 
-    y = data[:5000,1]   # bind only y-component
+    y = data[:,1]   # bind only y-component
     muinf, lags = mi(y)    # compute mutual information up to default maximum time lag
 
     plt.figure(figsize=(6., 8,))
@@ -61,7 +61,7 @@ datasets. Let's focus on the first 5,000 samples here and plot the time series a
 Now we are ready to go and simply call the PECUZAL algorithm :py:func:`pecuzal_embedding.pecuzal_embedding` 
 with a Theiler window determined from the first minimum of the mutual information shown in the above Figure 
 and possible delays ranging from `0:100`.
-**NOTE: The following computation will take approximately 10 minutes (depending on the machine you are running the code on).
+**NOTE: The following computation will take approximately 25 minutes (depending on the machine you are running the code on).
 See also the :ref:`performance note <note_performance>`.**
 
 .. code-block:: python
@@ -72,7 +72,7 @@ which leads to the following note in the console:
 
 ::
 
-    Algorithm stopped due to minimum L-value reached. VALID embedding achieved.
+    Algorithm stopped due to increasing L-values. VALID embedding achieved.
 
 `Y_reconstruct` stores the reconstructed trajectory. Since in this example `Y_reconstruct` is a three-dimensional
 trajectory we can actually plot it, in order to visualize the result.
@@ -89,7 +89,6 @@ trajectory we can actually plot it, in order to visualize the result.
     ax.set_ylabel('y(t+{})'.format(tau_vals[1]))
     ax.set_zlabel('y(t+{})'.format(tau_vals[2]))
     ax.set_title('PECUZAL reconstructed Roessler system')
-    ax.view_init(50, 70)
 
     ax = plt.subplot(122, projection='3d')
     ax.plot(data[:5000,0], data[:5000,1], data[:5000,2], 'gray')
@@ -150,5 +149,10 @@ can not minimize the `L`-statistic further. Its values for each embedding cycle 
 .. code-block::
     :name: l_uni
 
-    Ls = [-2.660021409247255, -3.497996853343526, -3.444974162070703]
+    Ls = [-0.897699553823271, -0.6939999833030868, 0.05337409135563753]
+
+Note that the very last value of the :math:`\Delta L` values corresponds to the last encountered third 
+embedding cycle and has a positive value. This is why the algorithm breaks after the 2nd embedding cycle
+and the total deacrease in `L` is thus `L_tot = -1.5917`.
+``
 

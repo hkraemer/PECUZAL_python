@@ -53,7 +53,7 @@ we'll get the following note in the console:
 
 ::
 
-    Algorithm stopped due to increasing L-values. Valid embedding NOT achieved.
+    Algorithm stopped due to increasing L-values in the first embedding cycle.. Valid embedding NOT achieved.
 
 
 The algorithm did not obtain any valid embedding, thus, it values the input data as a non-deterministic

@@ -9,7 +9,7 @@ and run it (after having pip-installed the package).
 
 Similar to the approach in the :ref:`sec_univariate`, we now highlight the capability of the
 proposed embedding method for a multivariate input. Again, we define and integrate the
-ODE's and restrict ourselves to the first 5,000 samples, in order to save computation time.
+ODE's and restrict ourselves to the first 2,500 samples, in order to save computation time.
 
 .. code-block:: python
    
@@ -21,7 +21,7 @@ ODE's and restrict ourselves to the first 5,000 samples, in order to save comput
         return [-x[1]-x[2], x[0]+.2*x[1], .2+x[2]*(x[0]-5.7)]
 
     x0 = [1., .5, .5] # define initial conditions
-    tspan = np.arange(0., 7500.*.2, .2) # time span
+    tspan = np.arange(0., 5000.*.2, .2) # time span
     data = odeint(roessler, x0, tspan, hmax = 0.01)
 
     data = data[2500:,:]    # remove transients
@@ -77,7 +77,7 @@ Due to the spikyness of the `z`-component the according auto mutual information 
 a result of empty bins in the histograms. So we stick to the choice of `theiler = 7` here and 
 call the PECUZAL algorithm :py:func:`pecuzal_embedding.pecuzal_embedding` with default `kwargs` 
 and possible delays ranging from `0:100`.
-**NOTE: The following computation will take approximately 25-30 minutes (depending on the machine you are running the code on).
+**NOTE: The following computation will take approximately 120 minutes (depending on the machine you are running the code on).
 See also the :ref:`performance note <note_performance>`.**
 
 .. code-block:: python
@@ -88,25 +88,25 @@ which leads to the following note in the console:
 
 ::
 
-   Algorithm stopped due to minimum L-value reached. VALID embedding achieved.
+   Algorithm stopped due to increasing L-values. VALID embedding achieved.
 
 
 The suggested embedding parameters...
 
 ::
 
-   tau_vals = [0, 1, 3]
-   ts_vals = [0, 1, 0]
+   tau_vals = [0, 0, 3]
+   ts_vals = [1, 0, 0]
 
 ... reveal that PECUZAL builds the reconstructed trajectory `Y_reconstruct` from the unlagged time series, having
-index `0`, i.e. the `x`-component, the `y`-component lagged by 1 samples, and finally again the `x`-component lagged
-by 3 samples. As expected the total `L`-value is smaller here than in the :ref:`univariate case <l_uni>`:
+index `0`, i.e. the `y`-component and the `x`-component without lag, and finally again the `x`-component lagged
+by 3 samples. As expected the total :math:`\Delta L`-value is smaller here than in the :ref:`univariate case <l_uni>`:
 
 .. code-block:: python
 
-   L_total = np.amin(Ls)
+   L_total = np.sum(Ls[:-1])
 
-   -3.520339146992172
+   -1.6242891455616424
 
 
 The reconstructed attractor looks also quite similar to the original one, even though that is not a proper evaluation
