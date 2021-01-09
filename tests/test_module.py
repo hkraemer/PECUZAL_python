@@ -28,7 +28,7 @@ class TestModule(unittest.TestCase):
     # Test case for multivariate example
     def test_pecuzal_multivariate_example(self):
         data = np.genfromtxt('./data/lorenz_pecora_multi.csv')
-        data = data[:500,:]
+        data = data[:500,:2]
         theiler = 15
         Tmax = 100
 
