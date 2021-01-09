@@ -164,7 +164,7 @@
 <p>&#64;author: hkraemer</p>
 <dl class="function">
 <dt id="pecuzal_embedding.all_neighbors">
-<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">all_neighbors</code><span class="sig-paren">(</span><em class="sig-param">vtree</em>, <em class="sig-param">vs</em>, <em class="sig-param">ns</em>, <em class="sig-param">K</em>, <em class="sig-param">theiler</em>, <em class="sig-param">k_max</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L826-L850"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.all_neighbors" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">all_neighbors</code><span class="sig-paren">(</span><em class="sig-param">vtree</em>, <em class="sig-param">vs</em>, <em class="sig-param">ns</em>, <em class="sig-param">K</em>, <em class="sig-param">theiler</em>, <em class="sig-param">k_max</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L960-L984"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.all_neighbors" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute <cite>K</cite> nearest neighbours for the points <cite>vs</cite> (having indices <cite>ns</cite>) from the tree <cite>vtree</cite>, while respecting the <cite>theiler</cite>-window.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -179,7 +179,7 @@
 
 <dl class="function">
 <dt id="pecuzal_embedding.all_neighbors_1dim">
-<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">all_neighbors_1dim</code><span class="sig-paren">(</span><em class="sig-param">vs</em>, <em class="sig-param">ns</em>, <em class="sig-param">K</em>, <em class="sig-param">theiler</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L852-L876"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.all_neighbors_1dim" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">all_neighbors_1dim</code><span class="sig-paren">(</span><em class="sig-param">vs</em>, <em class="sig-param">ns</em>, <em class="sig-param">K</em>, <em class="sig-param">theiler</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L986-L1010"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.all_neighbors_1dim" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute <cite>K</cite> nearest neighbours for the points <cite>vs</cite> (having indices <cite>ns</cite>), while respecting the <cite>theiler</cite>-window.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -194,9 +194,9 @@
 
 <dl class="function">
 <dt id="pecuzal_embedding.choose_right_embedding_params">
-<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">choose_right_embedding_params</code><span class="sig-paren">(</span><em class="sig-param">estar</em>, <em class="sig-param">Y_act</em>, <em class="sig-param">s</em>, <em class="sig-param">taus</em>, <em class="sig-param">Tw</em>, <em class="sig-param">KNN</em>, <em class="sig-param">theiler</em>, <em class="sig-param">sample_size</em>, <em class="sig-param">norm</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L340-L408"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.choose_right_embedding_params" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">choose_right_embedding_params</code><span class="sig-paren">(</span><em class="sig-param">estar</em>, <em class="sig-param">Y_act</em>, <em class="sig-param">s</em>, <em class="sig-param">taus</em>, <em class="sig-param">KNN</em>, <em class="sig-param">theiler</em>, <em class="sig-param">sample_size</em>, <em class="sig-param">norm</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L338-L405"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.choose_right_embedding_params" title="Permalink to this definition">¶</a></dt>
 <dd><p>Choose the right embedding parameters of the estar-statistic in any embedding cycle, but the
-first one, on the basis of minimal <cite>L</cite>.</p>
+first one, on the basis of minimal <cite>L</cite>, i.e. maximal <cite>L_decrease</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -204,7 +204,6 @@ first one, on the basis of minimal <cite>L</cite>.</p>
 <li><p><strong>Y_act</strong> (<cite>numpy.ndarray</cite>) – The actual phase space trajectory.</p></li>
 <li><p><strong>s</strong> (<em>numpy.ndarray`</em><em> (</em><em>N</em><em>, </em><em>M</em><em>)</em>) – The <cite>M</cite> time series of length <cite>N</cite>.</p></li>
 <li><p><strong>taus</strong> (<cite>iterable</cite>) – Possible delay values in sampling time units.</p></li>
-<li><p><strong>Tw</strong> (<cite>int</cite>) – The maximal considered time horizon for obtaining the L-statistic.</p></li>
 <li><p><strong>KNN</strong> (<cite>int</cite>) – The number of nearest neighbors to be considered in the L-statistic.</p></li>
 <li><p><strong>theiler</strong> (<cite>int</cite>) – Theiler window for excluding serial correlated points from neighbourhood, in sampling time units.</p></li>
 <li><p><strong>sample_size</strong> (<cite>float</cite>) – Number of considered fiducial points as a fraction of input time series length, i.e. a float from interval (0,1.].</p></li>
@@ -228,9 +227,10 @@ first one, on the basis of minimal <cite>L</cite>.</p>
 
 <dl class="function">
 <dt id="pecuzal_embedding.choose_right_embedding_params_first">
-<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">choose_right_embedding_params_first</code><span class="sig-paren">(</span><em class="sig-param">estar</em>, <em class="sig-param">Y_act</em>, <em class="sig-param">s</em>, <em class="sig-param">taus</em>, <em class="sig-param">Tw</em>, <em class="sig-param">KNN</em>, <em class="sig-param">theiler</em>, <em class="sig-param">sample_size</em>, <em class="sig-param">norm</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L263-L336"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.choose_right_embedding_params_first" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">choose_right_embedding_params_first</code><span class="sig-paren">(</span><em class="sig-param">estar</em>, <em class="sig-param">Y_act</em>, <em class="sig-param">s</em>, <em class="sig-param">taus</em>, <em class="sig-param">KNN</em>, <em class="sig-param">theiler</em>, <em class="sig-param">sample_size</em>, <em class="sig-param">norm</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L265-L334"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.choose_right_embedding_params_first" title="Permalink to this definition">¶</a></dt>
 <dd><p>Choose the right embedding parameters of the estar-statistic in the first
-embedding cycle on the basis of minimal <cite>xi</cite> = (peak height * resulting <cite>L</cite>-statistic).</p>
+embedding cycle. Return the <cite>L</cite>-decrease-value, the corresponding index value of
+the chosen peak <cite>tau_idx</cite> and the number of the chosen time series <cite>ts_idx</cite> to start with.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -238,7 +238,6 @@ embedding cycle on the basis of minimal <cite>xi</cite> = (peak height * resulti
 <li><p><strong>Y_act</strong> (<cite>numpy.ndarray</cite>) – The actual phase space trajectory.</p></li>
 <li><p><strong>s</strong> (<em>numpy.ndarray`</em><em> (</em><em>N</em><em>, </em><em>M</em><em>)</em>) – The <cite>M</cite> time series of length <cite>N</cite>.</p></li>
 <li><p><strong>taus</strong> (<cite>iterable</cite>) – Possible delay values in sampling time units.</p></li>
-<li><p><strong>Tw</strong> (<cite>int</cite>) – The maximal considered time horizon for obtaining the L-statistic.</p></li>
 <li><p><strong>KNN</strong> (<cite>int</cite>) – The number of nearest neighbors to be considered in the L-statistic.</p></li>
 <li><p><strong>theiler</strong> (<cite>int</cite>) – Theiler window for excluding serial correlated points from neighbourhood, in sampling time units.</p></li>
 <li><p><strong>sample_size</strong> (<cite>float</cite>) – Number of considered fiducial points as a fraction of input time series length, i.e. a float from interval (0,1.].</p></li>
@@ -250,7 +249,6 @@ embedding cycle on the basis of minimal <cite>xi</cite> = (peak height * resulti
 <li><p><strong>L</strong> (<cite>float</cite>) – <cite>L</cite>-value of chosen peak in <cite>estar</cite></p></li>
 <li><p><strong>tau_idx</strong> (<cite>int</cite>) – The corresponding index value of the chosen peak</p></li>
 <li><p><strong>ts_idx</strong> (<cite>int</cite>) – The number of the chosen time series to start with</p></li>
-<li><p><strong>xi_min</strong> (<cite>float</cite>) – The minimum <cite>xi = (peak height * resulting L-statistic)</cite> according to the chosen peak.</p></li>
 </ul>
 </p>
 </dd>
@@ -263,7 +261,7 @@ embedding cycle on the basis of minimal <cite>xi</cite> = (peak height * resulti
 
 <dl class="function">
 <dt id="pecuzal_embedding.comp_Ek2">
-<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">comp_Ek2</code><span class="sig-paren">(</span><em class="sig-param">Y</em>, <em class="sig-param">ns</em>, <em class="sig-param">NNidxs</em>, <em class="sig-param">T</em>, <em class="sig-param">K</em>, <em class="sig-param">norm</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L879-L912"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.comp_Ek2" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">comp_Ek2</code><span class="sig-paren">(</span><em class="sig-param">Y</em>, <em class="sig-param">ns</em>, <em class="sig-param">NNidxs</em>, <em class="sig-param">T</em>, <em class="sig-param">K</em>, <em class="sig-param">norm</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L1013-L1046"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.comp_Ek2" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the approximated conditional variance for a specific point in <cite>Y</cite> (with index <cite>ns</cite>) for time horizon <cite>T</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -277,13 +275,18 @@ which indices are stored in <cite>NNidxs</cite>, for a time horizon <cite>T</cit
 </dd></dl>
 
 <dl class="function">
+<dt id="pecuzal_embedding.compute_L_decrease">
+<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">compute_L_decrease</code><span class="sig-paren">(</span><em class="sig-param">E2</em>, <em class="sig-param">E2_trial</em>, <em class="sig-param">eps2</em>, <em class="sig-param">eps2_trial</em>, <em class="sig-param">T</em>, <em class="sig-param">NN</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L942-L957"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.compute_L_decrease" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
 <dt id="pecuzal_embedding.continuity_per_timeseries">
-<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">continuity_per_timeseries</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">ns</em>, <em class="sig-param">allNNidxs</em>, <em class="sig-param">delays</em>, <em class="sig-param">K</em>, <em class="sig-param">alpha</em>, <em class="sig-param">p</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L681-L693"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.continuity_per_timeseries" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">continuity_per_timeseries</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">ns</em>, <em class="sig-param">allNNidxs</em>, <em class="sig-param">delays</em>, <em class="sig-param">K</em>, <em class="sig-param">alpha</em>, <em class="sig-param">p</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L673-L685"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.continuity_per_timeseries" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="pecuzal_embedding.continuity_statistic">
-<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">continuity_statistic</code><span class="sig-paren">(</span><em class="sig-param">s</em>, <em class="sig-param">taus</em>, <em class="sig-param">js</em>, <em class="sig-param">delays=range(0</em>, <em class="sig-param">50)</em>, <em class="sig-param">sample_size=1.0</em>, <em class="sig-param">K=13</em>, <em class="sig-param">theiler=1</em>, <em class="sig-param">norm='euclidean'</em>, <em class="sig-param">alpha=0.05</em>, <em class="sig-param">p=0.5</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L522-L604"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.continuity_statistic" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">continuity_statistic</code><span class="sig-paren">(</span><em class="sig-param">s</em>, <em class="sig-param">taus</em>, <em class="sig-param">js</em>, <em class="sig-param">delays=range(0</em>, <em class="sig-param">50)</em>, <em class="sig-param">sample_size=1.0</em>, <em class="sig-param">K=13</em>, <em class="sig-param">theiler=1</em>, <em class="sig-param">norm='euclidean'</em>, <em class="sig-param">alpha=0.05</em>, <em class="sig-param">p=0.5</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L514-L596"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.continuity_statistic" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the continuity statistic for a trajectory defined by <cite>s</cite>, <cite>taus</cite> and <cite>js</cite> and all time series stored in <cite>s</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -323,36 +326,36 @@ specified by the general embedding parameters <cite>taus</cite> and <cite>js</ci
 
 <dl class="function">
 <dt id="pecuzal_embedding.embedding_cycle_pecuzal">
-<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">embedding_cycle_pecuzal</code><span class="sig-paren">(</span><em class="sig-param">Y_act</em>, <em class="sig-param">Ys</em>, <em class="sig-param">counter</em>, <em class="sig-param">M</em>, <em class="sig-param">taus</em>, <em class="sig-param">theiler</em>, <em class="sig-param">sample_size</em>, <em class="sig-param">K</em>, <em class="sig-param">norm</em>, <em class="sig-param">alpha</em>, <em class="sig-param">p</em>, <em class="sig-param">Tw</em>, <em class="sig-param">KNN</em>, <em class="sig-param">tau_vals</em>, <em class="sig-param">ts_vals</em>, <em class="sig-param">Ls</em>, <em class="sig-param">eps</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L237-L259"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.embedding_cycle_pecuzal" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">embedding_cycle_pecuzal</code><span class="sig-paren">(</span><em class="sig-param">Y_act</em>, <em class="sig-param">Ys</em>, <em class="sig-param">counter</em>, <em class="sig-param">M</em>, <em class="sig-param">taus</em>, <em class="sig-param">theiler</em>, <em class="sig-param">sample_size</em>, <em class="sig-param">K</em>, <em class="sig-param">norm</em>, <em class="sig-param">alpha</em>, <em class="sig-param">p</em>, <em class="sig-param">KNN</em>, <em class="sig-param">tau_vals</em>, <em class="sig-param">ts_vals</em>, <em class="sig-param">Ls</em>, <em class="sig-param">eps</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L239-L261"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.embedding_cycle_pecuzal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform an embedding cycle of the multivariate embedding, but the first one.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="pecuzal_embedding.entropy1d">
-<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">entropy1d</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">binrule</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L957-L966"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.entropy1d" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">entropy1d</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">binrule</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L1091-L1100"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.entropy1d" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the Shannon entropy according to the bin rule specified.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="pecuzal_embedding.entropy2d">
-<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">entropy2d</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">bin_edges</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L969-L981"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.entropy2d" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">entropy2d</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">bin_edges</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L1103-L1115"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.entropy2d" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the Shannon entropy according to the bin rule specified.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="pecuzal_embedding.eps_star">
-<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">eps_star</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">n</em>, <em class="sig-param">tau</em>, <em class="sig-param">NNidxs</em>, <em class="sig-param">delta_to_epsilon_amount</em>, <em class="sig-param">Ks</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L696-L704"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.eps_star" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">eps_star</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">n</em>, <em class="sig-param">tau</em>, <em class="sig-param">NNidxs</em>, <em class="sig-param">delta_to_epsilon_amount</em>, <em class="sig-param">Ks</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L688-L696"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.eps_star" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="pecuzal_embedding.first_embedding_cycle_pecuzal">
-<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">first_embedding_cycle_pecuzal</code><span class="sig-paren">(</span><em class="sig-param">Ys</em>, <em class="sig-param">M</em>, <em class="sig-param">taus</em>, <em class="sig-param">theiler</em>, <em class="sig-param">sample_size</em>, <em class="sig-param">K</em>, <em class="sig-param">norm</em>, <em class="sig-param">alpha</em>, <em class="sig-param">p</em>, <em class="sig-param">Tw</em>, <em class="sig-param">KNN</em>, <em class="sig-param">tau_vals</em>, <em class="sig-param">ts_vals</em>, <em class="sig-param">Ls</em>, <em class="sig-param">eps</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L186-L234"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.first_embedding_cycle_pecuzal" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">first_embedding_cycle_pecuzal</code><span class="sig-paren">(</span><em class="sig-param">Ys</em>, <em class="sig-param">M</em>, <em class="sig-param">taus</em>, <em class="sig-param">theiler</em>, <em class="sig-param">sample_size</em>, <em class="sig-param">K</em>, <em class="sig-param">norm</em>, <em class="sig-param">alpha</em>, <em class="sig-param">p</em>, <em class="sig-param">KNN</em>, <em class="sig-param">tau_vals</em>, <em class="sig-param">ts_vals</em>, <em class="sig-param">Ls</em>, <em class="sig-param">eps</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L189-L236"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.first_embedding_cycle_pecuzal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform the first embedding cycle of the multivariate embedding.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="pecuzal_embedding.genembed">
-<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">genembed</code><span class="sig-paren">(</span><em class="sig-param">s</em>, <em class="sig-param">taus</em>, <em class="sig-param">js</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L607-L646"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.genembed" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">genembed</code><span class="sig-paren">(</span><em class="sig-param">s</em>, <em class="sig-param">taus</em>, <em class="sig-param">js</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L599-L638"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.genembed" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform an embedding with delays <cite>taus</cite> and time series stored in <cite>s</cite>, specified by their indices <cite>js</cite></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -382,7 +385,7 @@ If <cite>js = (0, 2, 1)</cite> and <cite>taus = (0, 2, 7)</cite> the created del
 
 <dl class="function">
 <dt id="pecuzal_embedding.get_binomial_table">
-<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">get_binomial_table</code><span class="sig-paren">(</span><em class="sig-param">p=0.5</em>, <em class="sig-param">alpha=0.05</em>, <em class="sig-param">trial_range=8</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L649-L678"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.get_binomial_table" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">get_binomial_table</code><span class="sig-paren">(</span><em class="sig-param">p=0.5</em>, <em class="sig-param">alpha=0.05</em>, <em class="sig-param">trial_range=8</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L641-L670"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.get_binomial_table" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the numbers of points from the <span class="math notranslate nohighlight">\(\delta\)</span>-neighborhood, which need to fall outside the <span class="math notranslate nohighlight">\(\varepsilon\)</span>-neighborhood, in order to reject
 the Null Hypothesis at a significance level <span class="math notranslate nohighlight">\(\alpha\)</span>.</p>
 <dl class="field-list simple">
@@ -409,13 +412,13 @@ instance, if <cite>trial_range = 8</cite>, then <span class="math notranslate no
 
 <dl class="function">
 <dt id="pecuzal_embedding.get_maxima">
-<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">get_maxima</code><span class="sig-paren">(</span><em class="sig-param">s</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L438-L473"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.get_maxima" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">get_maxima</code><span class="sig-paren">(</span><em class="sig-param">s</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L431-L466"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.get_maxima" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the maxima of the given time series <cite>s</cite> and its indices</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="pecuzal_embedding.hcat_lagged_values">
-<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">hcat_lagged_values</code><span class="sig-paren">(</span><em class="sig-param">Y</em>, <em class="sig-param">s</em>, <em class="sig-param">tau</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L477-L500"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.hcat_lagged_values" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">hcat_lagged_values</code><span class="sig-paren">(</span><em class="sig-param">Y</em>, <em class="sig-param">s</em>, <em class="sig-param">tau</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L470-L493"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.hcat_lagged_values" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add the <cite>tau</cite> lagged values of the timeseries <cite>s</cite> as additional component to <cite>Y</cite>
 (<cite>np.ndarray</cite>), in order to form a higher embedded dataset <cite>Z</cite>.
 The dimensionality of <cite>Z</cite> is thus equal to that of <cite>Y</cite> + 1.</p>
@@ -423,14 +426,14 @@ The dimensionality of <cite>Z</cite> is thus equal to that of <cite>Y</cite> + 1
 
 <dl class="function">
 <dt id="pecuzal_embedding.local_L_statistics">
-<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">local_L_statistics</code><span class="sig-paren">(</span><em class="sig-param">estar</em>, <em class="sig-param">Y_act</em>, <em class="sig-param">s</em>, <em class="sig-param">taus</em>, <em class="sig-param">Tw</em>, <em class="sig-param">KNN</em>, <em class="sig-param">theiler</em>, <em class="sig-param">sample_size</em>, <em class="sig-param">norm</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L412-L434"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.local_L_statistics" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the L-statistic <cite>L</cite> and indices <cite>max_idx</cite> and weighted peak height
-<cite>xi = peak-height * L</cite> for all local maxima in <cite>estar</cite>.</p>
+<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">local_L_statistics</code><span class="sig-paren">(</span><em class="sig-param">estar</em>, <em class="sig-param">Y_act</em>, <em class="sig-param">s</em>, <em class="sig-param">taus</em>, <em class="sig-param">KNN</em>, <em class="sig-param">theiler</em>, <em class="sig-param">sample_size</em>, <em class="sig-param">norm</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L409-L427"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.local_L_statistics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the maximum decrease of the L-statistic <cite>L_decrease</cite> and corresponding
+delay-indices <cite>max_idx</cite> for all local maxima in <cite>estar</cite>.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="pecuzal_embedding.mi">
-<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">mi</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">maxlag=50</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L917-L954"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.mi" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">mi</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">maxlag=50</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L1051-L1088"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.mi" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the auto mutual information of a time series <cite>x</cite> up to a lag <cite>maxlag</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -451,13 +454,13 @@ The dimensionality of <cite>Z</cite> is thus equal to that of <cite>Y</cite> + 1
 
 <dl class="function">
 <dt id="pecuzal_embedding.pecuzal_break_criterion">
-<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">pecuzal_break_criterion</code><span class="sig-paren">(</span><em class="sig-param">Ls</em>, <em class="sig-param">counter</em>, <em class="sig-param">max_num_of_cycles</em>, <em class="sig-param">L_init</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L503-L520"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.pecuzal_break_criterion" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">pecuzal_break_criterion</code><span class="sig-paren">(</span><em class="sig-param">Ls</em>, <em class="sig-param">counter</em>, <em class="sig-param">max_num_of_cycles</em>, <em class="sig-param">threshold</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L496-L512"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.pecuzal_break_criterion" title="Permalink to this definition">¶</a></dt>
 <dd><p>Checks whether some break criteria are fulfilled</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="pecuzal_embedding.pecuzal_embedding">
-<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">pecuzal_embedding</code><span class="sig-paren">(</span><em class="sig-param">s</em>, <em class="sig-param">taus=range(0</em>, <em class="sig-param">50)</em>, <em class="sig-param">theiler=1</em>, <em class="sig-param">sample_size=1.0</em>, <em class="sig-param">K=13</em>, <em class="sig-param">KNN=3</em>, <em class="sig-param">Tw_factor=4</em>, <em class="sig-param">alpha=0.05</em>, <em class="sig-param">p=0.5</em>, <em class="sig-param">max_cycles=10</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L18-L159"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.pecuzal_embedding" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">pecuzal_embedding</code><span class="sig-paren">(</span><em class="sig-param">s</em>, <em class="sig-param">taus=range(0</em>, <em class="sig-param">50)</em>, <em class="sig-param">theiler=1</em>, <em class="sig-param">sample_size=1.0</em>, <em class="sig-param">K=13</em>, <em class="sig-param">KNN=3</em>, <em class="sig-param">L_threshold=0.0</em>, <em class="sig-param">alpha=0.05</em>, <em class="sig-param">p=0.5</em>, <em class="sig-param">max_cycles=10</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L18-L162"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.pecuzal_embedding" title="Permalink to this definition">¶</a></dt>
 <dd><p>Performs an embedding of time series using the PECUZAL method</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -471,9 +474,8 @@ The dimensionality of <cite>Z</cite> is thus equal to that of <cite>Y</cite> + 1
 <li><p><strong>K</strong> (<cite>int</cite>, optional) – The amount of nearest neighbors in the Delta-ball. Must be at least 8 (in order to guarantee a valid statistic) and the Default is
 <cite>K = 13</cite>. The continuity statistic <cite>avrg_eps_star</cite> is computed in each embedding cycle, taking the minimum result over all <cite>k in K</cite>.</p></li>
 <li><p><strong>KNN</strong> (<cite>int</cite>, optional) – The number of nearest neighbors to be considered in the L-statistic, Default is <cite>KNN = 3</cite>.</p></li>
-<li><p><strong>Tw_factor</strong> (<cite>int</cite>, optional) – The maximal considered time horizon for obtaining the L-statistic as a factor getting multiplied with the given <cite>theiler</cite>:
-<cite>Tw = Tw_factor * theiler</cite> and Default is <cite>Tw_factor = 4</cite>. If <cite>theiler</cite> is set to, say, <cite>theiler = 15</cite> and <cite>Tw_factor</cite> is on its Default
-the maximal considered time horizon <cite>Tw</cite> for obtaining the L-statistic is <cite>Tw = Tw_factor * 15 = 4 * 15 = 60</cite>.</p></li>
+<li><p><strong>L_threshold</strong> (<cite>float</cite>, optional) – The algorithm breaks, when this threshold is exceeded by <cite>ΔL</cite> in an embedding cycle (set as a positive number, i.e. an absolute value
+of <cite>ΔL</cite>).</p></li>
 <li><p><strong>alpha</strong> (<cite>float</cite>, optional) – Significance level for obtaining the continuity statistic <cite>avrg_eps_star</cite> in each embedding cycle (Default is <cite>alpha = 0.05</cite>).</p></li>
 <li><p><strong>p</strong> (<cite>float</cite>, optional) – Binominal p for obtaining the continuity statistic <cite>avrg_eps_star</cite> in each embedding cycle (Default is <cite>p = 0.5</cite>).</p></li>
 <li><p><strong>max_cycles</strong> (<cite>int</cite>, optional) – The algorithm will stop after that many cycles no matter what. Default is <cite>max_cycles = 10</cite>.</p></li>
@@ -494,31 +496,40 @@ trajectory <cite>Y</cite>.</p></li>
 </dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="#pecuzal_embedding.uzal_cost" title="pecuzal_embedding.uzal_cost"><code class="xref py py-func docutils literal notranslate"><span class="pre">uzal_cost()</span></code></a>, <a class="reference internal" href="#pecuzal_embedding.continuity_statistic" title="pecuzal_embedding.continuity_statistic"><code class="xref py py-func docutils literal notranslate"><span class="pre">continuity_statistic()</span></code></a></p>
+<p><a class="reference internal" href="#pecuzal_embedding.uzal_cost" title="pecuzal_embedding.uzal_cost"><code class="xref py py-func docutils literal notranslate"><span class="pre">uzal_cost()</span></code></a>, <a class="reference internal" href="#pecuzal_embedding.uzal_cost_pecuzal" title="pecuzal_embedding.uzal_cost_pecuzal"><code class="xref py py-func docutils literal notranslate"><span class="pre">uzal_cost_pecuzal()</span></code></a>, <a class="reference internal" href="#pecuzal_embedding.continuity_statistic" title="pecuzal_embedding.continuity_statistic"><code class="xref py py-func docutils literal notranslate"><span class="pre">continuity_statistic()</span></code></a></p>
 </div>
 <p class="rubric">Notes</p>
 <p>The method works iteratively and gradually builds the final embedding vectors
 <cite>Y</cite>, as proposed in <a class="reference internal" href="index.html#kraemer2020" id="id6"><span>[kraemer2020]</span></a> . Based on the continuity statistic <cite>avrg_eps_star</cite> <a class="reference internal" href="#pecora2007" id="id7"><span>[pecora2007]</span></a> the algorithm picks an
 optimal delay value <cite>tau_i</cite> for each embedding cycle <cite>i</cite>. For achieving that, we take the inpute time series
-<cite>s</cite> and compute the continuity statistic <cite>avrg_eps_star</cite>. 1. Each local maxima in <cite>avrg_eps_star</cite> is used
-for constructing a candidate embedding trajectory <cite>Y_trial</cite> with a delay corresponding to that
-specific peak in <cite>avrg_eps_star</cite>. 2. We then compute the <cite>L</cite>-statistic <a class="reference internal" href="#uzal2011" id="id8"><span>[uzal2011]</span></a> for <cite>Y_trial</cite>. 3. We pick the
-peak/<cite>tau</cite>-value, for which <cite>L</cite> is minimal and construct the actual embedding trajectory <cite>Y_actual</cite> (steps
-1.-3. correspond to an embedding cycle). 4. We repeat steps 1.-3. with <cite>Y_actual</cite> as input and stop the
-algorithm when <cite>L</cite> can not be reduced anymore. <cite>Y_actual</cite> -&gt; <cite>Y</cite>.</p>
+<cite>s</cite>, denoted as the actual phase space trajectory <cite>Y_actual</cite> and compute the continuity statistic <cite>avrg_eps_star</cite>.
+1. Each local maxima in <cite>avrg_eps_star</cite> is used for constructing a candidate embedding trajectory <cite>Y_trial</cite> with a delay
+corresponding to that specific peak in <cite>avrg_eps_star</cite>.
+2. We then compute the <cite>L</cite>-statistic <a class="reference internal" href="#uzal2011" id="id8"><span>[uzal2011]</span></a> for <cite>Y_trial</cite> (<cite>L-trial</cite>) and <cite>Y_actual</cite> (<cite>L_actual</cite>) for increasing prediction
+time horizons (free parameter in the <cite>L</cite>-statistic) and save the maximum difference <cite>max(L-trial - L_actual)</cite> as <span class="math notranslate nohighlight">\(\Delta L\)</span>
+(Note that this is a negative number, since the <cite>L</cite>-statistic decreases with better reconstructions).
+3. We pick the peak/<cite>tau</cite>-value, for which <span class="math notranslate nohighlight">\(\Delta L\)</span> is minimal (=maximum decrease of the overall <cite>L</cite>-value) and construct the actual
+embedding trajectory <cite>Y_actual</cite> (steps 1.-3. correspond to an embedding cycle).
+4. We repeat steps 1.-3. with <cite>Y_actual</cite> as input and stop the algorithm when <span class="math notranslate nohighlight">\(\Delta L\)</span> is &gt; 0, i.e. when and additional embedding
+component would not lead to a lower overall L-value. <cite>Y_actual</cite> -&gt; <cite>Y</cite>.</p>
 <p>In case of multivariate embedding, i.e. when embedding a set of <cite>M</cite> time series, in each embedding cycle
-<cite>avrg_eps_star</cite> gets computed for all <cite>M</cite> time series available. The optimal delay value <cite>tau_i</cite> in each
-embedding cycle <cite>i</cite> is chosen as the peak/<cite>tau</cite>-value for which <cite>L</cite> is minimal under all available peaks
-and under all M <cite>avrg_eps_star</cite>’s. In the first embedding cycle there will be M**2 different <cite>avrg_eps_star</cite>’s
-to consider, since it is not clear a priori which time series of the input should consitute the first component
-of the embedding vector and form <cite>Y_actual</cite>.</p>
+the continuity statistic <cite>avrg_eps_star</cite> gets computed for all <cite>M</cite> time series available. The optimal delay value
+<cite>tau_i</cite> in each embedding cycle <cite>i</cite> is chosen as the peak/<cite>tau</cite>-value for which <span class="math notranslate nohighlight">\(\Delta L\)</span> is minimal under all available peaks and under
+all M <cite>avrg_eps_star</cite>’s. In the first embedding cycle there will be <span class="math notranslate nohighlight">\(M^2\)</span> different <cite>avrg_eps_star</cite>’s to consider, since it is
+not clear a priori which time series of the input should consitute the first component of the embedding vector and form <cite>Y_actual</cite>.</p>
+<p>The range of considered delay values is determined in <cite>taus</cite> and for the nearest neighbor search we respect the Theiler window
+<cite>theiler</cite>. The final embedding vector is stored in <cite>Y</cite> (<cite>numpy.ndarray</cite>). The chosen delay values for each embedding cycle are stored in
+<cite>tau_vals</cite> (<cite>list</cite> of <cite>int</cite>) and the according time series numbers chosen for each delay value in <cite>tau_vals</cite> are stored in <cite>ts_vals</cite>. For
+univariate embedding <cite>ts_vals</cite> is a vector of ones of length <cite>len(tau_vals)</cite>, because there is simply just one time series to choose
+from. The function also returns the <span class="math notranslate nohighlight">\(\Delta Ls\)</span>-values <cite>Ls</cite> for each embedding cycle and the continuity statistic <cite>avrg_eps_stars</cite> as
+<cite>list</cite> of <a href="#id9"><span class="problematic" id="id10">`</span></a>list`s.</p>
 <p>For distance computations the Euclidean norm is used.</p>
 <p class="rubric">References</p>
 <dl class="citation">
 <dt class="label" id="pecora2007"><span class="brackets">pecora2007</span><span class="fn-backref">(<a href="#id2">1</a>,<a href="#id7">2</a>)</span></dt>
 <dd><p>Pecora et al., “A unified approach to attractor reconstruction”, Chaos, vol. 17, 013110, 2007.  <a class="reference external" href="https://doi.org/10.1063/1.2430294">https://doi.org/10.1063/1.2430294</a></p>
 </dd>
-<dt class="label" id="uzal2011"><span class="brackets">uzal2011</span><span class="fn-backref">(<a href="#id1">1</a>,<a href="#id8">2</a>,<a href="#id9">3</a>)</span></dt>
+<dt class="label" id="uzal2011"><span class="brackets">uzal2011</span><span class="fn-backref">(<a href="#id1">1</a>,<a href="#id8">2</a>,<a href="#id11">3</a>,<a href="#id12">4</a>)</span></dt>
 <dd><p>Uzal et al., “Optimal reconstruction of dynamical systems: A noise amplification approach”, Physical Review E,
 vol. 84, 016223, 2011. <a class="reference external" href="https://doi.org/10.1103/PhysRevE.84.016223">https://doi.org/10.1103/PhysRevE.84.016223</a></p>
 </dd>
@@ -527,13 +538,13 @@ vol. 84, 016223, 2011. <a class="reference external" href="https://doi.org/10.11
 
 <dl class="function">
 <dt id="pecuzal_embedding.pecuzal_multivariate_embedding_cycle">
-<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">pecuzal_multivariate_embedding_cycle</code><span class="sig-paren">(</span><em class="sig-param">Y_act</em>, <em class="sig-param">flag</em>, <em class="sig-param">Ys</em>, <em class="sig-param">taus</em>, <em class="sig-param">theiler</em>, <em class="sig-param">counter</em>, <em class="sig-param">eps</em>, <em class="sig-param">tau_vals</em>, <em class="sig-param">norm</em>, <em class="sig-param">Ls</em>, <em class="sig-param">ts_vals</em>, <em class="sig-param">sample_size</em>, <em class="sig-param">K</em>, <em class="sig-param">alpha</em>, <em class="sig-param">p</em>, <em class="sig-param">Tw</em>, <em class="sig-param">KNN</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L162-L182"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.pecuzal_multivariate_embedding_cycle" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">pecuzal_multivariate_embedding_cycle</code><span class="sig-paren">(</span><em class="sig-param">Y_act</em>, <em class="sig-param">flag</em>, <em class="sig-param">Ys</em>, <em class="sig-param">taus</em>, <em class="sig-param">theiler</em>, <em class="sig-param">counter</em>, <em class="sig-param">eps</em>, <em class="sig-param">tau_vals</em>, <em class="sig-param">norm</em>, <em class="sig-param">Ls</em>, <em class="sig-param">ts_vals</em>, <em class="sig-param">sample_size</em>, <em class="sig-param">K</em>, <em class="sig-param">alpha</em>, <em class="sig-param">p</em>, <em class="sig-param">KNN</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L165-L185"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.pecuzal_multivariate_embedding_cycle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform one embedding cycle on <cite>Y_act</cite> with a multivariate set Ys</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="pecuzal_embedding.uzal_cost">
-<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">uzal_cost</code><span class="sig-paren">(</span><em class="sig-param">Y</em>, <em class="sig-param">K=3</em>, <em class="sig-param">Tw=40</em>, <em class="sig-param">theiler=1</em>, <em class="sig-param">sample_size=1.0</em>, <em class="sig-param">norm='euclidean'</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L708-L821"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.uzal_cost" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">uzal_cost</code><span class="sig-paren">(</span><em class="sig-param">Y</em>, <em class="sig-param">K=3</em>, <em class="sig-param">Tw=40</em>, <em class="sig-param">theiler=1</em>, <em class="sig-param">sample_size=1.0</em>, <em class="sig-param">norm='euclidean'</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L700-L813"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.uzal_cost" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the L-statistic for the trajectory <cite>Y</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -558,7 +569,7 @@ i.e. considering all points of the trajectory. The length of <cite>L_local</cite
 </dl>
 <p class="rubric">Notes</p>
 <p>The <cite>L</cite>-statistic is based on theoretical arguments on noise amplification, the complexity of the reconstructed attractor and a
-direct measure of local stretch, which constitutes an irrelevance measure <a class="reference internal" href="#uzal2011" id="id9"><span>[uzal2011]</span></a>. Technically, it is the logarithm of the product of the
+direct measure of local stretch, which constitutes an irrelevance measure <a class="reference internal" href="#uzal2011" id="id11"><span>[uzal2011]</span></a>. Technically, it is the logarithm of the product of the
 <span class="math notranslate nohighlight">\(\sigma\)</span>-statistic and a normalization statistic <span class="math notranslate nohighlight">\(\alpha\)</span> :</p>
 <div class="math notranslate nohighlight">
 \[L = log_{10}(\sigma\alpha)\]</div>
@@ -572,6 +583,40 @@ a range of reference points on the attractor, which is controlled by <cite>sampl
 accurate result will obviously be gained when setting <cite>sample_size=1.0</cite>.</p>
 <p>The <span class="math notranslate nohighlight">\(\alpha\)</span>-statistic is a normalization factor, such that <span class="math notranslate nohighlight">\(\sigma\)</span>’s from different embeddings can be compared. <span class="math notranslate nohighlight">\(\alpha^2\)</span>
 is defined as the inverse of the sum of the inverse of all <span class="math notranslate nohighlight">\(\varepsilon^2\)</span>’s for all considered reference points.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="pecuzal_embedding.uzal_cost_pecuzal">
+<code class="sig-prename descclassname">pecuzal_embedding.</code><code class="sig-name descname">uzal_cost_pecuzal</code><span class="sig-paren">(</span><em class="sig-param">Y</em>, <em class="sig-param">Y_trial</em>, <em class="sig-param">Tw</em>, <em class="sig-param">K=3</em>, <em class="sig-param">theiler=1</em>, <em class="sig-param">norm='euclidean'</em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/tree/docs-config/docs/docsource/pecuzal_embedding.py#L816-L939"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#pecuzal_embedding.uzal_cost_pecuzal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute Uzal etg al.’s L-statistic for the trajectories <cite>Y</cite> (<cite>L</cite>) and <cite>Y_trial</cite> (<cite>L_trial</cite>) up to the maximum given
+prediction horizon <cite>Tw</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Y</strong> (<cite>numpy.ndarray</cite> (N, d)) – State space vectors of length <cite>N</cite> and dimensionality <cite>d</cite>.</p></li>
+<li><p><strong>Y_trial</strong> (<cite>numpy.ndarray</cite> (N’, d+1)) – State space vectors of length <cite>N’</cite> and dimensionality <cite>d+1</cite>. This is usually result of <cite>Y</cite> undergoing a potential embedding cycle.</p></li>
+<li><p><strong>Tw</strong> (<cite>int</cite>) – The maximal considered time horizon for obtaining the <span class="math notranslate nohighlight">\(\Delta L\)</span>.</p></li>
+<li><p><strong>K</strong> (<cite>int</cite>, optional) – The number of nearest neighbors to be considered in the L-statistic, Default is <cite>K = 3</cite>.</p></li>
+<li><p><strong>theiler</strong> (<cite>int</cite>, optional) – Theiler window for excluding serial correlated points from neighbourhood. In sampling time units, Default is <cite>theiler = 1</cite>.</p></li>
+<li><p><strong>norm</strong> (<cite>str</cite>, optional) – The norm used for distance computations. Must be either <cite>‘euclidean’</cite> (Default) or <cite>‘chebyshev’</cite></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>:math:`Delta L`</strong> – The first minimal value of <cite>L_trial - L</cite> with respect to <cite>T</cite> <span class="math notranslate nohighlight">\(\in\)</span> <cite>2:Tw</cite>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><cite>float</cite></p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function makes use of the idea of the L-statistic proposed in <a class="reference internal" href="#uzal2011" id="id12"><span>[uzal2011]</span></a> and specifically tailored for the needs of the
+PECUZAL algorithm to work, cf. Ref. <a class="reference internal" href="index.html#kraemer2020" id="id13"><span>[kraemer2020]</span></a> . For each <cite>T</cite> <span class="math notranslate nohighlight">\(\in\)</span> <cite>2:Tw</cite>, we compute <span class="math notranslate nohighlight">\(\Delta L\)</span> = <cite>L_trial - L</cite>.
+As soon as <span class="math notranslate nohighlight">\(\Delta L\)</span> increases with increasing <cite>T</cite> (since it is a negative value for a valuable embedding <cite>Y_trial</cite> with
+respect to <cite>Y</cite>) and <span class="math notranslate nohighlight">\(\Delta L&gt;0\)</span>, the algorithm breaks.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#pecuzal_embedding.uzal_cost" title="pecuzal_embedding.uzal_cost"><code class="xref py py-func docutils literal notranslate"><span class="pre">uzal_cost()</span></code></a></p>
+</div>
 </dd></dl>
 
 </div>

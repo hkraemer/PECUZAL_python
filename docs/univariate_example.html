@@ -175,7 +175,7 @@ ODE’s:</p>
     <span class="k">return</span> <span class="p">[</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+.</span><span class="mi">2</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">.</span><span class="mi">2</span><span class="o">+</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mf">5.7</span><span class="p">)]</span>
 
 <span class="n">x0</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">]</span> <span class="c1"># define initial conditions</span>
-<span class="n">tspan</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">7500.</span><span class="o">*.</span><span class="mi">2</span><span class="p">,</span> <span class="o">.</span><span class="mi">2</span><span class="p">)</span> <span class="c1"># time span</span>
+<span class="n">tspan</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">5000.</span><span class="o">*.</span><span class="mi">2</span><span class="p">,</span> <span class="o">.</span><span class="mi">2</span><span class="p">)</span> <span class="c1"># time span</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">odeint</span><span class="p">(</span><span class="n">roessler</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">tspan</span><span class="p">,</span> <span class="n">hmax</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">)</span>
 
 <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="mi">2500</span><span class="p">:,:]</span>    <span class="c1"># remove transients</span>
@@ -183,11 +183,11 @@ ODE’s:</p>
 </div>
 <p>Now bind the time series we would like to consider and compute the auto mutual information, in order
 to estimate an appropriate Theiler window. This is especially important when dealing with highly sampled
-datasets. Let’s focus on the first 5,000 samples here and plot the time series and its mutual information:</p>
+datasets. Let’s focus on the first 2,500 samples here and plot the time series and its mutual information:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">from</span> <span class="nn">pecuzal_embedding</span> <span class="kn">import</span> <span class="n">pecuzal_embedding</span><span class="p">,</span> <span class="n">mi</span>
 
-<span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:</span><span class="mi">5000</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>   <span class="c1"># bind only y-component</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span>   <span class="c1"># bind only y-component</span>
 <span class="n">muinf</span><span class="p">,</span> <span class="n">lags</span> <span class="o">=</span> <span class="n">mi</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>    <span class="c1"># compute mutual information up to default maximum time lag</span>
 
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">6.</span><span class="p">,</span> <span class="mi">8</span><span class="p">,))</span>
@@ -211,13 +211,13 @@ datasets. Let’s focus on the first 5,000 samples here and plot the time series
 <p>Now we are ready to go and simply call the PECUZAL algorithm <a class="reference internal" href="pecuzal_embedding.html#pecuzal_embedding.pecuzal_embedding" title="pecuzal_embedding.pecuzal_embedding"><code class="xref py py-func docutils literal notranslate"><span class="pre">pecuzal_embedding.pecuzal_embedding()</span></code></a>
 with a Theiler window determined from the first minimum of the mutual information shown in the above Figure
 and possible delays ranging from <cite>0:100</cite>.
-<strong>NOTE: The following computation will take approximately 10 minutes (depending on the machine you are running the code on).
+<strong>NOTE: The following computation will take approximately 25 minutes (depending on the machine you are running the code on).
 See also the :ref:`performance note &lt;note_performance&gt;`.</strong></p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Y_reconstruct</span><span class="p">,</span> <span class="n">tau_vals</span><span class="p">,</span> <span class="n">ts_vals</span><span class="p">,</span> <span class="n">Ls</span><span class="p">,</span> <span class="n">eps</span> <span class="o">=</span> <span class="n">pecuzal_embedding</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">taus</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> <span class="n">theiler</span> <span class="o">=</span> <span class="mi">7</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>which leads to the following note in the console:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Algorithm</span> <span class="n">stopped</span> <span class="n">due</span> <span class="n">to</span> <span class="n">minimum</span> <span class="n">L</span><span class="o">-</span><span class="n">value</span> <span class="n">reached</span><span class="o">.</span> <span class="n">VALID</span> <span class="n">embedding</span> <span class="n">achieved</span><span class="o">.</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Algorithm</span> <span class="n">stopped</span> <span class="n">due</span> <span class="n">to</span> <span class="n">increasing</span> <span class="n">L</span><span class="o">-</span><span class="n">values</span><span class="o">.</span> <span class="n">VALID</span> <span class="n">embedding</span> <span class="n">achieved</span><span class="o">.</span>
 </pre></div>
 </div>
 <p><cite>Y_reconstruct</cite> stores the reconstructed trajectory. Since in this example <cite>Y_reconstruct</cite> is a three-dimensional
@@ -232,7 +232,6 @@ trajectory we can actually plot it, in order to visualize the result.</p>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;y(t+</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tau_vals</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_zlabel</span><span class="p">(</span><span class="s1">&#39;y(t+</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">tau_vals</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;PECUZAL reconstructed Roessler system&#39;</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">view_init</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">70</span><span class="p">)</span>
 
 <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">122</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s1">&#39;3d&#39;</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="p">[:</span><span class="mi">5000</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">data</span><span class="p">[:</span><span class="mi">5000</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">data</span><span class="p">[:</span><span class="mi">5000</span><span class="p">,</span><span class="mi">2</span><span class="p">],</span> <span class="s1">&#39;gray&#39;</span><span class="p">)</span>
@@ -277,9 +276,13 @@ the result. We stored these statistics for each embedding cycle in the variable 
 <p>The points mark the postitions, where the algorithm picked the delays for the reconstruction from.
 In the third embedding cycle there is no delay value picked and the algorithm breaks, because it
 can not minimize the <cite>L</cite>-statistic further. Its values for each embedding cycle are stored in <cite>Ls</cite>:</p>
-<div class="highlight-default notranslate" id="l-uni"><div class="highlight"><pre><span></span><span class="n">Ls</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">2.660021409247255</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.497996853343526</span><span class="p">,</span> <span class="o">-</span><span class="mf">3.444974162070703</span><span class="p">]</span>
+<div class="highlight-default notranslate" id="l-uni"><div class="highlight"><pre><span></span><span class="n">Ls</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.897699553823271</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.6939999833030868</span><span class="p">,</span> <span class="mf">0.05337409135563753</span><span class="p">]</span>
 </pre></div>
 </div>
+<p>Note that the very last value of the <span class="math notranslate nohighlight">\(\Delta L\)</span> values corresponds to the last encountered third
+embedding cycle and has a positive value. This is why the algorithm breaks after the 2nd embedding cycle
+and the total deacrease in <cite>L</cite> is thus <cite>L_tot = -1.5917</cite>.
+``</p>
 </div>
 
 
