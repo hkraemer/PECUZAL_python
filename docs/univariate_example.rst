@@ -5,7 +5,7 @@ Univariate example
 
 If you want to run the following example on your local machine, you are welcome to download the code
 `here <https://github.com/hkraemer/PECUZAL_python/blob/docs-config/docs/compute_documentation_examples.py>`_ 
-and run it (after having pip-installed the package).
+and run it (after having pip-installed pecuzal-embedding and matplotlib packages).
 
 We exemplify the proposed embedding method by embedding the `y`-component of the Roessler system
 (with standard parameters :math:`[a = 0.2, b = 0.2, c = 5.7]`). Therefore we define and integrate the

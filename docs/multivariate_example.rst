@@ -5,7 +5,7 @@ Multivariate example
 
 If you want to run the following example on your local machine, you are welcome to download the code
 `here <https://github.com/hkraemer/PECUZAL_python/blob/docs-config/docs/compute_documentation_examples.py>`_ 
-and run it (after having pip-installed the package).
+and run it (after having pip-installed pecuzal-embedding and matplotlib packages).
 
 Similar to the approach in the :ref:`sec_univariate`, we now highlight the capability of the
 proposed embedding method for a multivariate input. Again, we define and integrate the
