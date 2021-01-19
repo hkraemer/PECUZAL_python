@@ -29,7 +29,7 @@ give an introduction to its easy usage in three examples. Enjoy Embedding!
 Getting started
 ===============
 
-Install from `PyPI <https://pypi.org/>`_ by simply typing
+Install from `PyPI <https://pypi.org/project/pecuzal-embedding/>`_ by simply typing
 
 ::
 
