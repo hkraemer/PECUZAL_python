@@ -4,6 +4,8 @@
 .. image:: https://img.shields.io/badge/docs-dev-blue.svg
     :target: https://hkraemer.github.io/PECUZAL_python/
     
+.. image:: https://zenodo.org/badge/312547816.svg
+   :target: https://zenodo.org/badge/latestdoi/312547816
 
 PECUZAL Python
 ==============
