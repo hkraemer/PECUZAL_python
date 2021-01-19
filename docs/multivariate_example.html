@@ -163,7 +163,7 @@
 <span id="sec-multivariate"></span><h1>Multivariate example<a class="headerlink" href="#multivariate-example" title="Permalink to this headline">¶</a></h1>
 <p>If you want to run the following example on your local machine, you are welcome to download the code
 <a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/blob/docs-config/docs/compute_documentation_examples.py">here</a>
-and run it (after having pip-installed the package).</p>
+and run it (after having pip-installed pecuzal-embedding and matplotlib packages).</p>
 <p>Similar to the approach in the <a class="reference internal" href="univariate_example.html#sec-univariate"><span class="std std-ref">Univariate example</span></a>, we now highlight the capability of the
 proposed embedding method for a multivariate input. Again, we define and integrate the
 ODE’s and restrict ourselves to the first 2,500 samples, in order to save computation time.</p>
@@ -218,17 +218,16 @@ by taking the first minimum of the auto mutual information.</p>
    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Mutual information for &#39;</span><span class="o">+</span><span class="n">ts_str</span><span class="p">[</span><span class="n">cnt</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;-component of Roessler test time series&#39;</span><span class="p">)</span>
    <span class="n">cnt</span> <span class="o">+=</span><span class="mi">1</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">hspace</span><span class="o">=.</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s1">&#39;mi_and_timeseries_multi.png&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <img alt="_images/mi_and_timeseries_multi.png" id="fig-mi-multi" src="_images/mi_and_timeseries_multi.png" />
 <p>Due to the spikyness of the <cite>z</cite>-component the according auto mutual information yields <cite>nan</cite>-values as
 a result of empty bins in the histograms. So we stick to the choice of <cite>theiler = 7</cite> here and
 call the PECUZAL algorithm <a class="reference internal" href="pecuzal_embedding.html#pecuzal_embedding.pecuzal_embedding" title="pecuzal_embedding.pecuzal_embedding"><code class="xref py py-func docutils literal notranslate"><span class="pre">pecuzal_embedding.pecuzal_embedding()</span></code></a> with default <cite>kwargs</cite>
-and possible delays ranging from <cite>0:100</cite>.
-<strong>NOTE: The following computation will take approximately 120 minutes (depending on the machine you are running the code on).
+and possible delays ranging from <cite>0:100</cite>. We will run the function with the <cite>econ</cite> option for faster computation.
+<strong>NOTE: The following computation will take approximately 70 minutes (depending on the machine you are running the code on).
 See also the :ref:`performance note &lt;note_performance&gt;`.</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Y_reconstruct</span><span class="p">,</span> <span class="n">tau_vals</span><span class="p">,</span> <span class="n">ts_vals</span><span class="p">,</span> <span class="n">Ls</span><span class="p">,</span> <span class="n">eps</span> <span class="o">=</span> <span class="n">pecuzal_embedding</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">taus</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> <span class="n">theiler</span> <span class="o">=</span> <span class="mi">7</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Y_reconstruct</span><span class="p">,</span> <span class="n">tau_vals</span><span class="p">,</span> <span class="n">ts_vals</span><span class="p">,</span> <span class="n">Ls</span><span class="p">,</span> <span class="n">eps</span> <span class="o">=</span> <span class="n">pecuzal_embedding</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">taus</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> <span class="n">theiler</span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span> <span class="n">econ</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>which leads to the following note in the console:</p>
@@ -243,9 +242,9 @@ See also the :ref:`performance note &lt;note_performance&gt;`.</strong></p>
 <p>… reveal that PECUZAL builds the reconstructed trajectory <cite>Y_reconstruct</cite> from the unlagged time series, having
 index <cite>0</cite>, i.e. the <cite>y</cite>-component and the <cite>x</cite>-component without lag, and finally again the <cite>x</cite>-component lagged
 by 3 samples. As expected the total <span class="math notranslate nohighlight">\(\Delta L\)</span>-value is smaller here than in the <a class="reference internal" href="univariate_example.html#l-uni"><span class="std std-ref">univariate case</span></a>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">L_total</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">Ls</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">L_total_multi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">Ls</span><span class="p">)</span>
 
-<span class="o">-</span><span class="mf">1.6242891455616424</span>
+<span class="o">-</span><span class="mf">1.61236358817</span>
 </pre></div>
 </div>
 <p>The reconstructed attractor looks also quite similar to the original one, even though that is not a proper evaluation

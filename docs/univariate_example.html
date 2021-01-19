@@ -163,7 +163,7 @@
 <span id="sec-univariate"></span><h1>Univariate example<a class="headerlink" href="#univariate-example" title="Permalink to this headline">¶</a></h1>
 <p>If you want to run the following example on your local machine, you are welcome to download the code
 <a class="reference external" href="https://github.com/hkraemer/PECUZAL_python/blob/docs-config/docs/compute_documentation_examples.py">here</a>
-and run it (after having pip-installed the package).</p>
+and run it (after having pip-installed pecuzal-embedding and matplotlib packages).</p>
 <p>We exemplify the proposed embedding method by embedding the <cite>y</cite>-component of the Roessler system
 (with standard parameters <span class="math notranslate nohighlight">\([a = 0.2, b = 0.2, c = 5.7]\)</span>). Therefore we define and integrate the
 ODE’s:</p>
@@ -172,9 +172,9 @@ ODE’s:</p>
 
 <span class="c1"># integrate Roessler system on standard parameters</span>
 <span class="k">def</span> <span class="nf">roessler</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">t</span><span class="p">):</span>
-    <span class="k">return</span> <span class="p">[</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+.</span><span class="mi">2</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">.</span><span class="mi">2</span><span class="o">+</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mf">5.7</span><span class="p">)]</span>
+<span class="k">return</span> <span class="p">[</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+.</span><span class="mi">2</span><span class="o">*</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="o">.</span><span class="mi">2</span><span class="o">+</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mf">5.7</span><span class="p">)]</span>
 
-<span class="n">x0</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">]</span> <span class="c1"># define initial conditions</span>
+<span class="n">x0</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1.</span><span class="p">,</span> <span class="o">.</span><span class="mi">5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">]</span> <span class="c1"># define initial conditions</span>
 <span class="n">tspan</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">5000.</span><span class="o">*.</span><span class="mi">2</span><span class="p">,</span> <span class="o">.</span><span class="mi">2</span><span class="p">)</span> <span class="c1"># time span</span>
 <span class="n">data</span> <span class="o">=</span> <span class="n">odeint</span><span class="p">(</span><span class="n">roessler</span><span class="p">,</span> <span class="n">x0</span><span class="p">,</span> <span class="n">tspan</span><span class="p">,</span> <span class="n">hmax</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">)</span>
 
@@ -210,10 +210,10 @@ datasets. Let’s focus on the first 2,500 samples here and plot the time series
 <img alt="_images/mi_and_timeseries_y_comp.png" id="fig-mi-y" src="_images/mi_and_timeseries_y_comp.png" />
 <p>Now we are ready to go and simply call the PECUZAL algorithm <a class="reference internal" href="pecuzal_embedding.html#pecuzal_embedding.pecuzal_embedding" title="pecuzal_embedding.pecuzal_embedding"><code class="xref py py-func docutils literal notranslate"><span class="pre">pecuzal_embedding.pecuzal_embedding()</span></code></a>
 with a Theiler window determined from the first minimum of the mutual information shown in the above Figure
-and possible delays ranging from <cite>0:100</cite>.
-<strong>NOTE: The following computation will take approximately 25 minutes (depending on the machine you are running the code on).
+and possible delays ranging from <cite>0:100</cite>. We will run the function with the <cite>econ</cite> option for faster computation.
+<strong>NOTE: The following computation will take approximately 13 minutes (depending on the machine you are running the code on).
 See also the :ref:`performance note &lt;note_performance&gt;`.</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Y_reconstruct</span><span class="p">,</span> <span class="n">tau_vals</span><span class="p">,</span> <span class="n">ts_vals</span><span class="p">,</span> <span class="n">Ls</span><span class="p">,</span> <span class="n">eps</span> <span class="o">=</span> <span class="n">pecuzal_embedding</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">taus</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> <span class="n">theiler</span> <span class="o">=</span> <span class="mi">7</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Y_reconstruct</span><span class="p">,</span> <span class="n">tau_vals</span><span class="p">,</span> <span class="n">ts_vals</span><span class="p">,</span> <span class="n">Ls</span><span class="p">,</span> <span class="n">eps</span> <span class="o">=</span> <span class="n">pecuzal_embedding</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">taus</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> <span class="n">theiler</span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span> <span class="n">econ</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>which leads to the following note in the console:</p>
@@ -249,7 +249,7 @@ stored in the output-variable we named <cite>tau_vals</cite> above.</p>
 </pre></div>
 </div>
 <p>This means, that the reconstructed trajectory consists of the unlagged time series (here the
-<cite>y</cite>-component) and two more components with the time series lagged by 7 and 15 sample, respectively.
+<cite>y</cite>-component) and two more components with the time series lagged by 7 and 15 samples, respectively.
 Note the coincidence with the first minimum of the mutual information…
 The output variable <cite>ts_vals</cite> stores the chosen time series for each delay value stored in <cite>tau_vals</cite>.
 Since there is only one time series we fed in,</p>
@@ -276,13 +276,17 @@ the result. We stored these statistics for each embedding cycle in the variable 
 <p>The points mark the postitions, where the algorithm picked the delays for the reconstruction from.
 In the third embedding cycle there is no delay value picked and the algorithm breaks, because it
 can not minimize the <cite>L</cite>-statistic further. Its values for each embedding cycle are stored in <cite>Ls</cite>:</p>
-<div class="highlight-default notranslate" id="l-uni"><div class="highlight"><pre><span></span><span class="n">Ls</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.897699553823271</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.6939999833030868</span><span class="p">,</span> <span class="mf">0.05337409135563753</span><span class="p">]</span>
+<div class="highlight-default notranslate" id="l-uni"><div class="highlight"><pre><span></span><span class="n">Ls</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.89078493296554</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.6889087842665718</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>Note that the very last value of the <span class="math notranslate nohighlight">\(\Delta L\)</span> values corresponds to the last encountered third
-embedding cycle and has a positive value. This is why the algorithm breaks after the 2nd embedding cycle
-and the total deacrease in <cite>L</cite> is thus <cite>L_tot = -1.5917</cite>.
-``</p>
+<p>Note that the very last value of the <span class="math notranslate nohighlight">\(\Delta L\)</span> values corresponds to the last encountered embedding cycle,
+that led to a negative <span class="math notranslate nohighlight">\(\Delta L\)</span>, i.e. in this case two embedding cycles had been run successful, resulting
+in a three-dimensional embedding. The total deacrease in <cite>L</cite> is simply</p>
+<div class="highlight-default notranslate" id="l-uni-total"><div class="highlight"><pre><span></span><span class="n">L_total_uni</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">Ls</span><span class="p">)</span>
+
+<span class="o">-</span><span class="mf">1.57968927756</span>
+</pre></div>
+</div>
 </div>
 
 

@@ -12,6 +12,9 @@ Welcome to PECUZAL automatic embedding for Python's documentation!
 .. image:: https://img.shields.io/badge/docs-dev-blue.svg
     :target: https://hkraemer.github.io/PECUZAL_python/
 
+.. image:: https://zenodo.org/badge/312547816.svg
+   :target: https://zenodo.org/badge/latestdoi/312547816
+
 We introduce the PECUZAL automatic embedding of time series method for Python. It is solely based
 on the paper [kraemer2020]_ `(Open Source) <https://arxiv.org/abs/2011.07040>`_, where the functionality is explained in detail. Here we
 give an introduction to its easy usage in three examples. Enjoy Embedding! 

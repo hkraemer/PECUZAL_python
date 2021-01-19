@@ -4,6 +4,8 @@
 .. image:: https://img.shields.io/badge/docs-dev-blue.svg
     :target: https://hkraemer.github.io/PECUZAL_python/
     
+.. image:: https://zenodo.org/badge/312547816.svg
+   :target: https://zenodo.org/badge/latestdoi/312547816
 
 PECUZAL Python
 ==============
@@ -37,8 +39,9 @@ it is well documented and embedded in the
 `DynamicalSystems.jl <https://juliadynamics.github.io/DynamicalSystems.jl/dev/>`_ ecosystem.
 For instance, the compuations made in the `Univariate example <https://hkraemer.github.io/PECUZAL_python/univariate_example.html>`_ 
 and the `Multivariate example <https://hkraemer.github.io/PECUZAL_python/multivariate_example.html>`_
-in this documentation took approximately `1500s` (approx. 25 mins) and `7500s` (approx. 2 hours!), respectively. In the Julia implementation
-the exact same computation took `3s` and `20s`, respectively! (running on a 2.8GHz Quad-Core i7,  16GB 1600 MHz DDR3)
+in this documentation took approximately `800s` (approx. 13 mins) and `7500s` (approx. 1 hour and 10 mins!), respectively, even when
+using the `econ` option in the function call, for an accelerated computation. In the Julia implementation
+the exact same computation took `4s` and `25s`, respectively! (running on a 2.8GHz Quad-Core i7,  16GB 1600 MHz DDR3)
 
 
 Documentation

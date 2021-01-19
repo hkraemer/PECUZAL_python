@@ -162,6 +162,7 @@
 <h1>Welcome to PECUZAL automatic embedding for Python’s documentation!<a class="headerlink" href="#welcome-to-pecuzal-automatic-embedding-for-python-s-documentation" title="Permalink to this headline">¶</a></h1>
 <a class="reference external image-reference" href="https://travis-ci.org/hkraemer/PECUZAL_python"><img alt="https://travis-ci.org/hkraemer/PECUZAL_python.svg?branch=main" src="https://travis-ci.org/hkraemer/PECUZAL_python.svg?branch=main" /></a>
 <a class="reference external image-reference" href="https://hkraemer.github.io/PECUZAL_python/"><img alt="https://img.shields.io/badge/docs-dev-blue.svg" src="https://img.shields.io/badge/docs-dev-blue.svg" /></a>
+<a class="reference external image-reference" href="https://zenodo.org/badge/latestdoi/312547816"><img alt="https://zenodo.org/badge/312547816.svg" src="https://zenodo.org/badge/312547816.svg" /></a>
 <p>We introduce the PECUZAL automatic embedding of time series method for Python. It is solely based
 on the paper <a class="reference internal" href="#kraemer2020" id="id1"><span>[kraemer2020]</span></a> <a class="reference external" href="https://arxiv.org/abs/2011.07040">(Open Source)</a>, where the functionality is explained in detail. Here we
 give an introduction to its easy usage in three examples. Enjoy Embedding!</p>
@@ -189,8 +190,9 @@ in order to get fast results, especially in the multivariate case. Moreover,
 it is well documented and embedded in the
 <a class="reference external" href="https://juliadynamics.github.io/DynamicalSystems.jl/dev/">DynamicalSystems.jl</a> ecosystem.
 For instance, the compuations made in the <a class="reference internal" href="univariate_example.html#sec-univariate"><span class="std std-ref">Univariate example</span></a> and the <a class="reference internal" href="multivariate_example.html#sec-multivariate"><span class="std std-ref">Multivariate example</span></a>
-in this documentation took approximately <cite>1500s</cite> (approx. 25 mins.) and <cite>7500s</cite> (approx. 2 hours!), respectively. In the Julia implementation
-the exact same computation took <cite>3s</cite> and <cite>20s</cite>, respectively! (running on a 2.8GHz Quad-Core i7,  16GB 1600 MHz DDR3)</p>
+in this documentation took approximately <cite>800s</cite> (approx. 13 mins.) and <cite>4700s</cite> (approx. 1 hour and 10 mins!), respectively,
+even when using the <cite>econ</cite> option in the function call, which accelerates the computation time. In the Julia implementation
+the exact same computation took <cite>4s</cite> and <cite>25s</cite>, respectively! (running on a 2.8GHz Quad-Core i7,  16GB 1600 MHz DDR3)</p>
 </div>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Usage and examples</span></p>
