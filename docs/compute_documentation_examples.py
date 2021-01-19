@@ -17,6 +17,7 @@ import numpy as np
 from scipy.integrate import odeint
 
 import matplotlib.pyplot as plt
+from mpl_toolkits import mplot3d
 from pecuzal_embedding import pecuzal_embedding, mi
 
 # integrate Roessler system on standard parameters
@@ -49,7 +50,7 @@ plt.title('Mutual information for y-component of Roessler test time series')
 plt.subplots_adjust(hspace=.3)
 plt.savefig('mi_and_timeseries_y_comp.png')
 
-Y_reconstruct, tau_vals, ts_vals, Ls, eps = pecuzal_embedding(y, taus = range(100), theiler = 7)
+Y_reconstruct, tau_vals, ts_vals, Ls, eps = pecuzal_embedding(y, taus = range(100), theiler = 7, econ = True)
 
 fig = plt.figure(figsize=(14., 8.))
 ax = plt.subplot(121, projection='3d')
@@ -86,6 +87,8 @@ plt.grid()
 plt.savefig('continuity_univariate.png')
 
 print(Ls)
+L_total_uni = np.sum(Ls)
+print(L_total_uni)
 
 
 ## Multivariate example
@@ -119,14 +122,14 @@ for i in range(0,6,2):
 plt.subplots_adjust(hspace=.3)
 plt.savefig('mi_and_timeseries_multi.png')
 
-Y_reconstruct, tau_vals, ts_vals, Ls, eps = pecuzal_embedding(data, taus = range(100), theiler = 7)
+Y_reconstruct, tau_vals, ts_vals, Ls, eps = pecuzal_embedding(data, taus = range(100), theiler = 7, econ = True)
 
 print(tau_vals)
 print(ts_vals)
 
 print(Ls)
-L_total = np.sum(Ls[:-1])
-print(L_total)
+L_total_multi = np.sum(Ls)
+print(L_total_multi)
 
 ts_labels = ['x','y','z']
 
@@ -173,4 +176,4 @@ plt.xlabel('sample')
 plt.grid()
 plt.savefig('ar_ts.png')
 
-Y_reconstruct, tau_vals, ts_vals, Ls, eps = pecuzal_embedding(data)
+Y_reconstruct, tau_vals, ts_vals, Ls, eps = pecuzal_embedding(data, econ = True)
