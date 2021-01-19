@@ -67,7 +67,6 @@ by taking the first minimum of the auto mutual information.
       plt.title('Mutual information for '+ts_str[cnt]+'-component of Roessler test time series')
       cnt +=1
    plt.subplots_adjust(hspace=.3)
-   plt.savefig('mi_and_timeseries_multi.png')
 
 .. _fig_mi_multi:
 
@@ -76,13 +75,13 @@ by taking the first minimum of the auto mutual information.
 Due to the spikyness of the `z`-component the according auto mutual information yields `nan`-values as
 a result of empty bins in the histograms. So we stick to the choice of `theiler = 7` here and 
 call the PECUZAL algorithm :py:func:`pecuzal_embedding.pecuzal_embedding` with default `kwargs` 
-and possible delays ranging from `0:100`.
-**NOTE: The following computation will take approximately 120 minutes (depending on the machine you are running the code on).
+and possible delays ranging from `0:100`. We will run the function with the `econ` option for faster computation.
+**NOTE: The following computation will take approximately 70 minutes (depending on the machine you are running the code on).
 See also the :ref:`performance note <note_performance>`.**
 
 .. code-block:: python
 
-   Y_reconstruct, tau_vals, ts_vals, Ls, eps = pecuzal_embedding(data, taus = range(100), theiler = 7)
+   Y_reconstruct, tau_vals, ts_vals, Ls, eps = pecuzal_embedding(data, taus = range(100), theiler = 7, econ = True)
 
 which leads to the following note in the console:
 
@@ -104,9 +103,9 @@ by 3 samples. As expected the total :math:`\Delta L`-value is smaller here than 
 
 .. code-block:: python
 
-   L_total = np.sum(Ls[:-1])
+   L_total_multi = np.sum(Ls)
 
-   -1.6242891455616424
+   -1.61236358817
 
 
 The reconstructed attractor looks also quite similar to the original one, even though that is not a proper evaluation

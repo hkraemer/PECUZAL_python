@@ -18,9 +18,9 @@ ODE's:
 
     # integrate Roessler system on standard parameters
     def roessler(x,t):
-        return [-x[1]-x[2], x[0]+.2*x[1], .2+x[2]*(x[0]-5.7)]
+    return [-x[1]-x[2], x[0]+.2*x[1], .2+x[2]*(x[0]-5.7)]
 
-    x0 = [1., .5, .5] # define initial conditions
+    x0 = [1., .5, 0.5] # define initial conditions
     tspan = np.arange(0., 5000.*.2, .2) # time span
     data = odeint(roessler, x0, tspan, hmax = 0.01)
 
@@ -60,13 +60,13 @@ datasets. Let's focus on the first 2,500 samples here and plot the time series a
 
 Now we are ready to go and simply call the PECUZAL algorithm :py:func:`pecuzal_embedding.pecuzal_embedding` 
 with a Theiler window determined from the first minimum of the mutual information shown in the above Figure 
-and possible delays ranging from `0:100`.
-**NOTE: The following computation will take approximately 25 minutes (depending on the machine you are running the code on).
+and possible delays ranging from `0:100`. We will run the function with the `econ` option for faster computation.
+**NOTE: The following computation will take approximately 13 minutes (depending on the machine you are running the code on).
 See also the :ref:`performance note <note_performance>`.**
 
 .. code-block:: python
 
-    Y_reconstruct, tau_vals, ts_vals, Ls, eps = pecuzal_embedding(y, taus = range(100), theiler = 7)
+    Y_reconstruct, tau_vals, ts_vals, Ls, eps = pecuzal_embedding(y, taus = range(100), theiler = 7, econ = True)
 
 which leads to the following note in the console:
 
@@ -111,7 +111,7 @@ stored in the output-variable we named `tau_vals` above.
     tau_vals = [0, 7, 15]
 
 This means, that the reconstructed trajectory consists of the unlagged time series (here the 
-`y`-component) and two more components with the time series lagged by 7 and 15 sample, respectively.
+`y`-component) and two more components with the time series lagged by 7 and 15 samples, respectively.
 Note the coincidence with the first minimum of the mutual information...
 The output variable `ts_vals` stores the chosen time series for each delay value stored in `tau_vals`. 
 Since there is only one time series we fed in,
@@ -149,10 +149,17 @@ can not minimize the `L`-statistic further. Its values for each embedding cycle 
 .. code-block::
     :name: l_uni
 
-    Ls = [-0.897699553823271, -0.6939999833030868, 0.05337409135563753]
+    Ls = [-0.89078493296554, -0.6889087842665718]
 
-Note that the very last value of the :math:`\Delta L` values corresponds to the last encountered third 
-embedding cycle and has a positive value. This is why the algorithm breaks after the 2nd embedding cycle
-and the total deacrease in `L` is thus `L_tot = -1.5917`.
-``
+Note that the very last value of the :math:`\Delta L` values corresponds to the last encountered embedding cycle, 
+that led to a negative :math:`\Delta L`, i.e. in this case two embedding cycles had been run successful, resulting
+in a three-dimensional embedding. The total deacrease in `L` is simply 
+
+.. code-block::
+    :name: l_uni_total
+
+    L_total_uni = np.sum(Ls)
+
+    -1.57968927756
+
 

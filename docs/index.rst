@@ -45,8 +45,9 @@ in your console.
    it is well documented and embedded in the 
    `DynamicalSystems.jl <https://juliadynamics.github.io/DynamicalSystems.jl/dev/>`_ ecosystem.
    For instance, the compuations made in the :ref:`sec_univariate` and the :ref:`sec_multivariate`
-   in this documentation took approximately `1500s` (approx. 25 mins.) and `7500s` (approx. 2 hours!), respectively. In the Julia implementation
-   the exact same computation took `3s` and `20s`, respectively! (running on a 2.8GHz Quad-Core i7,  16GB 1600 MHz DDR3)
+   in this documentation took approximately `800s` (approx. 13 mins.) and `4700s` (approx. 1 hour and 10 mins!), respectively, 
+   even when using the `econ` option in the function call, which accelerates the computation time. In the Julia implementation
+   the exact same computation took `4s` and `25s`, respectively! (running on a 2.8GHz Quad-Core i7,  16GB 1600 MHz DDR3)
 
 .. toctree::
    :maxdepth: 1

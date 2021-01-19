@@ -15,7 +15,7 @@ from scipy.stats import binom, zscore
 from progress.bar import Bar
 
 
-def pecuzal_embedding(s, taus = range(50), theiler = 1, sample_size = 1., K = 13, KNN = 3, L_threshold = 0.0, alpha = 0.05, p = 0.5, max_cycles = 10):
+def pecuzal_embedding(s, taus = range(50), theiler = 1, sample_size = 1., K = 13, KNN = 3, L_threshold = 0.0, alpha = 0.05, p = 0.5, max_cycles = 10, econ = False):
     '''Performs an embedding of time series using the PECUZAL method
 
     Parameters
@@ -44,6 +44,9 @@ def pecuzal_embedding(s, taus = range(50), theiler = 1, sample_size = 1., K = 13
         Binominal p for obtaining the continuity statistic `avrg_eps_star` in each embedding cycle (Default is `p = 0.5`).
     max_cycles : `int`, optional
         The algorithm will stop after that many cycles no matter what. Default is `max_cycles = 10`.
+    econ : `bool`, optional 
+        Economy-mode for L-statistic computation. Instead of computing L-statistics for time horizons `2:Tw`, here we only compute them for
+        `2:2:Tw`.
     
     Returns
     -------
@@ -115,6 +118,7 @@ def pecuzal_embedding(s, taus = range(50), theiler = 1, sample_size = 1., K = 13
     assert (alpha >= 0) and (alpha < 1), "Significance level alpha must be in (0 1)"
     assert (p >= 0) and (p < 1), "Binomial p parameter must be in (0 1)"
     assert (L_threshold >= 0), "L_threshold must be given as an absolute value, i.e. a positive number."
+    assert (type(econ) is bool), "econ parameter must be a Boolean. Set to True or False (default)" 
     norm = 'euclidean' 
     threshold = -L_threshold
 
@@ -143,7 +147,7 @@ def pecuzal_embedding(s, taus = range(50), theiler = 1, sample_size = 1., K = 13
 
         Y_act, tau_vals, ts_vals, Ls, eps = pecuzal_multivariate_embedding_cycle(
                 Y_act, flag, s, taus, theiler, counter, eps, tau_vals, norm,
-                Ls, ts_vals, sample_size, K, alpha, p, KNN)
+                Ls, ts_vals, sample_size, K, alpha, p, KNN, econ)
 
         flag = pecuzal_break_criterion(Ls, counter, max_cycles, threshold)
         counter += 1
@@ -159,11 +163,11 @@ def pecuzal_embedding(s, taus = range(50), theiler = 1, sample_size = 1., K = 13
         for i in range(len(tau_vals[:-2])):
             Y_final = hcat_lagged_values(Y_final,s_orig,tau_vals[i+1])       
     
-    return Y_final, tau_vals[:-1], ts_vals[:-1], Ls, eps[:,:counter]
+    return Y_final, tau_vals[:-1], ts_vals[:-1], Ls[:-1], eps[:,:counter]
 
 
 def pecuzal_multivariate_embedding_cycle(Y_act, flag, Ys, taus, theiler, counter, eps, tau_vals, norm,
-        Ls, ts_vals, sample_size, K, alpha, p, KNN):
+        Ls, ts_vals, sample_size, K, alpha, p, KNN, econ):
     '''Perform one embedding cycle on `Y_act` with a multivariate set Ys
     '''
     if np.ndim(Ys)>1:
@@ -175,19 +179,19 @@ def pecuzal_multivariate_embedding_cycle(Y_act, flag, Ys, taus, theiler, counter
     # the tau according to minimial xi = (peak height * resulting L-statistic)
     if counter == 0:
         Y_act, tau_vals, ts_vals, Ls, eps = first_embedding_cycle_pecuzal(Ys, M, taus, theiler, sample_size, K,
-                                norm, alpha, p, KNN, tau_vals, ts_vals, Ls, eps)
+                                norm, alpha, p, KNN, tau_vals, ts_vals, Ls, eps, econ)
     # in all other cycles we just have to check (size(Y,2)) combinations and pick
     # the tau according to minimal resulting L-statistic
     else:
         Y_act, tau_vals, ts_vals, Ls, eps = embedding_cycle_pecuzal(Y_act, Ys, counter, M, taus, theiler, sample_size,
-                            K, norm, alpha, p, KNN, tau_vals, ts_vals, Ls, eps)
+                            K, norm, alpha, p, KNN, tau_vals, ts_vals, Ls, eps, econ)
 
     return Y_act, tau_vals, ts_vals, Ls, eps
 
 
 
 def first_embedding_cycle_pecuzal(Ys, M, taus, theiler, sample_size, K,
-                        norm, alpha, p, KNN, tau_vals, ts_vals, Ls, eps):
+                        norm, alpha, p, KNN, tau_vals, ts_vals, Ls, eps, econ):
     '''Perform the first embedding cycle of the multivariate embedding.
     '''
     counter = 0
@@ -204,7 +208,7 @@ def first_embedding_cycle_pecuzal(Ys, M, taus, theiler, sample_size, K,
             L_min[ts], L_min_idx[ts], idx[ts] = choose_right_embedding_params_first(
                                             estar[:,(M*ts):(M*(ts+1))], Ys[:,ts],
                                             Ys, taus, KNN, theiler, sample_size,
-                                            norm)
+                                            norm, econ)
 
         min_idx = np.argmin(L_min)
         if np.ndim(min_idx) > 0:
@@ -223,7 +227,7 @@ def first_embedding_cycle_pecuzal(Ys, M, taus, theiler, sample_size, K,
         estar = continuity_statistic(Ys, [0], [0], delays = taus, sample_size = sample_size, 
                                         K = K, theiler = theiler, norm = norm, alpha = alpha, p = p)
         L_min, L_min_idx, idx = choose_right_embedding_params_first(
-                                        estar, Ys, Ys, taus, KNN, theiler, sample_size, norm)
+                                        estar, Ys, Ys, taus, KNN, theiler, sample_size, norm, econ)
         # update tau_vals, ts_vals, Ls
         tau_vals.append(taus[L_min_idx])
         ts_vals.append(0) # time series to start with
@@ -237,14 +241,14 @@ def first_embedding_cycle_pecuzal(Ys, M, taus, theiler, sample_size, K,
 
 
 def embedding_cycle_pecuzal(Y_act, Ys, counter, M, taus, theiler, sample_size,
-                    K, norm, alpha, p, KNN, tau_vals, ts_vals, Ls, eps):
+                    K, norm, alpha, p, KNN, tau_vals, ts_vals, Ls, eps, econ):
     """Perform an embedding cycle of the multivariate embedding, but the first one.
     """
     
     estar = continuity_statistic(Ys, tau_vals, ts_vals, delays = taus, sample_size = sample_size, 
                                     K = K, theiler = theiler, norm = norm, alpha = alpha, p = p)
     # update tau_vals, ts_vals, Ls, eps
-    L_min, L_min_idx, idx = choose_right_embedding_params(estar, Y_act, Ys, taus, KNN, theiler, sample_size, norm)
+    L_min, L_min_idx, idx = choose_right_embedding_params(estar, Y_act, Ys, taus, KNN, theiler, sample_size, norm, econ)
 
     tau_vals.append(taus[L_min_idx])
     ts_vals.append(idx)
@@ -262,7 +266,7 @@ def embedding_cycle_pecuzal(Y_act, Ys, counter, M, taus, theiler, sample_size,
 
 
 
-def choose_right_embedding_params_first(estar, Y_act, s, taus, KNN, theiler, sample_size, norm):
+def choose_right_embedding_params_first(estar, Y_act, s, taus, KNN, theiler, sample_size, norm, econ):
     '''Choose the right embedding parameters of the estar-statistic in the first
     embedding cycle. Return the `L`-decrease-value, the corresponding index value of
     the chosen peak `tau_idx` and the number of the chosen time series `ts_idx` to start with.
@@ -285,6 +289,9 @@ def choose_right_embedding_params_first(estar, Y_act, s, taus, KNN, theiler, sam
         Number of considered fiducial points as a fraction of input time series length, i.e. a float from interval (0,1.].
     norm : `str`
         The norm used for distance computations.
+    econ : `bool`
+        Economy-mode for L-statistic computation. Instead of computing L-statistics for time horizons `2:Tw`, here we only compute them for
+        `2:2:Tw`.
 
     Returns
     -------
@@ -308,7 +315,7 @@ def choose_right_embedding_params_first(estar, Y_act, s, taus, KNN, theiler, sam
             # zero-padding of estar in order to also cover tau=0 (important for the multivariate case)
             # get the L-statistic for each peak in estar and take the one according to L_min
             L_trials_, max_idx_ = local_L_statistics(np.insert(estar[:,ts],0,0), Y_act, s[:,ts],
-                                            taus, KNN, theiler, sample_size, norm)
+                                            taus, KNN, theiler, sample_size, norm, econ)
 
             min_idx_ = np.argmin(L_trials_)
             if np.ndim(min_idx_)>0:
@@ -323,7 +330,7 @@ def choose_right_embedding_params_first(estar, Y_act, s, taus, KNN, theiler, sam
         return L_min_[idx], tau_idx[idx], idx
     else:
         L_trials_, max_idx_ = local_L_statistics(np.insert(estar,0,0), Y_act, s,
-                                    taus, KNN, theiler, sample_size, norm)
+                                    taus, KNN, theiler, sample_size, norm, econ)
         min_idx_ = np.argmin(L_trials_)
 
         if np.ndim(min_idx_)>0:
@@ -335,7 +342,7 @@ def choose_right_embedding_params_first(estar, Y_act, s, taus, KNN, theiler, sam
 
 
 
-def choose_right_embedding_params(estar, Y_act, s, taus, KNN, theiler, sample_size, norm):
+def choose_right_embedding_params(estar, Y_act, s, taus, KNN, theiler, sample_size, norm, econ):
     '''Choose the right embedding parameters of the estar-statistic in any embedding cycle, but the
     first one, on the basis of minimal `L`, i.e. maximal `L_decrease`.
     
@@ -357,6 +364,9 @@ def choose_right_embedding_params(estar, Y_act, s, taus, KNN, theiler, sample_si
         Number of considered fiducial points as a fraction of input time series length, i.e. a float from interval (0,1.].
     norm : `str`
         The norm used for distance computations.
+    econ : `bool`  
+        Economy-mode for L-statistic computation. Instead of computing L-statistics for time horizons `2:Tw`, here we only compute them for
+        `2:2:Tw`.
 
     Returns
     -------
@@ -380,7 +390,7 @@ def choose_right_embedding_params(estar, Y_act, s, taus, KNN, theiler, sample_si
             # zero-padding of estar in order to also cover tau=0 (important for the multivariate case)
             # get the L-statistic for each peak in estar and take the one according to L_min
             L_trials_, max_idx_ = local_L_statistics(np.insert(estar[:,ts],0,0), Y_act, s[:,ts],
-                                            taus, KNN, theiler, sample_size, norm)
+                                            taus, KNN, theiler, sample_size, norm, econ)
             min_idx_ = np.argmin(L_trials_)
             if np.ndim(min_idx_)>0:
                 min_idx_ = min_idx_[0]
@@ -394,7 +404,7 @@ def choose_right_embedding_params(estar, Y_act, s, taus, KNN, theiler, sample_si
         return L_min_[idx], tau_idx[idx], idx
     else:
         L_trials_, max_idx_ = local_L_statistics(np.insert(estar,0,0), Y_act, s,
-                                    taus, KNN, theiler, sample_size, norm)
+                                    taus, KNN, theiler, sample_size, norm, econ)
 
         min_idx_ = np.argmin(L_trials_)
         if np.ndim(min_idx_)>0:
@@ -406,7 +416,7 @@ def choose_right_embedding_params(estar, Y_act, s, taus, KNN, theiler, sample_si
 
 
 
-def local_L_statistics(estar, Y_act, s, taus, KNN, theiler, sample_size, norm):
+def local_L_statistics(estar, Y_act, s, taus, KNN, theiler, sample_size, norm, econ):
     '''Return the maximum decrease of the L-statistic `L_decrease` and corresponding
     delay-indices `max_idx` for all local maxima in `estar`.
     '''
@@ -419,10 +429,10 @@ def local_L_statistics(estar, Y_act, s, taus, KNN, theiler, sample_size, norm):
         Y_trial = hcat_lagged_values(Y_act,s,taus[int(tau_idx)-1])
         # compute L-statistic for Y_act and Y_trial and get the maximum decrease
         if np.ndim(max_idx)>0:
-            L_decrease[i] = uzal_cost_pecuzal(Y_act, Y_trial, taus[-1], K = KNN, theiler = theiler, norm = norm)
+            L_decrease[i] = uzal_cost_pecuzal(Y_act, Y_trial, taus[-1], K = KNN, theiler = theiler, norm = norm, econ = econ)
             
         else:
-            L_decrease = uzal_cost_pecuzal(Y_act, Y_trial, taus[-1], K = KNN, theiler = theiler, norm = norm)
+            L_decrease = uzal_cost_pecuzal(Y_act, Y_trial, taus[-1], K = KNN, theiler = theiler, norm = norm, econ = econ)
                    
     return L_decrease, max_idx
 
@@ -474,12 +484,15 @@ def hcat_lagged_values(Y, s, tau):
     '''
     assert tau >= 0
     N = len(Y)
+    MM = len(s)
     try:
         D = np.size(Y,1)
     except IndexError:
         D = 1
-    assert N <= len(s)
-    M = N - tau
+    assert N <= MM
+    MMM = MM - tau
+    M = np.min([N,MMM])
+
     data = np.empty(shape=(M,D+1))
 
     if D > 1:
@@ -813,7 +826,7 @@ def uzal_cost(Y, K = 3, Tw = 40, theiler = 1 , sample_size = 1.0, norm = 'euclid
     return L, L_local
 
 
-def uzal_cost_pecuzal(Y, Y_trial, Tw, K = 3, theiler = 1, norm = 'euclidean'):
+def uzal_cost_pecuzal(Y, Y_trial, Tw, K = 3, theiler = 1, norm = 'euclidean', econ = False):
     '''Compute Uzal etg al.'s L-statistic for the trajectories `Y` (`L`) and `Y_trial` (`L_trial`) up to the maximum given 
     prediction horizon `Tw`. 
 
@@ -831,11 +844,14 @@ def uzal_cost_pecuzal(Y, Y_trial, Tw, K = 3, theiler = 1, norm = 'euclidean'):
         Theiler window for excluding serial correlated points from neighbourhood. In sampling time units, Default is `theiler = 1`.
     norm : `str`, optional
         The norm used for distance computations. Must be either `'euclidean'` (Default) or `'chebyshev'`
+    econ : `bool`, optional 
+        Economy-mode for L-statistic computation. Instead of computing L-statistics for time horizons `2:Tw`, here we only compute them for
+        `2:2:Tw`.
  
     Returns
     -------
     :math:`\Delta L` : `float`
-        The first minimal value of `L_trial - L` with respect to `T` :math:`\\in` `2:Tw`.
+        The first minimal value of `L_trial - L` with respect to `T` :math:`\\in` `2:Tw` (`2:2:Tw`, when `econ` is `true`).
 
     Notes
     -----
@@ -853,6 +869,7 @@ def uzal_cost_pecuzal(Y, Y_trial, Tw, K = 3, theiler = 1, norm = 'euclidean'):
     assert (K >= 0) and (type(K) is int) and (K < len(Y))
     assert (Tw >= 0) and (type(Tw) is int) and (Tw < len(Y))
     assert (type(norm) is str) and (norm == 'euclidean' or norm == 'chebyshev')
+    assert (type(econ) is bool)
 
     if np.ndim(Y)>1:
         assert (np.size(Y,0) > np.size(Y,1)), "You must provide a numpy array storing the time series in its columns."
@@ -863,13 +880,19 @@ def uzal_cost_pecuzal(Y, Y_trial, Tw, K = 3, theiler = 1, norm = 'euclidean'):
     assert (np.size(Y_trial,0) > np.size(Y_trial,1)), "You must provide a numpy array storing the time series in its columns."
     assert (np.size(Y_trial,1) == (D+1)), "The trial trajectory must have dimension D+1, when the actual trajectory has dimension D."
 
+    if econ:
+        tws = range(2,Tw+1,2) # start at 2 will eliminate bad results for noise
+    else:
+        tws = range(2,Tw+1) # start at 2 will eliminate bad results for noise
+
+
     NNN = len(Y_trial)-1
     # preallocation for 1st dataset
     eps2 = np.empty(NNN)             # neighborhood size
-    E2 = np.empty(shape=(NNN, Tw))    # conditional variance
+    E2 = np.empty(shape=(NNN, len(tws)))    # conditional variance
     # preallocation for 2nd dataset
     eps2_trial = np.empty(NNN)             # neighborhood size
-    E2_trial = np.empty(shape=(NNN, Tw))   # conditional variance
+    E2_trial = np.empty(shape=(NNN, len(tws)))   # conditional variance
 
     dist_former = 9999999 # intial L-decrease
 
@@ -878,7 +901,7 @@ def uzal_cost_pecuzal(Y, Y_trial, Tw, K = 3, theiler = 1, norm = 'euclidean'):
     vs_trial = Y_trial[ns[:]] # the fiducial points in the data set
     # loop over each time horizon
     cnt = 0
-    for T in range(2,Tw+1):    # start at 2 will eliminate results for noise
+    for T in tws:    # start at 2 will eliminate results for noise
         NN = len(Y_trial)-T
 
         if D == 1:
@@ -928,7 +951,7 @@ def uzal_cost_pecuzal(Y, Y_trial, Tw, K = 3, theiler = 1, norm = 'euclidean'):
         # compute distance of L-values and check whether that distance can be
         # increased
 
-        dist = compute_L_decrease(E2, E2_trial, eps2, eps2_trial, T, NN)
+        dist = compute_L_decrease(E2, E2_trial, eps2, eps2_trial, cnt+1, NN)
         if dist > dist_former and dist_former<0:
             break
         else:
@@ -942,14 +965,14 @@ def uzal_cost_pecuzal(Y, Y_trial, Tw, K = 3, theiler = 1, norm = 'euclidean'):
 def compute_L_decrease(E2, E2_trial, eps2, eps2_trial, T, NN):
     # 1st dataset
     # Average E²[T] over all prediction horizons
-    E2_avrg = np.mean(E2[:NN,:T-1], axis=1)                   # Eq. 15
+    E2_avrg = np.mean(E2[:NN,:T], axis=1)                   # Eq. 15
     sigma2 = np.divide(E2_avrg,eps2[:NN]) # noise amplification σ², Eq. 17
     sigma2_avrg = np.mean(sigma2) # averaged value of the noise amplification, Eq. 18
     alpha2 = np.divide(1,np.sum(eps2[:NN]**(-1))) # for normalization, Eq. 21
     L = np.log10(np.sqrt(sigma2_avrg)*np.sqrt(alpha2))
     # 2nd dataset
     # Average E²[T] over all prediction horizons
-    E2_avrg_trial = np.mean(E2_trial[:NN,:T-1], axis=1)                   # Eq. 15
+    E2_avrg_trial = np.mean(E2_trial[:NN,:T], axis=1)                   # Eq. 15
     sigma2_trial = np.divide(E2_avrg_trial,eps2_trial[:NN]) # noise amplification σ², Eq. 17
     sigma2_avrg_trial = np.mean(sigma2_trial) # averaged value of the noise amplification, Eq. 18
     alpha2_trial = np.divide(1, np.sum(eps2_trial[:NN]**(-1))) # for normalization, Eq. 21

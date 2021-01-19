@@ -13,7 +13,6 @@ data. Therefore, we create a simple AR(1)-process:
 .. code-block:: python
 
     import numpy as np
-    import random
     import matplotlib.pyplot as plt
 
     def ar_process(u0, alpha, p, N):
@@ -45,9 +44,9 @@ When we now call the PECUZAL algorithm :py:func:`pecuzal_embedding.pecuzal_embed
 
 .. code-block:: python
 
-    from pecuzal_embedding import *
+    from pecuzal_embedding import pecuzal_embedding
 
-    Y_reconstruct, tau_vals, ts_vals, Ls, eps = pecuzal_embedding(data)
+    Y_reconstruct, tau_vals, ts_vals, Ls, eps = pecuzal_embedding(data, econ = True)
 
 we'll get the following note in the console:
 
