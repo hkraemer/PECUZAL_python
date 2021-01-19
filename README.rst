@@ -20,7 +20,7 @@ give an introduction to its easy usage in three examples. Enjoy Embedding!
 Getting started
 ===============
 
-Install from `PyPI <https://pypi.org/>`_ by simply typing
+Install from `PyPI <https://pypi.org/project/pecuzal-embedding/>`_ by simply typing
 
 ::
 
@@ -39,7 +39,7 @@ it is well documented and embedded in the
 `DynamicalSystems.jl <https://juliadynamics.github.io/DynamicalSystems.jl/dev/>`_ ecosystem.
 For instance, the compuations made in the `Univariate example <https://hkraemer.github.io/PECUZAL_python/univariate_example.html>`_ 
 and the `Multivariate example <https://hkraemer.github.io/PECUZAL_python/multivariate_example.html>`_
-in this documentation took approximately `800s` (approx. 13 mins) and `7500s` (approx. 1 hour and 10 mins!), respectively, even when
+in this documentation took approximately `800s` (approx. 13 mins) and `4700s` (approx. 1 hour and 10 mins!), respectively, even when
 using the `econ` option in the function call, for an accelerated computation. In the Julia implementation
 the exact same computation took `4s` and `25s`, respectively! (running on a 2.8GHz Quad-Core i7,  16GB 1600 MHz DDR3)
 
