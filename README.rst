@@ -11,7 +11,7 @@ PECUZAL Python
 ==============
 
 We introduce the PECUZAL automatic embedding of time series method for Python. It is solely based
-on the paper [kraemer2020]_ `(Open Source) <https://arxiv.org/abs/2011.07040>`_, where the functionality is explained in detail. Here we
+on the paper [kraemer2021]_ `(Open Source) <https://iopscience.iop.org/article/10.1088/1367-2630/abe336>`_, where the functionality is explained in detail. Here we
 give an introduction to its easy usage in three examples. Enjoy Embedding! 
 
 .. image:: icon.png
@@ -54,20 +54,25 @@ Citing and reference
 ====================
 If you enjoy this tool and find it valuable for your research please cite
 
-.. [kraemer2020] Kraemer et al., "A unified and automated approach to attractor reconstruction",  `arXiv:2011.07040 [physics.data-an] <https://arxiv.org/abs/2011.07040>`_, 2020.
+.. [kraemer2021] Kraemer et al., "A unified and automated approach to attractor reconstruction", New Journal of Physics 23(3), 033017,  `10.1088/1367-2630/abe336 <https://iopscience.iop.org/article/10.1088/1367-2630/abe336>`_, 2021.
 
 or as BiBTeX-entry:
 
 ::
 
-    @misc{kraemer2020,
-    title={A unified and automated approach to attractor reconstruction}, 
-    author={K. H. Kraemer and G. Datseris and J. Kurths and I. Z. Kiss and J. L. Ocampo-Espindola and N. Marwan},
-    year={2020},
-    eprint={2011.07040},
-    archivePrefix={arXiv},
-    primaryClass={physics.data-an}
-    url={https://arxiv.org/abs/2011.07040}
+    @article{Kraemer2021,
+        doi = {10.1088/1367-2630/abe336},
+        url = {https://doi.org/10.1088/1367-2630/abe336},
+        year = 2021,
+        month = {mar},
+        publisher = {{IOP} Publishing},
+        volume = {23},
+        number = {3},
+        pages = {033017},
+        author = {K H Kraemer and G Datseris and J Kurths and I Z Kiss and J L Ocampo-Espindola and N Marwan},
+        title = {A unified and automated approach to attractor reconstruction},
+        journal = {New Journal of Physics},
+        abstract = {We present a fully automated method for the optimal state space reconstruction from univariate and multivariate time series. The proposed methodology generalizes the time delay embedding procedure by unifying two promising ideas in a symbiotic fashion. Using non-uniform delays allows the successful reconstruction of systems inheriting different time scales. In contrast to the established methods, the minimization of an appropriate cost function determines the embedding dimension without using a threshold parameter. Moreover, the method is capable of detecting stochastic time series and, thus, can handle noise contaminated input without adjusting parameters. The superiority of the proposed method is shown on some paradigmatic models and experimental data from chaotic chemical oscillators.}
     }
 
 
