@@ -952,6 +952,9 @@ def uzal_cost_pecuzal(Y, Y_trial, Tw, K = 3, theiler = 1, norm = 'euclidean', ec
         # increased
 
         dist = compute_L_decrease(E2, E2_trial, eps2, eps2_trial, cnt+1, NN)
+        if math.isnan(dist):
+            raise Exception('Computed 0-distances. You might use model-data, thus try to add minimal additive noise to the signal you wish to embed and try again.')
+
         if dist > dist_former and dist_former<0:
             break
         else:
