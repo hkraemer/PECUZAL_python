@@ -5,7 +5,7 @@ Univariate example
 
 If you want to run the following example on your local machine, you are welcome to download the code
 `here <https://github.com/hkraemer/PECUZAL_python/blob/docs-config/docs/compute_documentation_examples.py>`_ 
-and run it (after having pip-installed pecuzal-embedding and matplotlib packages).
+and run it (after having pip-installed the package).
 
 We exemplify the proposed embedding method by embedding the `y`-component of the Roessler system
 (with standard parameters :math:`[a = 0.2, b = 0.2, c = 5.7]`). Therefore we define and integrate the
@@ -18,24 +18,24 @@ ODE's:
 
     # integrate Roessler system on standard parameters
     def roessler(x,t):
-    return [-x[1]-x[2], x[0]+.2*x[1], .2+x[2]*(x[0]-5.7)]
+        return [-x[1]-x[2], x[0]+.2*x[1], .2+x[2]*(x[0]-5.7)]
 
-    x0 = [1., .5, 0.5] # define initial conditions
-    tspan = np.arange(0., 5000.*.2, .2) # time span
+    x0 = [1., .5, .5] # define initial conditions
+    tspan = np.arange(0., 7500.*.2, .2) # time span
     data = odeint(roessler, x0, tspan, hmax = 0.01)
 
     data = data[2500:,:]    # remove transients
 
 Now bind the time series we would like to consider and compute the auto mutual information, in order
 to estimate an appropriate Theiler window. This is especially important when dealing with highly sampled
-datasets. Let's focus on the first 2,500 samples here and plot the time series and its mutual information:
+datasets. Let's focus on the first 5,000 samples here and plot the time series and its mutual information:
 
 .. code-block:: python
    
     import matplotlib.pyplot as plt
     from pecuzal_embedding import pecuzal_embedding, mi
 
-    y = data[:,1]   # bind only y-component
+    y = data[:5000,1]   # bind only y-component
     muinf, lags = mi(y)    # compute mutual information up to default maximum time lag
 
     plt.figure(figsize=(6., 8,))
@@ -60,19 +60,19 @@ datasets. Let's focus on the first 2,500 samples here and plot the time series a
 
 Now we are ready to go and simply call the PECUZAL algorithm :py:func:`pecuzal_embedding.pecuzal_embedding` 
 with a Theiler window determined from the first minimum of the mutual information shown in the above Figure 
-and possible delays ranging from `0:100`. We will run the function with the `econ` option for faster computation.
-**NOTE: The following computation will take approximately 13 minutes (depending on the machine you are running the code on).
+and possible delays ranging from `0:100`.
+**NOTE: The following computation will take approximately 10 minutes (depending on the machine you are running the code on).
 See also the :ref:`performance note <note_performance>`.**
 
 .. code-block:: python
 
-    Y_reconstruct, tau_vals, ts_vals, Ls, eps = pecuzal_embedding(y, taus = range(100), theiler = 7, econ = True)
+    Y_reconstruct, tau_vals, ts_vals, Ls, eps = pecuzal_embedding(y, taus = range(100), theiler = 7)
 
 which leads to the following note in the console:
 
 ::
 
-    Algorithm stopped due to increasing L-values. VALID embedding achieved.
+    Algorithm stopped due to minimum L-value reached. VALID embedding achieved.
 
 `Y_reconstruct` stores the reconstructed trajectory. Since in this example `Y_reconstruct` is a three-dimensional
 trajectory we can actually plot it, in order to visualize the result.
@@ -89,6 +89,7 @@ trajectory we can actually plot it, in order to visualize the result.
     ax.set_ylabel('y(t+{})'.format(tau_vals[1]))
     ax.set_zlabel('y(t+{})'.format(tau_vals[2]))
     ax.set_title('PECUZAL reconstructed Roessler system')
+    ax.view_init(50, 70)
 
     ax = plt.subplot(122, projection='3d')
     ax.plot(data[:5000,0], data[:5000,1], data[:5000,2], 'gray')
@@ -111,7 +112,7 @@ stored in the output-variable we named `tau_vals` above.
     tau_vals = [0, 7, 15]
 
 This means, that the reconstructed trajectory consists of the unlagged time series (here the 
-`y`-component) and two more components with the time series lagged by 7 and 15 samples, respectively.
+`y`-component) and two more components with the time series lagged by 7 and 15 sample, respectively.
 Note the coincidence with the first minimum of the mutual information...
 The output variable `ts_vals` stores the chosen time series for each delay value stored in `tau_vals`. 
 Since there is only one time series we fed in,
@@ -149,17 +150,5 @@ can not minimize the `L`-statistic further. Its values for each embedding cycle 
 .. code-block::
     :name: l_uni
 
-    Ls = [-0.89078493296554, -0.6889087842665718]
-
-Note that the very last value of the :math:`\Delta L` values corresponds to the last encountered embedding cycle, 
-that led to a negative :math:`\Delta L`, i.e. in this case two embedding cycles had been run successful, resulting
-in a three-dimensional embedding. The total deacrease in `L` is simply 
-
-.. code-block::
-    :name: l_uni_total
-
-    L_total_uni = np.sum(Ls)
-
-    -1.57968927756
-
+    Ls = [-2.660021409247255, -3.497996853343526, -3.444974162070703]
 

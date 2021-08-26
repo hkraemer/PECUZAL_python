@@ -13,6 +13,7 @@ data. Therefore, we create a simple AR(1)-process:
 .. code-block:: python
 
     import numpy as np
+    import random
     import matplotlib.pyplot as plt
 
     def ar_process(u0, alpha, p, N):
@@ -44,15 +45,15 @@ When we now call the PECUZAL algorithm :py:func:`pecuzal_embedding.pecuzal_embed
 
 .. code-block:: python
 
-    from pecuzal_embedding import pecuzal_embedding
+    from pecuzal_embedding import *
 
-    Y_reconstruct, tau_vals, ts_vals, Ls, eps = pecuzal_embedding(data, econ = True)
+    Y_reconstruct, tau_vals, ts_vals, Ls, eps = pecuzal_embedding(data)
 
 we'll get the following note in the console:
 
 ::
 
-    Algorithm stopped due to increasing L-values in the first embedding cycle.. Valid embedding NOT achieved.
+    Algorithm stopped due to increasing L-values. Valid embedding NOT achieved.
 
 
 The algorithm did not obtain any valid embedding, thus, it values the input data as a non-deterministic
