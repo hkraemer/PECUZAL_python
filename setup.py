@@ -5,7 +5,7 @@ with open("README.rst", "r") as fh:
 
 setuptools.setup(
     name="pecuzal_embedding", 
-    version="1.3.1",
+    version="1.3.2",
     author="K.H.Kraemer",
     author_email="hkraemer@pik-potsdam.de",
     description="PECUZAL automatic embedding of uni- and multivariate time series",
