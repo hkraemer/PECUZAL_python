@@ -820,7 +820,7 @@ def uzal_cost(Y, K = 3, Tw = 40, theiler = 1 , sample_size = 1.0, norm = 'euclid
     
     sigma2 = E2_avrg / eps2 # noise amplification σ², Eq. 17
     sigma2_avrg = np.mean(sigma2) # averaged value of the noise amplification, Eq. 18
-    alpha2 = 1 / np.sum(eps2**(-1)) # for normalization, Eq. 21
+    alpha2 = 1 / np.mean(eps2**(-1)) # for normalization, Eq. 21
     L = np.log10(np.sqrt(sigma2_avrg)*np.sqrt(alpha2))
     L_local = np.log10(np.sqrt(sigma2)*np.sqrt(alpha2))
     return L, L_local
@@ -971,14 +971,14 @@ def compute_L_decrease(E2, E2_trial, eps2, eps2_trial, T, NN):
     E2_avrg = np.mean(E2[:NN,:T], axis=1)                   # Eq. 15
     sigma2 = np.divide(E2_avrg,eps2[:NN]) # noise amplification σ², Eq. 17
     sigma2_avrg = np.mean(sigma2) # averaged value of the noise amplification, Eq. 18
-    alpha2 = np.divide(1,np.sum(eps2[:NN]**(-1))) # for normalization, Eq. 21
+    alpha2 = np.divide(1,np.mean(eps2[:NN]**(-1))) # for normalization, Eq. 21
     L = np.log10(np.sqrt(sigma2_avrg)*np.sqrt(alpha2))
     # 2nd dataset
     # Average E²[T] over all prediction horizons
     E2_avrg_trial = np.mean(E2_trial[:NN,:T], axis=1)                   # Eq. 15
     sigma2_trial = np.divide(E2_avrg_trial,eps2_trial[:NN]) # noise amplification σ², Eq. 17
     sigma2_avrg_trial = np.mean(sigma2_trial) # averaged value of the noise amplification, Eq. 18
-    alpha2_trial = np.divide(1, np.sum(eps2_trial[:NN]**(-1))) # for normalization, Eq. 21
+    alpha2_trial = np.divide(1, np.mean(eps2_trial[:NN]**(-1))) # for normalization, Eq. 21
     L_trial = np.log10(np.sqrt(sigma2_avrg_trial)*np.sqrt(alpha2_trial))
     return L_trial - L
 
