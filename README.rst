@@ -1,9 +1,9 @@
-.. image:: https://travis-ci.org/hkraemer/PECUZAL_python.svg?branch=main
-    :target: https://travis-ci.org/hkraemer/PECUZAL_python
+.. image:: https://github.com/hkraemer/PECUZAL_python/actions/workflows/test_pecuzal.yml/badge.svg
+    :target: https://github.com/hkraemer/PECUZAL_python/actions/workflows/test_pecuzal.yml
 
 .. image:: https://img.shields.io/badge/docs-dev-blue.svg
     :target: https://hkraemer.github.io/PECUZAL_python/
-    
+
 .. image:: https://zenodo.org/badge/312547816.svg
    :target: https://zenodo.org/badge/latestdoi/312547816
 
@@ -12,7 +12,7 @@ PECUZAL Python
 
 We introduce the PECUZAL automatic embedding of time series method for Python. It is solely based
 on the paper [kraemer2021]_ `(Open Source) <https://iopscience.iop.org/article/10.1088/1367-2630/abe336>`_, where the functionality is explained in detail. Here we
-give an introduction to its easy usage in three examples. Enjoy Embedding! 
+give an introduction to its easy usage in three examples. Enjoy Embedding!
 
 .. image:: icon.png
 
@@ -32,12 +32,12 @@ NOTE
 ====
 
 This implementation is not profiled well. We recommend to use the implementation
-in the `Julia language <https://juliadynamics.github.io/DynamicalSystems.jl/latest/embedding/unified/>`_ or 
+in the `Julia language <https://juliadynamics.github.io/DynamicalSystems.jl/latest/embedding/unified/>`_ or
 in `Matlab <https://github.com/hkraemer/PECUZAL_Matlab>`_,
 in order to get fast results, especially in the multivariate case. Moreover,
-it is well documented and embedded in the 
+it is well documented and embedded in the
 `DynamicalSystems.jl <https://juliadynamics.github.io/DynamicalSystems.jl/dev/>`_ ecosystem.
-For instance, the compuations made in the `Univariate example <https://hkraemer.github.io/PECUZAL_python/univariate_example.html>`_ 
+For instance, the compuations made in the `Univariate example <https://hkraemer.github.io/PECUZAL_python/univariate_example.html>`_
 and the `Multivariate example <https://hkraemer.github.io/PECUZAL_python/multivariate_example.html>`_
 in this documentation took approximately `800s` (approx. 13 mins) and `4700s` (approx. 1 hour and 10 mins!), respectively, even when
 using the `econ` option in the function call, for an accelerated computation. In the Julia implementation
