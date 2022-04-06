@@ -1,5 +1,3 @@
-import sys 
-import os
 import unittest
 import numpy as np
 from pecuzal_embedding import *

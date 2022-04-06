@@ -12,7 +12,6 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/x-rst",
     url="https://github.com/hkraemer/PECUZAL_python.git",
-    #packages=setuptools.find_packages(exclude=['docs', 'tests*']),
     packages=setuptools.find_packages(exclude=['docs']),
     py_modules=["pecuzal_embedding"],
     package_dir={'':'src'},
