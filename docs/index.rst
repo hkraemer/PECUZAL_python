@@ -6,8 +6,8 @@
 Welcome to PECUZAL automatic embedding for Python's documentation!
 ==================================================================
 
-.. image:: https://travis-ci.org/hkraemer/PECUZAL_python.svg?branch=main
-    :target: https://travis-ci.org/hkraemer/PECUZAL_python
+.. image:: https://github.com/hkraemer/PECUZAL_python/actions/workflows/test_pecuzal.yml/badge.svg
+    :target: https://github.com/hkraemer/PECUZAL_python/actions/workflows/test_pecuzal.yml
 
 .. image:: https://img.shields.io/badge/docs-dev-blue.svg
     :target: https://hkraemer.github.io/PECUZAL_python/

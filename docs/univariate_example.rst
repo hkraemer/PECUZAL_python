@@ -62,7 +62,7 @@ Now we are ready to go and simply call the PECUZAL algorithm :py:func:`pecuzal_e
 with a Theiler window determined from the first minimum of the mutual information shown in the above Figure 
 and possible delays ranging from `0:100`. We will run the function with the `econ` option for faster computation.
 **NOTE: The following computation will take approximately 13 minutes (depending on the machine you are running the code on).
-See also the :ref:`performance note <note_performance>`.**
+See also the :ref:`note_performance`.**
 
 .. code-block:: python
 

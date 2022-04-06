@@ -77,7 +77,7 @@ a result of empty bins in the histograms. So we stick to the choice of `theiler 
 call the PECUZAL algorithm :py:func:`pecuzal_embedding.pecuzal_embedding` with default `kwargs` 
 and possible delays ranging from `0:100`. We will run the function with the `econ` option for faster computation.
 **NOTE: The following computation will take approximately 70 minutes (depending on the machine you are running the code on).
-See also the :ref:`performance note <note_performance>`.**
+See also the :ref:`note_performance`.**
 
 .. code-block:: python
 
@@ -109,7 +109,7 @@ by 3 samples. As expected the total :math:`\Delta L`-value is smaller here than 
 
 
 The reconstructed attractor looks also quite similar to the original one, even though that is not a proper evaluation
-criterion for the goodness of a reconstruction, see [kraemer2020]_.
+criterion for the goodness of a reconstruction, see [kraemer2021]_.
 
 .. code-block:: python
    
