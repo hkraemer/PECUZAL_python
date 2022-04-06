@@ -5,14 +5,13 @@ with open("README.rst", "r") as fh:
 
 setuptools.setup(
     name="pecuzal_embedding", 
-    version="1.3.2",
+    version="1.3.4",
     author="K.H.Kraemer",
     author_email="hkraemer@pik-potsdam.de",
     description="PECUZAL automatic embedding of uni- and multivariate time series",
     long_description=long_description,
     long_description_content_type="text/x-rst",
     url="https://github.com/hkraemer/PECUZAL_python.git",
-    #packages=setuptools.find_packages(exclude=['docs', 'tests*']),
     packages=setuptools.find_packages(exclude=['docs']),
     py_modules=["pecuzal_embedding"],
     package_dir={'':'src'},
@@ -32,6 +31,6 @@ setuptools.setup(
         "Operating System :: OS Independent",
         "Development Status :: 5 - Production/Stable"],
     python_requires='>=3.7',
-    install_requires=["numpy>=1.17.2","scipy>=1.3.1","scikit-learn>=0.21.3","progress>=1.5"], 
+    install_requires=["numpy>=1.17.2","scipy>=1.3.1,<1.9","scikit-learn>=0.21.3","progress>=1.5"], 
 )
 
