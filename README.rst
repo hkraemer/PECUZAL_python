@@ -14,7 +14,7 @@ We introduce the PECUZAL automatic embedding of time series method for Python. I
 on the paper [kraemer2021]_ `(Open Source) <https://iopscience.iop.org/article/10.1088/1367-2630/abe336>`_, where the functionality is explained in detail. Here we
 give an introduction to its easy usage in three examples. Enjoy Embedding!
 
-.. image:: icon.png
+.. image:: https://github.com/hkraemer/PECUZAL_python/raw/main/icon.webp
 
 
 Getting started
